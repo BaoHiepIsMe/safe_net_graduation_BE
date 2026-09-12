@@ -1,0 +1,5 @@
+export const LOCATION_EVENT_NAME = 'location.updated';
+export const LOCATION_FUTURE_TOLERANCE_MS = 5 * 60 * 1000;
+export const LOCATION_TRANSACTION_RETRY_LIMIT = 3;
+export const LOCATION_HISTORY_DEFAULT_LIMIT = 50;
+export const LOCATION_HISTORY_MAX_LIMIT = 100;
