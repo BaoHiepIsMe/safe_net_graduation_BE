@@ -91,7 +91,7 @@ export class ProfilesService {
       id: profile.id,
       fullName: profile.fullName,
       avatarUrl: profile.avatarUrl,
-      dateOfBirth: profile.dateOfBirth,
+      dateOfBirth: profile.dateOfBirth?.toISOString().slice(0, 10) ?? null,
       gender: profile.gender,
       phoneNumber: profile.phoneNumber,
       accountStatus: profile.accountStatus,

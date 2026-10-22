@@ -29,13 +29,23 @@ export class ProfilesRepository {
     });
   }
 
+  findProfileByPhoneNumber(phoneNumber: string) {
+    return this.prisma.profile.findUnique({
+      where: { phoneNumber },
+      select: { id: true },
+    });
+  }
+
   updateProfile(userId: string, dto: UpdateProfileDto) {
     return this.prisma.profile.update({
       where: { id: userId },
       data: {
         fullName: dto.fullName,
         avatarUrl: dto.avatarUrl,
-        dateOfBirth: dto.dateOfBirth,
+        dateOfBirth:
+          dto.dateOfBirth === undefined || dto.dateOfBirth === null
+            ? dto.dateOfBirth
+            : new Date(`${dto.dateOfBirth}T00:00:00.000Z`),
         gender: dto.gender,
         phoneNumber: dto.phoneNumber,
       },

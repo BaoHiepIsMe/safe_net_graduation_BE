@@ -15,6 +15,10 @@ export default () => ({
     anonKey: process.env.SUPABASE_ANON_KEY || '',
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
     jwtSecret: process.env.SUPABASE_JWT_SECRET || '',
+    authTimeoutMs: parseInt(
+      process.env.SUPABASE_AUTH_TIMEOUT_MS || '10000',
+      10,
+    ),
   },
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID || '',

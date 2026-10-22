@@ -25,6 +25,12 @@ export const envSchema = z
     SUPABASE_ANON_KEY: optionalNonEmptyString,
     SUPABASE_SERVICE_ROLE_KEY: optionalNonEmptyString,
     SUPABASE_JWT_SECRET: optionalNonEmptyString,
+    SUPABASE_AUTH_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .min(1000)
+      .max(60000)
+      .default(10000),
     FIREBASE_PROJECT_ID: optionalNonEmptyString,
     FIREBASE_CLIENT_EMAIL: optionalNonEmptyString,
     FIREBASE_PRIVATE_KEY: optionalNonEmptyString,

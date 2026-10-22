@@ -26,6 +26,19 @@ export class SupabaseService implements OnModuleInit {
 
     const clientOptions = {
       auth: { autoRefreshToken: false, persistSession: false },
+      global: {
+        fetch: (input: RequestInfo | URL, init?: RequestInit) => {
+          const timeoutMs =
+            this.configService.get<number>('supabase.authTimeoutMs') ?? 10000;
+          const deadline = AbortSignal.timeout(timeoutMs);
+          return fetch(input, {
+            ...init,
+            signal: init?.signal
+              ? AbortSignal.any([init.signal, deadline])
+              : deadline,
+          });
+        },
+      },
     };
     this.authClient = createClient(supabaseUrl, anonKey, clientOptions);
     this.adminClient = createClient(supabaseUrl, serviceRoleKey, clientOptions);

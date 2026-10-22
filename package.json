@@ -22,6 +22,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:integration:supabase": "node --env-file-if-exists=.env ./node_modules/jest/bin/jest.js --config ./test/jest-supabase-integration.json --runInBand",
+    "test:integration:registration": "node --experimental-vm-modules --env-file-if-exists=.env ./node_modules/jest/bin/jest.js --config ./test/jest-supabase-integration.json --runInBand test/registration.integration-spec.ts",
     "test:integration:geofence": "node --experimental-vm-modules --env-file-if-exists=.env ./node_modules/jest/bin/jest.js --config ./test/jest-supabase-integration.json --runInBand test/geofence-assignment-runtime.integration-spec.ts",
     "test:integration:geofence-transition": "node --experimental-vm-modules --env-file-if-exists=.env ./node_modules/jest/bin/jest.js --config ./test/jest-supabase-integration.json --runInBand test/geofence-location-transition.integration-spec.ts",
     "prisma:validate": "prisma validate",

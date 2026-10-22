@@ -69,18 +69,35 @@ export const sessionSchema = {
 
 export const registerSuccessDataSchema = {
   type: 'object',
-  required: ['user', 'session'],
+  required: [
+    'user',
+    'session',
+    'requiresEmailConfirmation',
+    'confirmationEmailSent',
+  ],
   properties: {
     user: {
       type: 'object',
-      required: ['id', 'fullName'],
+      required: [
+        'id',
+        'email',
+        'phoneNumber',
+        'fullName',
+        'gender',
+        'dateOfBirth',
+      ],
       properties: {
         id: { type: 'string', format: 'uuid' },
         email: nullableString,
+        phoneNumber: { type: 'string', example: '+84912345678' },
         fullName: { type: 'string' },
+        gender: { type: 'string', enum: ['male', 'female', 'other'] },
+        dateOfBirth: { type: 'string', format: 'date' },
       },
     },
-    session: { ...sessionSchema, nullable: true },
+    session: { type: 'object', nullable: true, enum: [null] },
+    requiresEmailConfirmation: { type: 'boolean', enum: [true] },
+    confirmationEmailSent: { type: 'boolean' },
   },
 };
 

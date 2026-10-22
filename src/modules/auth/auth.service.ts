@@ -26,27 +26,28 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const client = this.supabaseService.getAuthClient();
-
-    const { data, error } = await client.auth.signUp({
-      email: dto.email,
-      password: dto.password,
-      options: {
-        data: {
+    // Public signUp accepts either email or phone. Admin creation stores both
+    // on one Auth identity and runs the profile trigger in that transaction.
+    const { data, error } = await this.supabaseService
+      .getAdminAuthClient()
+      .auth.admin.createUser({
+        email: dto.email,
+        phone: dto.phoneNumber,
+        password: dto.password,
+        email_confirm: false,
+        phone_confirm: false,
+        user_metadata: {
           full_name: dto.fullName,
           phone_number: dto.phoneNumber,
+          gender: dto.gender,
+          date_of_birth: dto.dateOfBirth,
         },
-      },
-    });
+      });
 
-    const duplicateWithoutError = data.user?.identities?.length === 0;
-    if (error || duplicateWithoutError) {
-      if (
-        duplicateWithoutError ||
-        this.isDuplicateAccountError(error?.code, error?.message)
-      ) {
+    if (error) {
+      if (this.isDuplicateAccountError(error.code, error.message)) {
         throw new ConflictError(
-          'Tài khoản đã tồn tại',
+          'Email hoặc số điện thoại đã được sử dụng',
           ErrorCode.USER_ALREADY_EXISTS,
         );
       }
@@ -65,37 +66,73 @@ export class AuthService {
       );
     }
 
+    // The account is committed. A mail delivery failure must not pretend that
+    // account creation failed; clients can retry via resend-confirmation.
+    const confirmationEmailSent = await this.sendConfirmationEmail(dto.email);
+
     return {
       user: {
         id: data.user.id,
         email: data.user.email,
+        phoneNumber: dto.phoneNumber,
         fullName: dto.fullName,
+        gender: dto.gender,
+        dateOfBirth: dto.dateOfBirth,
       },
-      session: data.session
-        ? {
-            accessToken: data.session.access_token,
-            refreshToken: data.session.refresh_token,
-            expiresIn: data.session.expires_in,
-            tokenType: data.session.token_type,
-          }
-        : null,
+      session: null,
+      requiresEmailConfirmation: true,
+      confirmationEmailSent,
     };
+  }
+
+  async resendConfirmation(dto: ForgotPasswordDto) {
+    await this.sendConfirmationEmail(dto.email);
+    return {
+      message:
+        'Nếu tài khoản đang chờ xác nhận, email hướng dẫn xác nhận đã được yêu cầu gửi.',
+    };
+  }
+
+  private async sendConfirmationEmail(email: string): Promise<boolean> {
+    try {
+      const { error } = await this.supabaseService.getAuthClient().auth.resend({
+        type: 'signup',
+        email,
+      });
+      if (!error) return true;
+    } catch {
+      // Do not expose provider details or email addresses in logs.
+    }
+    this.logger.warn('Signup confirmation email could not be sent');
+    return false;
   }
 
   async login(dto: LoginDto) {
     const authClient = this.supabaseService.getAuthClient();
+    let email: string;
+    let expectedUserId: string | undefined;
+    if ('email' in dto) {
+      email = dto.email;
+    } else {
+      const account = await this.resolvePhoneAccount(dto.phoneNumber);
+      email = account.email;
+      expectedUserId = account.id;
+    }
 
     const { data, error } = await authClient.auth.signInWithPassword({
-      email: dto.email,
+      email,
       password: dto.password,
     });
 
-    if (error || !data.session || !data.user) {
-      this.logger.warn('Failed login attempt');
-      throw new UnauthorizedError(
-        'Email hoặc mật khẩu không chính xác',
-        ErrorCode.INVALID_CREDENTIALS,
-      );
+    if (
+      error ||
+      !data.session ||
+      !data.user ||
+      ('phoneNumber' in dto &&
+        (data.user.id !== expectedUserId ||
+          data.user.phone?.replace(/^\+/, '') !== dto.phoneNumber.slice(1)))
+    ) {
+      this.invalidCredentials();
     }
 
     const profile = await this.profilesRepository.findProfileById(data.user.id);
@@ -128,6 +165,35 @@ export class AuthService {
         tokenType: data.session.token_type,
       },
     };
+  }
+
+  private async resolvePhoneAccount(phoneNumber: string) {
+    const profile =
+      await this.profilesRepository.findProfileByPhoneNumber(phoneNumber);
+    if (!profile) this.invalidCredentials();
+
+    // Phone is an account identifier while SMS verification is unavailable.
+    // Auth remains authoritative for its binding, password and email status.
+    const { data, error } = await this.supabaseService
+      .getAdminAuthClient()
+      .auth.admin.getUserById(profile.id);
+    if (
+      error ||
+      !data.user?.email ||
+      data.user.id !== profile.id ||
+      data.user.phone?.replace(/^\+/, '') !== phoneNumber.slice(1)
+    ) {
+      this.invalidCredentials();
+    }
+    return { id: data.user.id, email: data.user.email };
+  }
+
+  private invalidCredentials(): never {
+    this.logger.warn('Failed login attempt');
+    throw new UnauthorizedError(
+      'Email, số điện thoại hoặc mật khẩu không chính xác',
+      ErrorCode.INVALID_CREDENTIALS,
+    );
   }
 
   async refreshSession(refreshToken: string) {

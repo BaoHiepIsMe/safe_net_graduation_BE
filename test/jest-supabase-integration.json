@@ -2,7 +2,7 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "..",
   "testEnvironment": "node",
-  "testRegex": "test/(supabase-live|geofence-assignment-runtime|geofence-location-transition)\\.integration-spec\\.ts$",
+  "testRegex": "test/(supabase-live|registration|geofence-assignment-runtime|geofence-location-transition)\\.integration-spec\\.ts$",
   "moduleNameMapper": {
     "^(\\.{1,2}/.*)\\.js$": "$1"
   },

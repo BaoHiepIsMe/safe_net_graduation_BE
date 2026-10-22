@@ -67,15 +67,38 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Đăng ký tài khoản Supabase Auth' })
+  @ApiOperation({
+    summary: 'Đăng ký bằng email, số điện thoại và thông tin profile',
+    description:
+      'Tạo tài khoản chưa xác minh và yêu cầu gửi email xác nhận. Chỉ đăng nhập sau khi xác nhận email. Số điện thoại chưa được xác minh qua OTP.',
+  })
   @ApiBody({
     schema: {
       ...emailPasswordSchema,
-      required: ['email', 'password', 'fullName'],
+      required: [
+        'email',
+        'password',
+        'phoneNumber',
+        'fullName',
+        'gender',
+        'dateOfBirth',
+      ],
       properties: {
         ...emailPasswordSchema.properties,
+        email: { type: 'string', format: 'email', maxLength: 150 },
         fullName: { type: 'string', minLength: 2, maxLength: 100 },
-        phoneNumber: { type: 'string', pattern: '^\\+?[1-9]\\d{7,14}$' },
+        phoneNumber: {
+          type: 'string',
+          pattern: '^\\+?[1-9]\\d{7,14}$',
+          description: 'Số quốc tế có mã quốc gia, ví dụ +84912345678',
+        },
+        gender: { type: 'string', enum: ['male', 'female', 'other'] },
+        dateOfBirth: {
+          type: 'string',
+          format: 'date',
+          example: '2000-01-15',
+          description: 'Ngày hợp lệ theo YYYY-MM-DD, không ở tương lai',
+        },
       },
     },
   })
@@ -89,10 +112,71 @@ export class AuthController {
   }
 
   @Public()
+  @Post('resend-confirmation')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Yêu cầu gửi lại email xác nhận đăng ký' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['email'],
+      properties: {
+        email: { type: 'string', format: 'email', maxLength: 254 },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, schema: successSchema(messageDataSchema) })
+  @ApiStandardErrors(400, 429, 500)
+  resendConfirmation(
+    @Body(new ZodValidationPipe(forgotPasswordSchema)) dto: ForgotPasswordDto,
+  ) {
+    return this.authService.resendConfirmation(dto);
+  }
+
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Đăng nhập bằng Supabase Auth' })
-  @ApiBody({ schema: emailPasswordSchema })
+  @ApiOperation({
+    summary: 'Đăng nhập bằng email hoặc số điện thoại và mật khẩu',
+    description:
+      'Gửi đúng một trong email hoặc phoneNumber. Số điện thoại là định danh của cùng tài khoản email; Supabase Auth kiểm tra mật khẩu và trạng thái xác nhận email. Không gửi SMS/OTP.',
+  })
+  @ApiBody({
+    schema: {
+      oneOf: [
+        {
+          ...emailPasswordSchema,
+          properties: {
+            ...emailPasswordSchema.properties,
+            password: {
+              type: 'string',
+              format: 'password',
+              minLength: 1,
+              maxLength: 128,
+            },
+          },
+        },
+        {
+          type: 'object',
+          additionalProperties: false,
+          required: ['phoneNumber', 'password'],
+          properties: {
+            phoneNumber: {
+              type: 'string',
+              pattern: '^\\+?[1-9]\\d{7,14}$',
+              example: '+84912345678',
+            },
+            password: {
+              type: 'string',
+              format: 'password',
+              minLength: 1,
+              maxLength: 128,
+            },
+          },
+        },
+      ],
+    },
+  })
   @ApiResponse({ status: 200, schema: successSchema(loginSuccessDataSchema) })
   @ApiStandardErrors(400, 401, 403, 429, 500)
   login(@Body(new ZodValidationPipe(loginSchema)) dto: LoginDto) {

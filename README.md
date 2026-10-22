@@ -50,6 +50,7 @@ Copy-Item .env.example .env
 | `SUPABASE_URL`                    | URL project Supabase                                       |
 | `SUPABASE_ANON_KEY`               | Client key dùng cho Supabase Auth operations               |
 | `SUPABASE_SERVICE_ROLE_KEY`       | Server-only Supabase Auth admin key                        |
+| `SUPABASE_AUTH_TIMEOUT_MS`        | Timeout mỗi request Supabase Auth, mặc định 10000 ms        |
 | `FIREBASE_PROJECT_ID`             | Firebase project, optional ở development                   |
 | `FIREBASE_CLIENT_EMAIL`           | Firebase service-account email                             |
 | `FIREBASE_PRIVATE_KEY`            | Firebase private key, hỗ trợ escaped newline               |
@@ -102,8 +103,15 @@ auth.users
   -> public.biometric_settings
 ```
 
-Auth calls dùng anon/auth client. Privileged Auth administration uses the
-server-only service-role client. Application data access uses Prisma directly
+Registration uses the server-only Auth admin client to create one unconfirmed
+user with both email and phone, then requests a confirmation email through the
+anon/auth client. The six required fields and resend flow are documented in
+[`docs/flutter-integration-contract.md`](docs/flutter-integration-contract.md#registration).
+Apply Prisma migration `20261016090000_registration_profile_fields` before
+enabling the new registration contract; enable **Confirm email** and configure
+the mail sender and Flutter confirmation-link redirects in Supabase.
+Other Auth calls use the anon/auth client; privileged Auth administration uses
+the server-only service-role client. Application data access uses Prisma directly
 through `DATABASE_URL`; neither credential replaces authorization in NestJS.
 
 Forward migration `20260819010000_secure_foundation_phase1.sql`:

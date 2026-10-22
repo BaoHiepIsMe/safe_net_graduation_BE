@@ -1,17 +1,10 @@
 import { z } from 'zod';
-
-const calendarDateSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Ngày sinh định dạng YYYY-MM-DD' })
-  .refine((value) => {
-    const [year, month, day] = value.split('-').map(Number);
-    const date = new Date(Date.UTC(year, month - 1, day));
-    return (
-      date.getUTCFullYear() === year &&
-      date.getUTCMonth() === month - 1 &&
-      date.getUTCDate() === day
-    );
-  }, 'Ngày sinh không tồn tại');
+import {
+  calendarDateSchema,
+  fullNameSchema,
+  genderSchema,
+  phoneNumberSchema,
+} from '../../../common/schemas/profile.schema';
 
 const timeSchema = z
   .string()
@@ -19,18 +12,13 @@ const timeSchema = z
     message: 'Thời gian không hợp lệ',
   });
 
-const phoneSchema = z
-  .string()
-  .trim()
-  .regex(/^\+?[1-9]\d{7,14}$/, { message: 'Số điện thoại không hợp lệ' });
-
 export const updateProfileSchema = z
   .object({
-    fullName: z.string().trim().min(2).max(100).optional(),
+    fullName: fullNameSchema.optional(),
     avatarUrl: z.string().trim().url().max(2048).nullable().optional(),
     dateOfBirth: calendarDateSchema.nullable().optional(),
-    gender: z.enum(['male', 'female', 'other']).nullable().optional(),
-    phoneNumber: phoneSchema.nullable().optional(),
+    gender: genderSchema.nullable().optional(),
+    phoneNumber: phoneNumberSchema.nullable().optional(),
   })
   .strict()
   .refine((value) => Object.keys(value).length > 0, {

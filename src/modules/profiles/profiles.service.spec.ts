@@ -53,4 +53,36 @@ describe('ProfilesService', () => {
       NotFoundError,
     );
   });
+
+  it('returns a database birthday as a calendar date without a time or timezone', async () => {
+    mockRepository.findProfileById.mockResolvedValue({
+      id: 'usr-1',
+      dateOfBirth: new Date('2000-02-29T00:00:00.000Z'),
+    });
+    await expect(service.getProfile('usr-1')).resolves.toMatchObject({
+      dateOfBirth: '2000-02-29',
+    });
+  });
+
+  it('returns the calendar date after a profile update', async () => {
+    mockRepository.findProfileById.mockResolvedValue({ id: 'usr-1' });
+    mockRepository.updateProfile.mockResolvedValue({
+      id: 'usr-1',
+      dateOfBirth: new Date('2000-02-29T00:00:00.000Z'),
+    });
+    await expect(
+      service.updateProfile('usr-1', { dateOfBirth: '2000-02-29' }),
+    ).resolves.toMatchObject({ dateOfBirth: '2000-02-29' });
+  });
+
+  it('returns null when a birthday is cleared', async () => {
+    mockRepository.findProfileById.mockResolvedValue({ id: 'usr-1' });
+    mockRepository.updateProfile.mockResolvedValue({
+      id: 'usr-1',
+      dateOfBirth: null,
+    });
+    await expect(
+      service.updateProfile('usr-1', { dateOfBirth: null }),
+    ).resolves.toMatchObject({ dateOfBirth: null });
+  });
 });

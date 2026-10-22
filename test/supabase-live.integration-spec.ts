@@ -42,6 +42,7 @@ liveDescribe('live Supabase Foundation and Phase 1 security', () => {
   let userAId: string;
   let userBId: string;
   let signupUserId: string | undefined;
+  let registrationUserId: string | undefined;
 
   beforeAll(async () => {
     anonymous = client(env('SUPABASE_ANON_KEY'));
@@ -77,6 +78,11 @@ liveDescribe('live Supabase Foundation and Phase 1 security', () => {
       if (cleanup.error) {
         throw new Error('Live integration signup-user cleanup failed');
       }
+    }
+    if (registrationUserId) {
+      const cleanup = await admin.auth.admin.deleteUser(registrationUserId);
+      if (cleanup.error)
+        throw new Error('Live registration-user cleanup failed');
     }
   });
 
@@ -136,7 +142,13 @@ liveDescribe('live Supabase Foundation and Phase 1 security', () => {
     const signup = await signupClient.auth.signUp({
       email,
       password: env('SUPABASE_TEST_SIGNUP_PASSWORD'),
-      options: { data: { full_name: 'SafeNet Integration User' } },
+      options: {
+        data: {
+          full_name: 'SafeNet Integration User',
+          gender: 'female',
+          date_of_birth: '2000-02-29',
+        },
+      },
     });
 
     let createdUser = signup.data.user;
@@ -146,7 +158,11 @@ liveDescribe('live Supabase Foundation and Phase 1 security', () => {
         email,
         password: env('SUPABASE_TEST_SIGNUP_PASSWORD'),
         email_confirm: true,
-        user_metadata: { full_name: 'SafeNet Integration User' },
+        user_metadata: {
+          full_name: 'SafeNet Integration User',
+          gender: 'female',
+          date_of_birth: '2000-02-29',
+        },
       });
       createdUser = adminCreation.data.user;
       creationError = adminCreation.error;
@@ -172,5 +188,62 @@ liveDescribe('live Supabase Foundation and Phase 1 security', () => {
         signupUserId,
       );
     }
+    const profile = await admin
+      .from('profiles')
+      .select('full_name,gender,date_of_birth')
+      .eq('id', signupUserId as string)
+      .single();
+    expect(profile.error).toBeNull();
+    expect(profile.data).toMatchObject({
+      full_name: 'SafeNet Integration User',
+      gender: 'female',
+      date_of_birth: '2000-02-29',
+    });
+  });
+
+  it('stores both Auth contacts and profile details while rejecting unconfirmed email login', async () => {
+    const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const email = `safenet-registration+${suffix}@${env('SUPABASE_TEST_SIGNUP_EMAIL_DOMAIN')}`;
+    const phone = `+1${Date.now()}`;
+    const created = await admin.auth.admin.createUser({
+      email,
+      phone,
+      password: env('SUPABASE_TEST_SIGNUP_PASSWORD'),
+      email_confirm: false,
+      phone_confirm: false,
+      user_metadata: {
+        full_name: 'SafeNet Registration User',
+        phone_number: phone,
+        gender: 'male',
+        date_of_birth: '1990-01-15',
+      },
+    });
+    registrationUserId = created.data.user?.id;
+    expect(created.error).toBeNull();
+    expect(registrationUserId).toBeDefined();
+    expect(created.data.user?.phone?.replace(/^\+/, '')).toBe(phone.slice(1));
+    expect(created.data.user?.email_confirmed_at).toBeFalsy();
+    expect(created.data.user?.phone_confirmed_at).toBeFalsy();
+
+    const profile = await admin
+      .from('profiles')
+      .select('full_name,phone,gender,date_of_birth')
+      .eq('id', registrationUserId as string)
+      .single();
+    expect(profile.error).toBeNull();
+    expect(profile.data).toEqual({
+      full_name: 'SafeNet Registration User',
+      phone,
+      gender: 'male',
+      date_of_birth: '1990-01-15',
+    });
+    const login = await client(
+      env('SUPABASE_ANON_KEY'),
+    ).auth.signInWithPassword({
+      email,
+      password: env('SUPABASE_TEST_SIGNUP_PASSWORD'),
+    });
+    expect(login.data.session).toBeNull();
+    expect(login.error?.code).toBe('email_not_confirmed');
   });
 });
