@@ -3174,6 +3174,7 @@ export const ProfileScalarFieldEnum = {
   avatarUrl: 'avatarUrl',
   dateOfBirth: 'dateOfBirth',
   gender: 'gender',
+  role: 'role',
   accountStatus: 'accountStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

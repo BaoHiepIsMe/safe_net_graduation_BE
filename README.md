@@ -103,13 +103,12 @@ auth.users
   -> public.biometric_settings
 ```
 
-Registration uses the server-only Auth admin client to create one unconfirmed
-user with both email and phone, then requests a confirmation email through the
-anon/auth client. The six required fields and resend flow are documented in
+Registration uses the server-only Auth admin client to create a confirmed
+user with email, phone, and profile metadata (including `role`), without
+sending a signup confirmation email. The seven required fields are documented in
 [`docs/flutter-integration-contract.md`](docs/flutter-integration-contract.md#registration).
-Apply Prisma migration `20261016090000_registration_profile_fields` before
-enabling the new registration contract; enable **Confirm email** and configure
-the mail sender and Flutter confirmation-link redirects in Supabase.
+Apply Prisma migrations `20261016090000_registration_profile_fields` and
+`20261110090000_profile_registration_role` before enabling the registration contract.
 Other Auth calls use the anon/auth client; privileged Auth administration uses
 the server-only service-role client. Application data access uses Prisma directly
 through `DATABASE_URL`; neither credential replaces authorization in NestJS.

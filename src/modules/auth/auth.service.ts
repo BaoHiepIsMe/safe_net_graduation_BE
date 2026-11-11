@@ -34,13 +34,14 @@ export class AuthService {
         email: dto.email,
         phone: dto.phoneNumber,
         password: dto.password,
-        email_confirm: false,
-        phone_confirm: false,
+        email_confirm: true,
+        phone_confirm: true,
         user_metadata: {
           full_name: dto.fullName,
           phone_number: dto.phoneNumber,
           gender: dto.gender,
           date_of_birth: dto.dateOfBirth,
+          role: dto.role,
         },
       });
 
@@ -66,10 +67,6 @@ export class AuthService {
       );
     }
 
-    // The account is committed. A mail delivery failure must not pretend that
-    // account creation failed; clients can retry via resend-confirmation.
-    const confirmationEmailSent = await this.sendConfirmationEmail(dto.email);
-
     return {
       user: {
         id: data.user.id,
@@ -78,33 +75,10 @@ export class AuthService {
         fullName: dto.fullName,
         gender: dto.gender,
         dateOfBirth: dto.dateOfBirth,
+        role: dto.role,
       },
       session: null,
-      requiresEmailConfirmation: true,
-      confirmationEmailSent,
     };
-  }
-
-  async resendConfirmation(dto: ForgotPasswordDto) {
-    await this.sendConfirmationEmail(dto.email);
-    return {
-      message:
-        'Nếu tài khoản đang chờ xác nhận, email hướng dẫn xác nhận đã được yêu cầu gửi.',
-    };
-  }
-
-  private async sendConfirmationEmail(email: string): Promise<boolean> {
-    try {
-      const { error } = await this.supabaseService.getAuthClient().auth.resend({
-        type: 'signup',
-        email,
-      });
-      if (!error) return true;
-    } catch {
-      // Do not expose provider details or email addresses in logs.
-    }
-    this.logger.warn('Signup confirmation email could not be sent');
-    return false;
   }
 
   async login(dto: LoginDto) {

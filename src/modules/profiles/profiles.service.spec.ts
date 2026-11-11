@@ -35,6 +35,7 @@ describe('ProfilesService', () => {
       id: 'usr-1',
       fullName: 'Bob Caregiver',
       avatarUrl: 'https://example.com/avatar.png',
+      role: 'guardian',
       accountStatus: 'active',
       createdAt: '2026-08-19T00:00:00.000Z',
       updatedAt: '2026-08-19T00:00:00.000Z',
@@ -44,6 +45,7 @@ describe('ProfilesService', () => {
     expect(result.id).toBe('usr-1');
     expect(result.fullName).toBe('Bob Caregiver');
     expect(result.avatarUrl).toBe('https://example.com/avatar.png');
+    expect(result.role).toBe('guardian');
   });
 
   it('should throw NotFoundError when profile is missing', async () => {

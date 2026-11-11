@@ -6,6 +6,8 @@ export const calendarDateSchema = z.iso
 
 export const genderSchema = z.enum(['male', 'female', 'other']);
 
+export const accountRoleSchema = z.enum(['personal', 'parent', 'guardian']);
+
 export const fullNameSchema = z.string().trim().min(2).max(100);
 
 export const phoneNumberSchema = z

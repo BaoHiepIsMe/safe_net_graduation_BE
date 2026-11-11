@@ -10,6 +10,7 @@ describe('ProfilesController', () => {
       id: 'usr-1',
       fullName: 'Alice',
       avatarUrl: null,
+      role: 'parent',
       accountStatus: 'active',
     }),
     updateProfile: jest.fn().mockResolvedValue({
@@ -62,6 +63,7 @@ describe('ProfilesController', () => {
     const res = await controller.getMyProfile({ id: 'usr-1' });
     expect(res.id).toBe('usr-1');
     expect(res.fullName).toBe('Alice');
+    expect(res.role).toBe('parent');
   });
 
   it('should return user settings', async () => {

@@ -18,12 +18,12 @@ describe('Foundation and Phase 1 security (e2e)', () => {
     fullName: 'Safe User',
     gender: 'female',
     dateOfBirth: '2000-02-29',
+    role: 'parent',
   };
   const createUser = jest.fn().mockResolvedValue({
     data: { user: { id: USER_ID, email: registration.email } },
     error: null,
   });
-  const resend = jest.fn().mockResolvedValue({ error: null });
   const updateProfile = jest.fn();
   const signInWithPassword = jest.fn(
     ({ email, password }: { email: string; password: string }) =>
@@ -65,6 +65,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
       avatarUrl: null,
       dateOfBirth: null,
       gender: null,
+      role: 'parent',
       phoneNumber: registration.phoneNumber,
       accountStatus: 'active',
       createdAt: '2026-08-19T00:00:00.000Z',
@@ -88,7 +89,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
         getAdminAuthClient: () => ({
           auth: { admin: { createUser, getUserById } },
         }),
-        getAuthClient: () => ({ auth: { resend, signInWithPassword } }),
+        getAuthClient: () => ({ auth: { signInWithPassword } }),
         verifyToken: jest.fn((token: string) =>
           Promise.resolve(
             token === 'valid-token'
@@ -151,6 +152,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
       .expect(200);
     expect(response.body.data.id).toBe(USER_ID);
     expect(response.body.data.fullName).toBe('Safe User');
+    expect(response.body.data.role).toBe('parent');
   });
 
   it('does not expose arbitrary or malformed profile lookup routes', async () => {
@@ -212,7 +214,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
     expect(response.body.error.code).toBe('VALIDATION_ERROR');
   });
 
-  it.each(['phoneNumber', 'gender', 'dateOfBirth'])(
+  it.each(['phoneNumber', 'gender', 'dateOfBirth', 'role'])(
     'rejects registration without %s before creating an Auth account',
     async (key) => {
       createUser.mockClear();
@@ -227,20 +229,16 @@ describe('Foundation and Phase 1 security (e2e)', () => {
     },
   );
 
-  it('registers complete details and requires email confirmation without returning tokens', async () => {
+  it('registers complete details without email confirmation or returning tokens', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send(registration)
       .expect(201);
     const { password: _password, ...user } = registration;
-    expect(response.body).toMatchObject({
-      success: true,
-      data: {
-        user: { id: USER_ID, ...user },
-        session: null,
-        requiresEmailConfirmation: true,
-        confirmationEmailSent: true,
-      },
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toEqual({
+      user: { id: USER_ID, ...user },
+      session: null,
     });
     expect(response.body.data.user).not.toHaveProperty('password');
   });
@@ -257,16 +255,12 @@ describe('Foundation and Phase 1 security (e2e)', () => {
     expect(response.body.error.code).toBe('USER_ALREADY_EXISTS');
   });
 
-  it('allows a public confirmation-email retry', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/api/v1/auth/resend-confirmation')
+  it('does not expose a confirmation resend route', async () => {
+    const removedPath = ['/api/v1/auth/resend', 'confirmation'].join('-');
+    await request(app.getHttpServer())
+      .post(removedPath)
       .send({ email: registration.email })
-      .expect(200);
-    expect(response.body.success).toBe(true);
-    expect(resend).toHaveBeenLastCalledWith({
-      type: 'signup',
-      email: registration.email,
-    });
+      .expect(404);
   });
 
   it.each([

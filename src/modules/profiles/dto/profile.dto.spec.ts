@@ -27,5 +27,6 @@ describe('profile request schemas', () => {
     expect(() =>
       updateProfileSchema.parse({ accountStatus: 'active' }),
     ).toThrow();
+    expect(() => updateProfileSchema.parse({ role: 'parent' })).toThrow();
   });
 });

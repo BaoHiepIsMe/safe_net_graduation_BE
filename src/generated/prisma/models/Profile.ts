@@ -32,6 +32,7 @@ export type ProfileMinAggregateOutputType = {
   avatarUrl: string | null
   dateOfBirth: Date | null
   gender: string | null
+  role: string | null
   accountStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -45,6 +46,7 @@ export type ProfileMaxAggregateOutputType = {
   avatarUrl: string | null
   dateOfBirth: Date | null
   gender: string | null
+  role: string | null
   accountStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -58,6 +60,7 @@ export type ProfileCountAggregateOutputType = {
   avatarUrl: number
   dateOfBirth: number
   gender: number
+  role: number
   accountStatus: number
   createdAt: number
   updatedAt: number
@@ -73,6 +76,7 @@ export type ProfileMinAggregateInputType = {
   avatarUrl?: true
   dateOfBirth?: true
   gender?: true
+  role?: true
   accountStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -86,6 +90,7 @@ export type ProfileMaxAggregateInputType = {
   avatarUrl?: true
   dateOfBirth?: true
   gender?: true
+  role?: true
   accountStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -99,6 +104,7 @@ export type ProfileCountAggregateInputType = {
   avatarUrl?: true
   dateOfBirth?: true
   gender?: true
+  role?: true
   accountStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -185,6 +191,7 @@ export type ProfileGroupByOutputType = {
   avatarUrl: string | null
   dateOfBirth: Date | null
   gender: string | null
+  role: string | null
   accountStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -219,6 +226,7 @@ export type ProfileWhereInput = {
   avatarUrl?: Prisma.StringNullableFilter<"Profile"> | string | null
   dateOfBirth?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   gender?: Prisma.StringNullableFilter<"Profile"> | string | null
+  role?: Prisma.StringNullableFilter<"Profile"> | string | null
   accountStatus?: Prisma.StringNullableFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
@@ -259,6 +267,7 @@ export type ProfileOrderByWithRelationInput = {
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   gender?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrderInput | Prisma.SortOrder
   accountStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -302,6 +311,7 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   avatarUrl?: Prisma.StringNullableFilter<"Profile"> | string | null
   dateOfBirth?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   gender?: Prisma.StringNullableFilter<"Profile"> | string | null
+  role?: Prisma.StringNullableFilter<"Profile"> | string | null
   accountStatus?: Prisma.StringNullableFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
@@ -342,6 +352,7 @@ export type ProfileOrderByWithAggregationInput = {
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   gender?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrderInput | Prisma.SortOrder
   accountStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -361,6 +372,7 @@ export type ProfileScalarWhereWithAggregatesInput = {
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   dateOfBirth?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
   gender?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
+  role?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   accountStatus?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
@@ -374,6 +386,7 @@ export type ProfileCreateInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -414,6 +427,7 @@ export type ProfileUncheckedCreateInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -454,6 +468,7 @@ export type ProfileUpdateInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -494,6 +509,7 @@ export type ProfileUncheckedUpdateInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -534,6 +550,7 @@ export type ProfileCreateManyInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -547,6 +564,7 @@ export type ProfileUpdateManyMutationInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -560,6 +578,7 @@ export type ProfileUncheckedUpdateManyInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -583,6 +602,7 @@ export type ProfileCountOrderByAggregateInput = {
   avatarUrl?: Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrder
   gender?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -596,6 +616,7 @@ export type ProfileMaxOrderByAggregateInput = {
   avatarUrl?: Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrder
   gender?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -609,6 +630,7 @@ export type ProfileMinOrderByAggregateInput = {
   avatarUrl?: Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrder
   gender?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -1010,6 +1032,7 @@ export type ProfileCreateWithoutBiometricSettingInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1049,6 +1072,7 @@ export type ProfileUncheckedCreateWithoutBiometricSettingInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1104,6 +1128,7 @@ export type ProfileUpdateWithoutBiometricSettingInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1143,6 +1168,7 @@ export type ProfileUncheckedUpdateWithoutBiometricSettingInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1182,6 +1208,7 @@ export type ProfileCreateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1221,6 +1248,7 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_caller_idToprofiles
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1265,6 +1293,7 @@ export type ProfileCreateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1304,6 +1333,7 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_receiver_idToprofil
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1359,6 +1389,7 @@ export type ProfileUpdateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1398,6 +1429,7 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_caller_idToprofiles
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1448,6 +1480,7 @@ export type ProfileUpdateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1487,6 +1520,7 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_receiver_idToprofil
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1526,6 +1560,7 @@ export type ProfileCreateWithoutCallActiveParticipantInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1565,6 +1600,7 @@ export type ProfileUncheckedCreateWithoutCallActiveParticipantInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1620,6 +1656,7 @@ export type ProfileUpdateWithoutCallActiveParticipantInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1659,6 +1696,7 @@ export type ProfileUncheckedUpdateWithoutCallActiveParticipantInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1698,6 +1736,7 @@ export type ProfileCreateWithoutCameraInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1737,6 +1776,7 @@ export type ProfileUncheckedCreateWithoutCameraInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1792,6 +1832,7 @@ export type ProfileUpdateWithoutCameraInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1831,6 +1872,7 @@ export type ProfileUncheckedUpdateWithoutCameraInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1870,6 +1912,7 @@ export type ProfileCreateWithoutConversationMemberInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1909,6 +1952,7 @@ export type ProfileUncheckedCreateWithoutConversationMemberInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1964,6 +2008,7 @@ export type ProfileUpdateWithoutConversationMemberInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2003,6 +2048,7 @@ export type ProfileUncheckedUpdateWithoutConversationMemberInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2042,6 +2088,7 @@ export type ProfileCreateWithoutCurrentLocationInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2081,6 +2128,7 @@ export type ProfileUncheckedCreateWithoutCurrentLocationInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2136,6 +2184,7 @@ export type ProfileUpdateWithoutCurrentLocationInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2175,6 +2224,7 @@ export type ProfileUncheckedUpdateWithoutCurrentLocationInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2214,6 +2264,7 @@ export type ProfileCreateWithoutDailyStatusReportsInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2253,6 +2304,7 @@ export type ProfileUncheckedCreateWithoutDailyStatusReportsInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2308,6 +2360,7 @@ export type ProfileUpdateWithoutDailyStatusReportsInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2347,6 +2400,7 @@ export type ProfileUncheckedUpdateWithoutDailyStatusReportsInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2386,6 +2440,7 @@ export type ProfileCreateWithoutDeviceInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2425,6 +2480,7 @@ export type ProfileUncheckedCreateWithoutDeviceInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2480,6 +2536,7 @@ export type ProfileUpdateWithoutDeviceInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2519,6 +2576,7 @@ export type ProfileUncheckedUpdateWithoutDeviceInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2558,6 +2616,7 @@ export type ProfileCreateWithoutFallEventInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2597,6 +2656,7 @@ export type ProfileUncheckedCreateWithoutFallEventInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2652,6 +2712,7 @@ export type ProfileUpdateWithoutFallEventInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2691,6 +2752,7 @@ export type ProfileUncheckedUpdateWithoutFallEventInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2730,6 +2792,7 @@ export type ProfileCreateWithoutFamilyInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2769,6 +2832,7 @@ export type ProfileUncheckedCreateWithoutFamilyInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2824,6 +2888,7 @@ export type ProfileUpdateWithoutFamilyInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2863,6 +2928,7 @@ export type ProfileUncheckedUpdateWithoutFamilyInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2902,6 +2968,7 @@ export type ProfileCreateWithoutFamily_members_family_members_invited_by_user_id
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2941,6 +3008,7 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_invited_b
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2985,6 +3053,7 @@ export type ProfileCreateWithoutFamily_members_family_members_user_idToprofilesI
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3024,6 +3093,7 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_user_idTo
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3079,6 +3149,7 @@ export type ProfileUpdateWithoutFamily_members_family_members_invited_by_user_id
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3118,6 +3189,7 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_invited_b
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3168,6 +3240,7 @@ export type ProfileUpdateWithoutFamily_members_family_members_user_idToprofilesI
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3207,6 +3280,7 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_user_idTo
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3246,6 +3320,7 @@ export type ProfileCreateWithoutGeofenceInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3285,6 +3360,7 @@ export type ProfileUncheckedCreateWithoutGeofenceInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3340,6 +3416,7 @@ export type ProfileUpdateWithoutGeofenceInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3379,6 +3456,7 @@ export type ProfileUncheckedUpdateWithoutGeofenceInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3418,6 +3496,7 @@ export type ProfileCreateWithoutLocationInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3457,6 +3536,7 @@ export type ProfileUncheckedCreateWithoutLocationInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3512,6 +3592,7 @@ export type ProfileUpdateWithoutLocationInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3551,6 +3632,7 @@ export type ProfileUncheckedUpdateWithoutLocationInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3590,6 +3672,7 @@ export type ProfileCreateWithoutMessageInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3629,6 +3712,7 @@ export type ProfileUncheckedCreateWithoutMessageInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3684,6 +3768,7 @@ export type ProfileUpdateWithoutMessageInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3723,6 +3808,7 @@ export type ProfileUncheckedUpdateWithoutMessageInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3762,6 +3848,7 @@ export type ProfileCreateWithoutNotifications_notifications_recipient_user_idTop
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3801,6 +3888,7 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_recipient_u
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3845,6 +3933,7 @@ export type ProfileCreateWithoutNotifications_notifications_sender_user_idToprof
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3884,6 +3973,7 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_sender_user
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3939,6 +4029,7 @@ export type ProfileUpdateWithoutNotifications_notifications_recipient_user_idTop
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3978,6 +4069,7 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_recipient_u
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4028,6 +4120,7 @@ export type ProfileUpdateWithoutNotifications_notifications_sender_user_idToprof
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4067,6 +4160,7 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_sender_user
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4106,6 +4200,7 @@ export type ProfileCreateWithoutPhoneCommandInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4145,6 +4240,7 @@ export type ProfileUncheckedCreateWithoutPhoneCommandInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4200,6 +4296,7 @@ export type ProfileUpdateWithoutPhoneCommandInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4239,6 +4336,7 @@ export type ProfileUncheckedUpdateWithoutPhoneCommandInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4278,6 +4376,7 @@ export type ProfileCreateWithoutPhoneRuleInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4317,6 +4416,7 @@ export type ProfileUncheckedCreateWithoutPhoneRuleInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4372,6 +4472,7 @@ export type ProfileUpdateWithoutPhoneRuleInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4411,6 +4512,7 @@ export type ProfileUncheckedUpdateWithoutPhoneRuleInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4450,6 +4552,7 @@ export type ProfileCreateWithoutRemindersCreatedInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4489,6 +4592,7 @@ export type ProfileUncheckedCreateWithoutRemindersCreatedInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4544,6 +4648,7 @@ export type ProfileUpdateWithoutRemindersCreatedInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4583,6 +4688,7 @@ export type ProfileUncheckedUpdateWithoutRemindersCreatedInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4622,6 +4728,7 @@ export type ProfileCreateWithoutSosContactsOwnedInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4661,6 +4768,7 @@ export type ProfileUncheckedCreateWithoutSosContactsOwnedInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4705,6 +4813,7 @@ export type ProfileCreateWithoutSosContactsLinkedInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4744,6 +4853,7 @@ export type ProfileUncheckedCreateWithoutSosContactsLinkedInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4799,6 +4909,7 @@ export type ProfileUpdateWithoutSosContactsOwnedInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4838,6 +4949,7 @@ export type ProfileUncheckedUpdateWithoutSosContactsOwnedInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4888,6 +5000,7 @@ export type ProfileUpdateWithoutSosContactsLinkedInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4927,6 +5040,7 @@ export type ProfileUncheckedUpdateWithoutSosContactsLinkedInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4966,6 +5080,7 @@ export type ProfileCreateWithoutSosEventsTriggeredInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5005,6 +5120,7 @@ export type ProfileUncheckedCreateWithoutSosEventsTriggeredInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5049,6 +5165,7 @@ export type ProfileCreateWithoutSosEventsHandledInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5088,6 +5205,7 @@ export type ProfileUncheckedCreateWithoutSosEventsHandledInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5143,6 +5261,7 @@ export type ProfileUpdateWithoutSosEventsTriggeredInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5182,6 +5301,7 @@ export type ProfileUncheckedUpdateWithoutSosEventsTriggeredInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5232,6 +5352,7 @@ export type ProfileUpdateWithoutSosEventsHandledInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5271,6 +5392,7 @@ export type ProfileUncheckedUpdateWithoutSosEventsHandledInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5310,6 +5432,7 @@ export type ProfileCreateWithoutSosRecipientInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5349,6 +5472,7 @@ export type ProfileUncheckedCreateWithoutSosRecipientInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5404,6 +5528,7 @@ export type ProfileUpdateWithoutSosRecipientInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5443,6 +5568,7 @@ export type ProfileUncheckedUpdateWithoutSosRecipientInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5482,6 +5608,7 @@ export type ProfileCreateWithoutUserSettingInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5521,6 +5648,7 @@ export type ProfileUncheckedCreateWithoutUserSettingInput = {
   avatarUrl?: string | null
   dateOfBirth?: Date | string | null
   gender?: string | null
+  role?: string | null
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5576,6 +5704,7 @@ export type ProfileUpdateWithoutUserSettingInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5615,6 +5744,7 @@ export type ProfileUncheckedUpdateWithoutUserSettingInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5892,6 +6022,7 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   avatarUrl?: boolean
   dateOfBirth?: boolean
   gender?: boolean
+  role?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -5933,6 +6064,7 @@ export type ProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   avatarUrl?: boolean
   dateOfBirth?: boolean
   gender?: boolean
+  role?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -5946,6 +6078,7 @@ export type ProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   avatarUrl?: boolean
   dateOfBirth?: boolean
   gender?: boolean
+  role?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -5959,12 +6092,13 @@ export type ProfileSelectScalar = {
   avatarUrl?: boolean
   dateOfBirth?: boolean
   gender?: boolean
+  role?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "email" | "phoneNumber" | "avatarUrl" | "dateOfBirth" | "gender" | "accountStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "email" | "phoneNumber" | "avatarUrl" | "dateOfBirth" | "gender" | "role" | "accountStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
 export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   BiometricSetting?: boolean | Prisma.Profile$BiometricSettingArgs<ExtArgs>
   call_logs_call_logs_caller_idToprofiles?: boolean | Prisma.Profile$call_logs_call_logs_caller_idToprofilesArgs<ExtArgs>
@@ -6037,6 +6171,7 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     avatarUrl: string | null
     dateOfBirth: Date | null
     gender: string | null
+    role: string | null
     accountStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6497,6 +6632,7 @@ export interface ProfileFieldRefs {
   readonly avatarUrl: Prisma.FieldRef<"Profile", 'String'>
   readonly dateOfBirth: Prisma.FieldRef<"Profile", 'DateTime'>
   readonly gender: Prisma.FieldRef<"Profile", 'String'>
+  readonly role: Prisma.FieldRef<"Profile", 'String'>
   readonly accountStatus: Prisma.FieldRef<"Profile", 'String'>
   readonly createdAt: Prisma.FieldRef<"Profile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Profile", 'DateTime'>

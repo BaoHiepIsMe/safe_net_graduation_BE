@@ -132,9 +132,6 @@ liveDescribe('Supabase registration and profile transaction', () => {
                 signInWithPassword: auth.auth.signInWithPassword.bind(
                   auth.auth,
                 ),
-                resend: jest.fn().mockResolvedValue({
-                  error: { code: 'MAIL_DISABLED_FOR_TEST' },
-                }),
               },
             }),
           },
@@ -152,6 +149,7 @@ liveDescribe('Supabase registration and profile transaction', () => {
       fullName: 'SafeNet Registration Integration',
       gender: 'female',
       dateOfBirth: '2000-02-29',
+      role: 'guardian',
     });
     const result = await service.register(dto);
     userId = result.user.id;
@@ -188,8 +186,8 @@ liveDescribe('Supabase registration and profile transaction', () => {
     expect(auth.data.user?.phone?.replace(/^\+/, '')).toBe(
       dto.phoneNumber.slice(1),
     );
-    expect(auth.data.user?.email_confirmed_at).toBeFalsy();
-    expect(auth.data.user?.phone_confirmed_at).toBeFalsy();
+    expect(auth.data.user?.email_confirmed_at).toBeTruthy();
+    expect(auth.data.user?.phone_confirmed_at).toBeTruthy();
 
     const profile = await prisma.profile.findUnique({ where: { id: userId } });
     expect(profile).toMatchObject({
@@ -198,6 +196,7 @@ liveDescribe('Supabase registration and profile transaction', () => {
       phoneNumber: dto.phoneNumber,
       fullName: dto.fullName,
       gender: dto.gender,
+      role: dto.role,
       dateOfBirth: new Date('2000-02-29T00:00:00.000Z'),
     });
     expect(await prisma.userSetting.count({ where: { userId } })).toBe(1);
@@ -323,9 +322,46 @@ liveDescribe('Supabase registration and profile transaction', () => {
     ).rejects.toMatchObject({ code: ErrorCode.INVALID_CREDENTIALS });
   });
 
-  it('rejects phone/password login until the account email is confirmed', async () => {
-    await expect(
-      service.login({ phoneNumber: dto.phoneNumber, password: dto.password }),
-    ).rejects.toMatchObject({ code: ErrorCode.INVALID_CREDENTIALS });
+  it('allows immediate phone/password login for a newly registered account', async () => {
+    const login = await service.login({
+      phoneNumber: dto.phoneNumber,
+      password: dto.password,
+    });
+    expect(login.user.id).toBe(userId);
+    expect(login.session.tokenType).toBe('bearer');
   });
+
+  it.each(['personal', 'parent', 'guardian'] as const)(
+    'registers with role %s, stores it in public.profiles.role, and logs in immediately by email and phone',
+    async (role) => {
+      const roleDto = registerSchema.parse({
+        email: email(),
+        phoneNumber: nextPhone(),
+        password: password(),
+        fullName: `SafeNet Role ${role}`,
+        gender: 'male',
+        dateOfBirth: '1995-05-20',
+        role,
+      });
+      const registered = await service.register(roleDto);
+      expect(registered.user.role).toBe(role);
+      expect(registered.session).toBeNull();
+
+      const rows = await prisma.$queryRaw<Array<{ role: string | null }>>`
+        SELECT role FROM public.profiles WHERE email = ${roleDto.email}
+      `;
+      expect(rows).toEqual([{ role }]);
+
+      const emailLogin = await service.login({
+        email: roleDto.email,
+        password: roleDto.password,
+      });
+      const phoneLogin = await service.login({
+        phoneNumber: roleDto.phoneNumber,
+        password: roleDto.password,
+      });
+      expect(emailLogin.user.id).toBe(registered.user.id);
+      expect(phoneLogin.user.id).toBe(registered.user.id);
+    },
+  );
 });

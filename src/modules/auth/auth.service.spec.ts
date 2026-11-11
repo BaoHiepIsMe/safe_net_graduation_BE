@@ -17,6 +17,7 @@ describe('AuthService', () => {
     fullName: 'Test User',
     gender: 'female' as const,
     dateOfBirth: '2000-02-29',
+    role: 'parent' as const,
   };
   let service: AuthService;
   let authClient: any;
@@ -104,13 +105,14 @@ describe('AuthService', () => {
       email: registration.email,
       phone: registration.phoneNumber,
       password: registration.password,
-      email_confirm: false,
-      phone_confirm: false,
+      email_confirm: true,
+      phone_confirm: true,
       user_metadata: {
         full_name: registration.fullName,
         phone_number: registration.phoneNumber,
         gender: registration.gender,
         date_of_birth: registration.dateOfBirth,
+        role: registration.role,
       },
     });
     expect(result).toEqual({
@@ -121,15 +123,11 @@ describe('AuthService', () => {
         fullName: registration.fullName,
         gender: registration.gender,
         dateOfBirth: registration.dateOfBirth,
+        role: registration.role,
       },
       session: null,
-      requiresEmailConfirmation: true,
-      confirmationEmailSent: true,
     });
-    expect(authClient.auth.resend).toHaveBeenCalledWith({
-      type: 'signup',
-      email: registration.email,
-    });
+    expect(authClient.auth.resend).not.toHaveBeenCalled();
   });
 
   it('maps duplicate registration to a stable conflict', async () => {
@@ -159,6 +157,7 @@ describe('AuthService', () => {
       phoneNumber: '+84912345678',
       gender: 'female',
       dateOfBirth: '2000-02-29',
+      role: 'parent',
       password: 'password123',
       fullName: 'Test User',
     });
@@ -203,42 +202,6 @@ describe('AuthService', () => {
       expect(adminClient.auth.admin.updateUserById).not.toHaveBeenCalled();
     },
   );
-
-  it.each([
-    { error: { message: 'private mail provider failure' } },
-    new Error('private network failure'),
-  ])(
-    'preserves a created account and reports a mail delivery failure',
-    async (mailResult) => {
-      adminClient.auth.admin.createUser.mockResolvedValue({
-        data: { user: { id: 'usr-1', email: registration.email } },
-        error: null,
-      });
-      if (mailResult instanceof Error) {
-        authClient.auth.resend.mockRejectedValue(mailResult);
-      } else {
-        authClient.auth.resend.mockResolvedValue(mailResult);
-      }
-      await expect(service.register(registration)).resolves.toMatchObject({
-        user: { id: 'usr-1' },
-        session: null,
-        requiresEmailConfirmation: true,
-        confirmationEmailSent: false,
-      });
-    },
-  );
-
-  it('returns the same safe resend response for existing and missing accounts', async () => {
-    const success = await service.resendConfirmation({
-      email: registration.email,
-    });
-    authClient.auth.resend.mockResolvedValue({
-      error: { code: 'user_not_found' },
-    });
-    await expect(
-      service.resendConfirmation({ email: 'unknown@example.com' }),
-    ).resolves.toEqual(success);
-  });
 
   it('logs in an active user', async () => {
     authClient.auth.signInWithPassword.mockResolvedValue({

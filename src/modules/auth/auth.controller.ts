@@ -70,7 +70,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Đăng ký bằng email, số điện thoại và thông tin profile',
     description:
-      'Tạo tài khoản chưa xác minh và yêu cầu gửi email xác nhận. Chỉ đăng nhập sau khi xác nhận email. Số điện thoại chưa được xác minh qua OTP.',
+      'Tạo tài khoản đã xác minh sẵn và lưu thông tin profile (gồm role). Có thể đăng nhập ngay sau khi đăng ký.',
   })
   @ApiBody({
     schema: {
@@ -82,6 +82,7 @@ export class AuthController {
         'fullName',
         'gender',
         'dateOfBirth',
+        'role',
       ],
       properties: {
         ...emailPasswordSchema.properties,
@@ -99,6 +100,7 @@ export class AuthController {
           example: '2000-01-15',
           description: 'Ngày hợp lệ theo YYYY-MM-DD, không ở tương lai',
         },
+        role: { type: 'string', enum: ['personal', 'parent', 'guardian'] },
       },
     },
   })
@@ -109,28 +111,6 @@ export class AuthController {
   @ApiStandardErrors(400, 409, 429, 500)
   register(@Body(new ZodValidationPipe(registerSchema)) dto: RegisterDto) {
     return this.authService.register(dto);
-  }
-
-  @Public()
-  @Post('resend-confirmation')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Yêu cầu gửi lại email xác nhận đăng ký' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      additionalProperties: false,
-      required: ['email'],
-      properties: {
-        email: { type: 'string', format: 'email', maxLength: 254 },
-      },
-    },
-  })
-  @ApiResponse({ status: 200, schema: successSchema(messageDataSchema) })
-  @ApiStandardErrors(400, 429, 500)
-  resendConfirmation(
-    @Body(new ZodValidationPipe(forgotPasswordSchema)) dto: ForgotPasswordDto,
-  ) {
-    return this.authService.resendConfirmation(dto);
   }
 
   @Public()

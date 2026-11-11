@@ -67,6 +67,8 @@ export class DailyStatusSchedulerService
           this.logger.warn('Daily Status generation failed');
         }
       }
+    } catch {
+      this.logger.warn('Daily Status due sweep failed');
     } finally {
       this.running = false;
     }

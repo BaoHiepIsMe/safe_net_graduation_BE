@@ -12,6 +12,7 @@ const profileSelect = {
   avatarUrl: true,
   dateOfBirth: true,
   gender: true,
+  role: true,
   phoneNumber: true,
   accountStatus: true,
   createdAt: true,
