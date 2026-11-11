@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  accountRoleSchema,
   calendarDateSchema,
   fullNameSchema,
   genderSchema,
@@ -29,6 +30,7 @@ export const registerSchema = z
       (value) => value <= new Date().toISOString().slice(0, 10),
       'Ngày sinh không được ở tương lai',
     ),
+    role: accountRoleSchema,
   })
   .strict();
 

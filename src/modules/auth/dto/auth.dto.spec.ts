@@ -8,6 +8,7 @@ describe('auth request schemas', () => {
     fullName: 'Safe User',
     gender: 'female',
     dateOfBirth: '2000-02-29',
+    role: 'parent',
   };
 
   it('normalizes email and full name', () => {
@@ -46,6 +47,7 @@ describe('auth request schemas', () => {
     { phoneNumber: '0912345678' },
     { phoneNumber: '+84123' },
     { gender: 'manager' },
+    { role: 'manager' },
     { dateOfBirth: '2001-02-29' },
     { dateOfBirth: '2000-04-31' },
     { dateOfBirth: '15/01/2000' },

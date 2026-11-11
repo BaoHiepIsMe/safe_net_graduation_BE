@@ -67,6 +67,8 @@ export class ReminderSchedulerService
           this.logger.warn('Reminder notification persistence failed');
         }
       }
+    } catch {
+      this.logger.warn('Reminder due sweep failed');
     } finally {
       this.running = false;
     }

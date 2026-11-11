@@ -69,12 +69,7 @@ export const sessionSchema = {
 
 export const registerSuccessDataSchema = {
   type: 'object',
-  required: [
-    'user',
-    'session',
-    'requiresEmailConfirmation',
-    'confirmationEmailSent',
-  ],
+  required: ['user', 'session'],
   properties: {
     user: {
       type: 'object',
@@ -85,6 +80,7 @@ export const registerSuccessDataSchema = {
         'fullName',
         'gender',
         'dateOfBirth',
+        'role',
       ],
       properties: {
         id: { type: 'string', format: 'uuid' },
@@ -93,11 +89,10 @@ export const registerSuccessDataSchema = {
         fullName: { type: 'string' },
         gender: { type: 'string', enum: ['male', 'female', 'other'] },
         dateOfBirth: { type: 'string', format: 'date' },
+        role: { type: 'string', enum: ['personal', 'parent', 'guardian'] },
       },
     },
     session: { type: 'object', nullable: true, enum: [null] },
-    requiresEmailConfirmation: { type: 'boolean', enum: [true] },
-    confirmationEmailSent: { type: 'boolean' },
   },
 };
 
@@ -149,6 +144,7 @@ export const profileDataSchema = {
     'avatarUrl',
     'dateOfBirth',
     'gender',
+    'role',
     'phoneNumber',
     'accountStatus',
     'createdAt',
@@ -162,6 +158,11 @@ export const profileDataSchema = {
     gender: {
       type: 'string',
       enum: ['male', 'female', 'other'],
+      nullable: true,
+    },
+    role: {
+      type: 'string',
+      enum: ['personal', 'parent', 'guardian'],
       nullable: true,
     },
     phoneNumber: nullableString,

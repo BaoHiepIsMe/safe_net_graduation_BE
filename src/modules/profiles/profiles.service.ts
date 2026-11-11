@@ -93,6 +93,7 @@ export class ProfilesService {
       avatarUrl: profile.avatarUrl,
       dateOfBirth: profile.dateOfBirth?.toISOString().slice(0, 10) ?? null,
       gender: profile.gender,
+      role: profile.role ?? null,
       phoneNumber: profile.phoneNumber,
       accountStatus: profile.accountStatus,
       createdAt: profile.createdAt,
