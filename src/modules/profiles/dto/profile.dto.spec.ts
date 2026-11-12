@@ -29,4 +29,17 @@ describe('profile request schemas', () => {
     ).toThrow();
     expect(() => updateProfileSchema.parse({ role: 'parent' })).toThrow();
   });
+
+  it('accepts known themes and rejects others', () => {
+    expect(updateUserSettingsSchema.parse({ theme: 'dark' })).toEqual({
+      theme: 'dark',
+    });
+    expect(() => updateUserSettingsSchema.parse({ theme: 'blue' })).toThrow();
+  });
+
+  it('rejects phoneNumber on profile update', () => {
+    expect(() =>
+      updateProfileSchema.parse({ phoneNumber: '+84912345678' }),
+    ).toThrow();
+  });
 });

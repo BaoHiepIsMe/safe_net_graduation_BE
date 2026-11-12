@@ -87,4 +87,34 @@ describe('ProfilesService', () => {
       service.updateProfile('usr-1', { dateOfBirth: null }),
     ).resolves.toMatchObject({ dateOfBirth: null });
   });
+
+  it('maps settings with default theme and HH:mm quiet hours', async () => {
+    mockRepository.findSettingsByUserId.mockResolvedValue({
+      userId: 'usr-1',
+      theme: null,
+      darkMode: true,
+      quietHoursStart: new Date('1970-01-01T22:00:00Z'),
+      quietHoursEnd: new Date('1970-01-01T06:30:00Z'),
+    });
+    await expect(service.getUserSettings('usr-1')).resolves.toMatchObject({
+      theme: 'system',
+      darkMode: false,
+      quietHoursStart: '22:00',
+      quietHoursEnd: '06:30',
+    });
+  });
+
+  it('derives darkMode from theme and keeps null quiet hours', async () => {
+    mockRepository.findSettingsByUserId.mockResolvedValue({
+      userId: 'usr-1',
+      theme: 'dark',
+      quietHoursStart: null,
+      quietHoursEnd: null,
+    });
+    await expect(service.getUserSettings('usr-1')).resolves.toMatchObject({
+      theme: 'dark',
+      darkMode: true,
+      quietHoursStart: null,
+    });
+  });
 });

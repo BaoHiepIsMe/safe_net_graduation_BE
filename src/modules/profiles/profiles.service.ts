@@ -101,7 +101,12 @@ export class ProfilesService {
     };
   }
 
+  private formatTime(value: Date | null | undefined) {
+    return value ? value.toISOString().slice(11, 16) : null;
+  }
+
   private mapUserSettings(settings: any) {
+    const theme = settings.theme ?? 'system';
     return {
       userId: settings.userId,
       language: settings.language,
@@ -109,9 +114,10 @@ export class ProfilesService {
       smsNotificationsEnabled: settings.smsNotificationsEnabled,
       emailNotificationsEnabled: settings.emailNotificationsEnabled,
       locationSharingEnabled: settings.locationSharingEnabled,
-      darkMode: settings.darkMode,
-      quietHoursStart: settings.quietHoursStart,
-      quietHoursEnd: settings.quietHoursEnd,
+      theme,
+      darkMode: theme === 'dark',
+      quietHoursStart: this.formatTime(settings.quietHoursStart),
+      quietHoursEnd: this.formatTime(settings.quietHoursEnd),
       updatedAt: settings.updatedAt,
     };
   }

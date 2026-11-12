@@ -48,7 +48,6 @@ export class ProfilesRepository {
             ? dto.dateOfBirth
             : new Date(`${dto.dateOfBirth}T00:00:00.000Z`),
         gender: dto.gender,
-        phoneNumber: dto.phoneNumber,
       },
       select: profileSelect,
     });
@@ -59,13 +58,22 @@ export class ProfilesRepository {
   }
 
   updateSettings(userId: string, dto: UpdateUserSettingsDto) {
+    // theme is the source of truth; darkMode is derived from it (design D1).
+    const theme =
+      dto.theme ??
+      (dto.darkMode === undefined
+        ? undefined
+        : dto.darkMode
+          ? 'dark'
+          : 'light');
     const data = {
       language: dto.language,
       pushNotificationsEnabled: dto.pushNotificationsEnabled,
       smsNotificationsEnabled: dto.smsNotificationsEnabled,
       emailNotificationsEnabled: dto.emailNotificationsEnabled,
       locationSharingEnabled: dto.locationSharingEnabled,
-      darkMode: dto.darkMode,
+      theme,
+      darkMode: theme === undefined ? undefined : theme === 'dark',
       quietHoursStart: this.toDatabaseTime(dto.quietHoursStart),
       quietHoursEnd: this.toDatabaseTime(dto.quietHoursEnd),
     };

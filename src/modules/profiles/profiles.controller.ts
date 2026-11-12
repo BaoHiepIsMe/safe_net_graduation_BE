@@ -62,7 +62,6 @@ export class ProfilesController {
           enum: ['male', 'female', 'other'],
           nullable: true,
         },
-        phoneNumber: { type: 'string', nullable: true },
       },
     },
   })
@@ -97,8 +96,17 @@ export class ProfilesController {
         emailNotificationsEnabled: { type: 'boolean' },
         locationSharingEnabled: { type: 'boolean' },
         darkMode: { type: 'boolean' },
-        quietHoursStart: { type: 'string', nullable: true },
-        quietHoursEnd: { type: 'string', nullable: true },
+        theme: { type: 'string', enum: ['light', 'dark', 'system'] },
+        quietHoursStart: {
+          type: 'string',
+          pattern: '^(?:[01]\\d|2[0-3]):[0-5]\\d$',
+          nullable: true,
+        },
+        quietHoursEnd: {
+          type: 'string',
+          pattern: '^(?:[01]\\d|2[0-3]):[0-5]\\d$',
+          nullable: true,
+        },
       },
     },
   })

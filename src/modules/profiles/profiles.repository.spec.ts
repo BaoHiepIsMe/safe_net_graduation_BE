@@ -2,16 +2,21 @@ import { Test } from '@nestjs/testing';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { ProfilesRepository } from './profiles.repository';
 
-describe('ProfilesRepository calendar dates', () => {
+describe('ProfilesRepository', () => {
   let repository: ProfilesRepository;
   const update = jest.fn().mockResolvedValue({});
+  const upsert = jest.fn().mockResolvedValue({});
 
   beforeEach(async () => {
     update.mockClear();
+    upsert.mockClear();
     const module = await Test.createTestingModule({
       providers: [
         ProfilesRepository,
-        { provide: PrismaService, useValue: { profile: { update } } },
+        {
+          provide: PrismaService,
+          useValue: { profile: { update }, userSetting: { upsert } },
+        },
       ],
     }).compile();
     repository = module.get(ProfilesRepository);
@@ -43,6 +48,24 @@ describe('ProfilesRepository calendar dates', () => {
     expect(update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ dateOfBirth: undefined }),
+      }),
+    );
+  });
+
+  it.each([
+    [{ theme: 'dark' as const }, { theme: 'dark', darkMode: true }],
+    [{ darkMode: true }, { theme: 'dark', darkMode: true }],
+    [{ darkMode: false }, { theme: 'light', darkMode: false }],
+    [
+      { theme: 'system' as const, darkMode: true },
+      { theme: 'system', darkMode: false },
+    ],
+    [{ language: 'en' as const }, { theme: undefined, darkMode: undefined }],
+  ])('derives theme/darkMode from %j', async (dto, expected) => {
+    await repository.updateSettings('user-id', dto);
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.objectContaining(expected),
       }),
     );
   });
