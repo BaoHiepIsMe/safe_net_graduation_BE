@@ -28,6 +28,13 @@ export const invitationIdParamSchema = z
   .object({ invitationId: z.string().uuid() })
   .strict();
 
+export const familyInvitationParamSchema = z
+  .object({
+    familyId: z.string().uuid(),
+    invitationId: z.string().uuid(),
+  })
+  .strict();
+
 export const familyPaginationSchema = pagePaginationSchema.strict();
 
 export const createFamilySchema = z
@@ -54,7 +61,7 @@ export const createInvitationSchema = z
     email: z.string().trim().toLowerCase().email().max(150).optional(),
     phoneNumber: phoneSchema.optional(),
     familyLabel: z.enum(FAMILY_LABELS),
-    role: z.enum(INVITABLE_FAMILY_ROLES).default(INVITABLE_FAMILY_ROLES[0]),
+    role: z.enum(INVITABLE_FAMILY_ROLES).optional(),
     displayName: displayNameSchema.optional(),
   })
   .strict()
@@ -67,6 +74,19 @@ export const createInvitationSchema = z
       });
     }
   });
+
+export const joinFamilySchema = z
+  .object({
+    // Normalised (trim + upper-case) in the service; a wrong code is a 404, not a 400.
+    code: z.string().trim().min(1).max(20),
+    familyLabel: z.enum(FAMILY_LABELS),
+    displayName: displayNameSchema.optional(),
+  })
+  .strict();
+
+export const transferOwnershipSchema = z
+  .object({ memberId: z.string().uuid() })
+  .strict();
 
 export const updateFamilyMemberSchema = z
   .object({
@@ -82,6 +102,9 @@ export const updateFamilyMemberSchema = z
 
 export type FamilyIdParam = z.infer<typeof familyIdParamSchema>;
 export type FamilyMemberParam = z.infer<typeof familyMemberParamSchema>;
+export type FamilyInvitationParam = z.infer<typeof familyInvitationParamSchema>;
+export type JoinFamilyDto = z.infer<typeof joinFamilySchema>;
+export type TransferOwnershipDto = z.infer<typeof transferOwnershipSchema>;
 export type InvitationIdParam = z.infer<typeof invitationIdParamSchema>;
 export type FamilyPaginationDto = z.infer<typeof familyPaginationSchema>;
 export type CreateFamilyDto = z.infer<typeof createFamilySchema>;

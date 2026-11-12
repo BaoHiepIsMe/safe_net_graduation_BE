@@ -92,6 +92,7 @@ export const pendingInvitationDataSchema = {
     familyLabel: label,
     displayName: nullableString,
     invitedAt: dateTime,
+    expiresAt: dateTime,
     family: familyDataSchema,
     invitedBy: {
       type: 'object',
@@ -171,7 +172,8 @@ export const createInvitationBodySchema = {
     role: {
       type: 'string',
       enum: ['adult', 'child', 'elder'],
-      default: 'adult',
+      description:
+        'Bỏ trống thì suy ra từ familyLabel: son/daughter → child, grandfather/grandmother → elder, còn lại → adult',
     },
     displayName: { type: 'string', minLength: 1, maxLength: 100 },
   },
@@ -188,4 +190,59 @@ export const updateFamilyMemberBodySchema = {
     displayName: { type: 'string', nullable: true, maxLength: 100 },
     locationSharingEnabled: { type: 'boolean' },
   },
+};
+
+const inviteCodeDataSchema = {
+  type: 'object',
+  required: ['code', 'expiresAt'],
+  properties: {
+    code: { type: 'string', minLength: 8, maxLength: 8, example: 'K7M2QX9P' },
+    expiresAt: { type: 'string', format: 'date-time' },
+  },
+};
+export const inviteCodeSuccessSchema = successSchema(inviteCodeDataSchema);
+
+export const sentInvitationDataSchema = {
+  ...familyMemberDataSchema,
+  required: [...familyMemberDataSchema.required, 'expiresAt', 'isExpired'],
+  properties: {
+    ...familyMemberDataSchema.properties,
+    expiresAt: dateTime,
+    isExpired: { type: 'boolean' },
+    invitedBy: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        fullName: nullableString,
+        avatarUrl: nullableString,
+      },
+    },
+  },
+};
+export const sentInvitationSuccessSchema = successSchema(
+  sentInvitationDataSchema,
+);
+
+export const joinFamilyBodySchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['code', 'familyLabel'],
+  properties: {
+    code: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 20,
+      description: 'Không phân biệt hoa thường, bỏ khoảng trắng hai đầu',
+    },
+    familyLabel: label,
+    displayName: { type: 'string', minLength: 1, maxLength: 100 },
+  },
+};
+
+export const transferOwnershipBodySchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['memberId'],
+  properties: { memberId: { type: 'string', format: 'uuid' } },
 };

@@ -30,6 +30,7 @@ export type FamilyMinAggregateOutputType = {
   ownerUserId: string | null
   avatarUrl: string | null
   inviteCode: string | null
+  inviteCodeExpiresAt: Date | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -41,6 +42,7 @@ export type FamilyMaxAggregateOutputType = {
   ownerUserId: string | null
   avatarUrl: string | null
   inviteCode: string | null
+  inviteCodeExpiresAt: Date | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -52,6 +54,7 @@ export type FamilyCountAggregateOutputType = {
   ownerUserId: number
   avatarUrl: number
   inviteCode: number
+  inviteCodeExpiresAt: number
   status: number
   createdAt: number
   updatedAt: number
@@ -65,6 +68,7 @@ export type FamilyMinAggregateInputType = {
   ownerUserId?: true
   avatarUrl?: true
   inviteCode?: true
+  inviteCodeExpiresAt?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -76,6 +80,7 @@ export type FamilyMaxAggregateInputType = {
   ownerUserId?: true
   avatarUrl?: true
   inviteCode?: true
+  inviteCodeExpiresAt?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -87,6 +92,7 @@ export type FamilyCountAggregateInputType = {
   ownerUserId?: true
   avatarUrl?: true
   inviteCode?: true
+  inviteCodeExpiresAt?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -171,6 +177,7 @@ export type FamilyGroupByOutputType = {
   ownerUserId: string
   avatarUrl: string | null
   inviteCode: string | null
+  inviteCodeExpiresAt: Date | null
   status: string
   createdAt: Date | null
   updatedAt: Date | null
@@ -203,6 +210,7 @@ export type FamilyWhereInput = {
   ownerUserId?: Prisma.UuidFilter<"Family"> | string
   avatarUrl?: Prisma.StringNullableFilter<"Family"> | string | null
   inviteCode?: Prisma.StringNullableFilter<"Family"> | string | null
+  inviteCodeExpiresAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
   status?: Prisma.StringFilter<"Family"> | string
   createdAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
@@ -230,6 +238,7 @@ export type FamilyOrderByWithRelationInput = {
   ownerUserId?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   inviteCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  inviteCodeExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -260,6 +269,7 @@ export type FamilyWhereUniqueInput = Prisma.AtLeast<{
   familyName?: Prisma.StringFilter<"Family"> | string
   ownerUserId?: Prisma.UuidFilter<"Family"> | string
   avatarUrl?: Prisma.StringNullableFilter<"Family"> | string | null
+  inviteCodeExpiresAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
   status?: Prisma.StringFilter<"Family"> | string
   createdAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
@@ -287,6 +297,7 @@ export type FamilyOrderByWithAggregationInput = {
   ownerUserId?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   inviteCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  inviteCodeExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -304,6 +315,7 @@ export type FamilyScalarWhereWithAggregatesInput = {
   ownerUserId?: Prisma.UuidWithAggregatesFilter<"Family"> | string
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"Family"> | string | null
   inviteCode?: Prisma.StringNullableWithAggregatesFilter<"Family"> | string | null
+  inviteCodeExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Family"> | Date | string | null
   status?: Prisma.StringWithAggregatesFilter<"Family"> | string
   createdAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Family"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Family"> | Date | string | null
@@ -314,6 +326,7 @@ export type FamilyCreateInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -341,6 +354,7 @@ export type FamilyUncheckedCreateInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -366,6 +380,7 @@ export type FamilyUpdateInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -393,6 +408,7 @@ export type FamilyUncheckedUpdateInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -419,6 +435,7 @@ export type FamilyCreateManyInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -429,6 +446,7 @@ export type FamilyUpdateManyMutationInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -440,6 +458,7 @@ export type FamilyUncheckedUpdateManyInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -456,6 +475,7 @@ export type FamilyCountOrderByAggregateInput = {
   ownerUserId?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   inviteCode?: Prisma.SortOrder
+  inviteCodeExpiresAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -467,6 +487,7 @@ export type FamilyMaxOrderByAggregateInput = {
   ownerUserId?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   inviteCode?: Prisma.SortOrder
+  inviteCodeExpiresAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -478,6 +499,7 @@ export type FamilyMinOrderByAggregateInput = {
   ownerUserId?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
   inviteCode?: Prisma.SortOrder
+  inviteCodeExpiresAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -759,6 +781,7 @@ export type FamilyCreateWithoutCallLogInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -785,6 +808,7 @@ export type FamilyUncheckedCreateWithoutCallLogInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -825,6 +849,7 @@ export type FamilyUpdateWithoutCallLogInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -851,6 +876,7 @@ export type FamilyUncheckedUpdateWithoutCallLogInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -875,6 +901,7 @@ export type FamilyCreateWithoutCameraInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -901,6 +928,7 @@ export type FamilyUncheckedCreateWithoutCameraInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -941,6 +969,7 @@ export type FamilyUpdateWithoutCameraInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -967,6 +996,7 @@ export type FamilyUncheckedUpdateWithoutCameraInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -991,6 +1021,7 @@ export type FamilyCreateWithoutConversationInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1017,6 +1048,7 @@ export type FamilyUncheckedCreateWithoutConversationInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1057,6 +1089,7 @@ export type FamilyUpdateWithoutConversationInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1083,6 +1116,7 @@ export type FamilyUncheckedUpdateWithoutConversationInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1107,6 +1141,7 @@ export type FamilyCreateWithoutDailyStatusReportsInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1133,6 +1168,7 @@ export type FamilyUncheckedCreateWithoutDailyStatusReportsInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1173,6 +1209,7 @@ export type FamilyUpdateWithoutDailyStatusReportsInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1199,6 +1236,7 @@ export type FamilyUncheckedUpdateWithoutDailyStatusReportsInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1223,6 +1261,7 @@ export type FamilyCreateWithoutFallEventInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1249,6 +1288,7 @@ export type FamilyUncheckedCreateWithoutFallEventInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1289,6 +1329,7 @@ export type FamilyUpdateWithoutFallEventInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1315,6 +1356,7 @@ export type FamilyUncheckedUpdateWithoutFallEventInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1339,6 +1381,7 @@ export type FamilyCreateWithoutMembersInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1365,6 +1408,7 @@ export type FamilyUncheckedCreateWithoutMembersInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1405,6 +1449,7 @@ export type FamilyUpdateWithoutMembersInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1431,6 +1476,7 @@ export type FamilyUncheckedUpdateWithoutMembersInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1455,6 +1501,7 @@ export type FamilyCreateWithoutGeofenceEventInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1481,6 +1528,7 @@ export type FamilyUncheckedCreateWithoutGeofenceEventInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1521,6 +1569,7 @@ export type FamilyUpdateWithoutGeofenceEventInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1547,6 +1596,7 @@ export type FamilyUncheckedUpdateWithoutGeofenceEventInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1571,6 +1621,7 @@ export type FamilyCreateWithoutGeofenceMemberInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1597,6 +1648,7 @@ export type FamilyUncheckedCreateWithoutGeofenceMemberInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1637,6 +1689,7 @@ export type FamilyUpdateWithoutGeofenceMemberInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1663,6 +1716,7 @@ export type FamilyUncheckedUpdateWithoutGeofenceMemberInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1687,6 +1741,7 @@ export type FamilyCreateWithoutGeofenceInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1713,6 +1768,7 @@ export type FamilyUncheckedCreateWithoutGeofenceInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1753,6 +1809,7 @@ export type FamilyUpdateWithoutGeofenceInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1779,6 +1836,7 @@ export type FamilyUncheckedUpdateWithoutGeofenceInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1803,6 +1861,7 @@ export type FamilyCreateWithoutGeofenceStateInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1829,6 +1888,7 @@ export type FamilyUncheckedCreateWithoutGeofenceStateInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1869,6 +1929,7 @@ export type FamilyUpdateWithoutGeofenceStateInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1895,6 +1956,7 @@ export type FamilyUncheckedUpdateWithoutGeofenceStateInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1919,6 +1981,7 @@ export type FamilyCreateWithoutNotificationInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1945,6 +2008,7 @@ export type FamilyUncheckedCreateWithoutNotificationInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1985,6 +2049,7 @@ export type FamilyUpdateWithoutNotificationInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2011,6 +2076,7 @@ export type FamilyUncheckedUpdateWithoutNotificationInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2035,6 +2101,7 @@ export type FamilyCreateWithoutPhoneCommandInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2061,6 +2128,7 @@ export type FamilyUncheckedCreateWithoutPhoneCommandInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2101,6 +2169,7 @@ export type FamilyUpdateWithoutPhoneCommandInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2127,6 +2196,7 @@ export type FamilyUncheckedUpdateWithoutPhoneCommandInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2151,6 +2221,7 @@ export type FamilyCreateWithoutPhoneRuleInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2177,6 +2248,7 @@ export type FamilyUncheckedCreateWithoutPhoneRuleInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2217,6 +2289,7 @@ export type FamilyUpdateWithoutPhoneRuleInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2243,6 +2316,7 @@ export type FamilyUncheckedUpdateWithoutPhoneRuleInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2267,6 +2341,7 @@ export type FamilyCreateWithoutOwnerInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2292,6 +2367,7 @@ export type FamilyUncheckedCreateWithoutOwnerInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2347,6 +2423,7 @@ export type FamilyScalarWhereInput = {
   ownerUserId?: Prisma.UuidFilter<"Family"> | string
   avatarUrl?: Prisma.StringNullableFilter<"Family"> | string | null
   inviteCode?: Prisma.StringNullableFilter<"Family"> | string | null
+  inviteCodeExpiresAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
   status?: Prisma.StringFilter<"Family"> | string
   createdAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableFilter<"Family"> | Date | string | null
@@ -2357,6 +2434,7 @@ export type FamilyCreateWithoutRemindersInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2383,6 +2461,7 @@ export type FamilyUncheckedCreateWithoutRemindersInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2423,6 +2502,7 @@ export type FamilyUpdateWithoutRemindersInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2449,6 +2529,7 @@ export type FamilyUncheckedUpdateWithoutRemindersInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2473,6 +2554,7 @@ export type FamilyCreateWithoutSosEventInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2499,6 +2581,7 @@ export type FamilyUncheckedCreateWithoutSosEventInput = {
   ownerUserId: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2539,6 +2622,7 @@ export type FamilyUpdateWithoutSosEventInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2565,6 +2649,7 @@ export type FamilyUncheckedUpdateWithoutSosEventInput = {
   ownerUserId?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2589,6 +2674,7 @@ export type FamilyCreateManyOwnerInput = {
   familyName: string
   avatarUrl?: string | null
   inviteCode?: string | null
+  inviteCodeExpiresAt?: Date | string | null
   status?: string
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2599,6 +2685,7 @@ export type FamilyUpdateWithoutOwnerInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2624,6 +2711,7 @@ export type FamilyUncheckedUpdateWithoutOwnerInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2649,6 +2737,7 @@ export type FamilyUncheckedUpdateManyWithoutOwnerInput = {
   familyName?: Prisma.StringFieldUpdateOperationsInput | string
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2817,6 +2906,7 @@ export type FamilySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   ownerUserId?: boolean
   avatarUrl?: boolean
   inviteCode?: boolean
+  inviteCodeExpiresAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2845,6 +2935,7 @@ export type FamilySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   ownerUserId?: boolean
   avatarUrl?: boolean
   inviteCode?: boolean
+  inviteCodeExpiresAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2857,6 +2948,7 @@ export type FamilySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   ownerUserId?: boolean
   avatarUrl?: boolean
   inviteCode?: boolean
+  inviteCodeExpiresAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2869,12 +2961,13 @@ export type FamilySelectScalar = {
   ownerUserId?: boolean
   avatarUrl?: boolean
   inviteCode?: boolean
+  inviteCodeExpiresAt?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FamilyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "familyName" | "ownerUserId" | "avatarUrl" | "inviteCode" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["family"]>
+export type FamilyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "familyName" | "ownerUserId" | "avatarUrl" | "inviteCode" | "inviteCodeExpiresAt" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["family"]>
 export type FamilyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   CallLog?: boolean | Prisma.Family$CallLogArgs<ExtArgs>
   Camera?: boolean | Prisma.Family$CameraArgs<ExtArgs>
@@ -2927,6 +3020,7 @@ export type $FamilyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     ownerUserId: string
     avatarUrl: string | null
     inviteCode: string | null
+    inviteCodeExpiresAt: Date | null
     status: string
     createdAt: Date | null
     updatedAt: Date | null
@@ -3374,6 +3468,7 @@ export interface FamilyFieldRefs {
   readonly ownerUserId: Prisma.FieldRef<"Family", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"Family", 'String'>
   readonly inviteCode: Prisma.FieldRef<"Family", 'String'>
+  readonly inviteCodeExpiresAt: Prisma.FieldRef<"Family", 'DateTime'>
   readonly status: Prisma.FieldRef<"Family", 'String'>
   readonly createdAt: Prisma.FieldRef<"Family", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Family", 'DateTime'>
