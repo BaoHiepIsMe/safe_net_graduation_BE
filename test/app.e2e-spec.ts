@@ -113,6 +113,15 @@ describe('Foundation and Phase 1 security (e2e)', () => {
           findFirst: jest.fn().mockResolvedValue(null),
           update: updateProfile,
         },
+        userSetting: {
+          findUnique: jest.fn().mockResolvedValue({
+            userId: USER_ID,
+            language: 'vi',
+            theme: null,
+            quietHoursStart: new Date('1970-01-01T22:00:00Z'),
+            quietHoursEnd: null,
+          }),
+        },
         familyMember: { findFirst: jest.fn().mockResolvedValue(null) },
         conversationMember: { findFirst: jest.fn().mockResolvedValue(null) },
       })
@@ -190,6 +199,30 @@ describe('Foundation and Phase 1 security (e2e)', () => {
       .send({ dateOfBirth: null })
       .expect(200);
     expect(response.body.data.dateOfBirth).toBeNull();
+  });
+
+  it('rejects phoneNumber on profile update (read-only identity)', async () => {
+    updateProfile.mockClear();
+    const response = await request(app.getHttpServer())
+      .patch('/api/v1/profiles/me')
+      .set('Authorization', 'Bearer valid-token')
+      .send({ phoneNumber: '+84900000000' })
+      .expect(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    expect(updateProfile).not.toHaveBeenCalled();
+  });
+
+  it('returns theme and HH:mm quiet hours in settings', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/profiles/settings')
+      .set('Authorization', 'Bearer valid-token')
+      .expect(200);
+    expect(response.body.data).toMatchObject({
+      theme: 'system',
+      darkMode: false,
+      quietHoursStart: '22:00',
+      quietHoursEnd: null,
+    });
   });
 
   it('rejects an impossible birthday before attempting a write', async () => {

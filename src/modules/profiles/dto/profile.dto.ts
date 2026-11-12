@@ -3,7 +3,6 @@ import {
   calendarDateSchema,
   fullNameSchema,
   genderSchema,
-  phoneNumberSchema,
 } from '../../../common/schemas/profile.schema';
 
 const timeSchema = z
@@ -18,7 +17,6 @@ export const updateProfileSchema = z
     avatarUrl: z.string().trim().url().max(2048).nullable().optional(),
     dateOfBirth: calendarDateSchema.nullable().optional(),
     gender: genderSchema.nullable().optional(),
-    phoneNumber: phoneNumberSchema.nullable().optional(),
   })
   .strict()
   .refine((value) => Object.keys(value).length > 0, {
@@ -35,6 +33,7 @@ export const updateUserSettingsSchema = z
     emailNotificationsEnabled: z.boolean().optional(),
     locationSharingEnabled: z.boolean().optional(),
     darkMode: z.boolean().optional(),
+    theme: z.enum(['light', 'dark', 'system']).optional(),
     quietHoursStart: timeSchema.nullable().optional(),
     quietHoursEnd: timeSchema.nullable().optional(),
   })
