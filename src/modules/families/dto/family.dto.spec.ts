@@ -1,6 +1,8 @@
 import {
   createInvitationSchema,
   familyIdParamSchema,
+  joinFamilySchema,
+  transferOwnershipSchema,
   updateFamilyMemberSchema,
 } from './family.dto';
 
@@ -38,5 +40,38 @@ describe('family request validation', () => {
         ownerUserId: '11111111-1111-4111-8111-111111111111',
       }).success,
     ).toBe(false);
+  });
+
+  it('does not default the invitation role (the service derives it)', () => {
+    const parsed = createInvitationSchema.parse({
+      email: 'user@example.com',
+      familyLabel: 'grandmother',
+    });
+    expect(parsed.role).toBeUndefined();
+  });
+
+  it('rejects role=manager on invitations with a 400-able error', () => {
+    expect(
+      createInvitationSchema.safeParse({
+        email: 'user@example.com',
+        familyLabel: 'other',
+        role: 'manager',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('validates join and transfer bodies', () => {
+    expect(
+      joinFamilySchema.safeParse({ code: ' abc ', familyLabel: 'son' }).success,
+    ).toBe(true);
+    expect(
+      joinFamilySchema.safeParse({ code: '', familyLabel: 'son' }).success,
+    ).toBe(false);
+    expect(
+      joinFamilySchema.safeParse({ code: 'ABC', familyLabel: 'boss' }).success,
+    ).toBe(false);
+    expect(transferOwnershipSchema.safeParse({ memberId: 'x' }).success).toBe(
+      false,
+    );
   });
 });

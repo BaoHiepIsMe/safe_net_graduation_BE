@@ -275,6 +275,7 @@ export const FamilyScalarFieldEnum = {
   ownerUserId: 'ownerUserId',
   avatarUrl: 'avatarUrl',
   inviteCode: 'inviteCode',
+  inviteCodeExpiresAt: 'inviteCodeExpiresAt',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

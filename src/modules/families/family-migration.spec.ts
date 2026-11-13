@@ -33,3 +33,22 @@ describe('Phase 2 family integrity migration', () => {
     expect(sql).toContain("fm.status = 'accepted'");
   });
 });
+
+describe('family invite code expiry migration', () => {
+  const sql = readFileSync(
+    join(
+      process.cwd(),
+      'prisma',
+      'migrations',
+      '20261113090000_family_invite_code_expiry',
+      'migration.sql',
+    ),
+    'utf8',
+  );
+
+  it('adds a nullable invite_code_expires_at column to families', () => {
+    expect(sql).toMatch(/ALTER TABLE "public"\."families"/);
+    expect(sql).toContain('"invite_code_expires_at" TIMESTAMPTZ(6)');
+    expect(sql).not.toMatch(/NOT NULL/i);
+  });
+});

@@ -7,12 +7,19 @@ import {
   ForbiddenError,
   NotFoundError,
 } from '../../common/errors/app.error';
+import {
+  deriveRoleFromLabel,
+  invitationCutoff,
+  invitationExpiresAt,
+} from './families.constants';
 import { FamilyAccessService } from './family-access.service';
 import { FamiliesRepository } from './families.repository';
 import {
   CreateFamilyDto,
   CreateInvitationDto,
   FamilyPaginationDto,
+  JoinFamilyDto,
+  TransferOwnershipDto,
   UpdateFamilyDto,
   UpdateFamilyMemberDto,
 } from './dto/family.dto';
@@ -204,27 +211,32 @@ export class FamiliesService {
         ErrorCode.FAMILY_MEMBER_ALREADY_EXISTS,
       );
     }
-    if (existing?.status === 'pending') {
+    if (existing?.status === 'pending' && !this.isExpired(existing.invitedAt)) {
       throw new ConflictError(
         'Lời mời đang chờ xử lý đã tồn tại',
         ErrorCode.FAMILY_INVITATION_ALREADY_EXISTS,
       );
     }
 
+    // Without an explicit role it follows the relationship (D5).
+    const data = {
+      ...dto,
+      role: dto.role ?? deriveRoleFromLabel(dto.familyLabel),
+    };
     try {
       const invitation = existing
         ? await this.familiesRepository.renewInvitation(
             existing.id,
             actorUserId,
-            dto,
+            data,
           )
         : await this.familiesRepository.createInvitation(
             familyId,
             target.id,
             actorUserId,
-            dto,
+            data,
           );
-      return this.mapMember(invitation);
+      return this.mapInvitation(invitation);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -252,6 +264,7 @@ export class FamiliesService {
         familyLabel: invitation.familyLabel,
         displayName: invitation.displayName,
         invitedAt: invitation.invitedAt,
+        expiresAt: this.expiresAt(invitation.invitedAt),
         family: this.mapFamily(invitation.family),
         invitedBy: invitation.inviter,
       })),
@@ -295,7 +308,202 @@ export class FamiliesService {
         'Lời mời không còn ở trạng thái chờ xử lý',
       );
     }
+    if (result.outcome === 'expired') {
+      throw new BusinessRuleError(
+        ErrorCode.FAMILY_INVITATION_EXPIRED,
+        'Lời mời đã hết hạn',
+      );
+    }
     return this.mapMember(result.membership);
+  }
+
+  async listSentInvitations(
+    userId: string,
+    familyId: string,
+    pagination: FamilyPaginationDto,
+  ) {
+    await this.familyAccess.requireManager(userId, familyId);
+    const { invitations, total } =
+      await this.familiesRepository.listSentInvitations(familyId, pagination);
+    return {
+      data: invitations.map((invitation) => ({
+        ...this.mapInvitation(invitation),
+        invitedBy: invitation.inviter,
+      })),
+      pagination: this.page(pagination, total),
+    };
+  }
+
+  async cancelInvitation(
+    userId: string,
+    familyId: string,
+    invitationId: string,
+  ): Promise<void> {
+    await this.familyAccess.requireManager(userId, familyId);
+    const result = await this.familiesRepository.cancelInvitation(
+      familyId,
+      invitationId,
+    );
+    if (result.outcome === 'cancelled') return;
+    this.throwInvitationOutcome(result.outcome);
+  }
+
+  async resendInvitation(
+    userId: string,
+    familyId: string,
+    invitationId: string,
+  ) {
+    await this.familyAccess.requireManager(userId, familyId);
+    const result = await this.familiesRepository.resendInvitation(
+      familyId,
+      invitationId,
+      userId,
+    );
+    if (result.outcome === 'resent') return this.mapInvitation(result.member);
+    return this.throwInvitationOutcome(result.outcome);
+  }
+
+  async getInviteCode(userId: string, familyId: string) {
+    await this.familyAccess.requireManager(userId, familyId);
+    return this.familiesRepository.getOrCreateInviteCode(familyId);
+  }
+
+  async regenerateInviteCode(userId: string, familyId: string) {
+    await this.familyAccess.requireManager(userId, familyId);
+    return this.familiesRepository.regenerateInviteCode(familyId);
+  }
+
+  async joinByCode(userId: string, dto: JoinFamilyDto) {
+    const code = dto.code.trim().toUpperCase();
+    let result;
+    try {
+      result = await this.familiesRepository.joinByInviteCode(
+        userId,
+        code,
+        dto,
+      );
+    } catch (error) {
+      // Two concurrent joins by the same user race on (family_id, user_id).
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictError(
+          'Người dùng đã là thành viên gia đình',
+          ErrorCode.FAMILY_MEMBER_ALREADY_EXISTS,
+        );
+      }
+      throw error;
+    }
+    if (result.outcome === 'invalid_code') {
+      throw new NotFoundError(
+        'Mã mời không hợp lệ hoặc đã hết hạn',
+        ErrorCode.FAMILY_INVITE_CODE_INVALID,
+      );
+    }
+    if (result.outcome === 'already_member') {
+      throw new ConflictError(
+        'Bạn đã là thành viên của gia đình này',
+        ErrorCode.FAMILY_MEMBER_ALREADY_EXISTS,
+      );
+    }
+    return {
+      ...this.mapFamily(result.family),
+      membership: this.mapMember(result.membership),
+    };
+  }
+
+  async leaveFamily(userId: string, familyId: string): Promise<void> {
+    const membership = await this.familyAccess.requireAcceptedMember(
+      userId,
+      familyId,
+    );
+    if (membership.family.ownerUserId === userId) {
+      throw new ForbiddenError(
+        'Chủ sở hữu cần chuyển quyền hoặc xóa gia đình trước khi rời',
+        ErrorCode.FAMILY_OWNER_CANNOT_LEAVE,
+      );
+    }
+    if (membership.role === 'child') {
+      throw new ForbiddenError(
+        'Trẻ em không thể tự rời gia đình',
+        ErrorCode.CHILD_CANNOT_LEAVE_FAMILY,
+      );
+    }
+    const result =
+      await this.familiesRepository.removeMemberWithManagerInvariant(
+        familyId,
+        membership.id,
+      );
+    if (result.outcome === 'last_manager') {
+      throw new BusinessRuleError(
+        ErrorCode.CANNOT_REMOVE_LAST_MANAGER,
+        'Gia đình phải có ít nhất một quản lý',
+      );
+    }
+    if (result.outcome !== 'removed') {
+      throw new NotFoundError(
+        'Không tìm thấy thành viên gia đình',
+        ErrorCode.FAMILY_MEMBER_NOT_FOUND,
+      );
+    }
+  }
+
+  async transferOwnership(
+    userId: string,
+    familyId: string,
+    dto: TransferOwnershipDto,
+  ) {
+    await this.familyAccess.requireOwner(userId, familyId);
+    const result = await this.familiesRepository.transferOwnership(
+      familyId,
+      userId,
+      dto.memberId,
+    );
+    if (result.outcome === 'not_owner') {
+      throw new ForbiddenError(
+        'Chỉ chủ sở hữu được chuyển quyền',
+        ErrorCode.FAMILY_ACCESS_DENIED,
+      );
+    }
+    if (result.outcome === 'invalid_target') {
+      throw new BusinessRuleError(
+        ErrorCode.OWNERSHIP_TRANSFER_TARGET_INVALID,
+        'Chỉ chuyển quyền cho người lớn hoặc quản lý khác đang hoạt động',
+      );
+    }
+    return this.mapFamily(result.family);
+  }
+
+  private throwInvitationOutcome(
+    outcome: 'not_found' | 'invalid_state',
+  ): never {
+    if (outcome === 'not_found') {
+      throw new NotFoundError(
+        'Không tìm thấy lời mời',
+        ErrorCode.FAMILY_INVITATION_NOT_FOUND,
+      );
+    }
+    throw new BusinessRuleError(
+      ErrorCode.FAMILY_INVITATION_INVALID_STATE,
+      'Lời mời không còn ở trạng thái chờ xử lý',
+    );
+  }
+
+  private expiresAt(invitedAt: Date | null) {
+    return invitedAt ? invitationExpiresAt(invitedAt) : null;
+  }
+
+  private isExpired(invitedAt: Date | null) {
+    return !invitedAt || invitedAt < invitationCutoff(new Date());
+  }
+
+  private mapInvitation(member: Parameters<FamiliesService['mapMember']>[0]) {
+    return {
+      ...this.mapMember(member),
+      expiresAt: this.expiresAt(member.invitedAt),
+      isExpired: this.isExpired(member.invitedAt),
+    };
   }
 
   private assertMemberManagementAllowed(
