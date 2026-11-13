@@ -70,6 +70,13 @@ export class LocationsController {
   @ApiOperation({ summary: 'Lấy lịch sử vị trí của tài khoản bằng cursor' })
   @ApiQuery({ name: 'limit', required: false, minimum: 1, maximum: 100 })
   @ApiQuery({ name: 'cursor', required: false, type: String })
+  @ApiQuery({
+    name: 'from',
+    required: false,
+    type: String,
+    format: 'date-time',
+  })
+  @ApiQuery({ name: 'to', required: false, type: String, format: 'date-time' })
   @ApiResponse({ status: 200, schema: locationHistorySuccessSchema })
   @ApiStandardErrors(400, 401, 403, 404, 409, 422, 429, 500)
   getOwnHistory(
@@ -110,6 +117,38 @@ export class LocationsController {
       user.id,
       params.familyId,
       params.memberId,
+    );
+  }
+
+  @Get('families/:familyId/members/:memberId/locations/history')
+  @ApiOperation({
+    summary: 'Lấy lịch sử vị trí 7 ngày của thành viên đang chia sẻ',
+  })
+  @ApiParam({ name: 'familyId', format: 'uuid' })
+  @ApiParam({ name: 'memberId', format: 'uuid' })
+  @ApiQuery({ name: 'limit', required: false, minimum: 1, maximum: 100 })
+  @ApiQuery({ name: 'cursor', required: false, type: String })
+  @ApiQuery({
+    name: 'from',
+    required: false,
+    type: String,
+    format: 'date-time',
+  })
+  @ApiQuery({ name: 'to', required: false, type: String, format: 'date-time' })
+  @ApiResponse({ status: 200, schema: locationHistorySuccessSchema })
+  @ApiStandardErrors(400, 401, 403, 404, 409, 422, 429, 500)
+  getFamilyMemberHistory(
+    @CurrentUser() user: AuthUser,
+    @Param(new ZodValidationPipe(familyMemberLocationParamSchema))
+    params: FamilyMemberLocationParam,
+    @Query(new ZodValidationPipe(locationHistoryQuerySchema))
+    query: LocationHistoryQueryDto,
+  ) {
+    return this.locationsService.getFamilyMemberHistory(
+      user.id,
+      params.familyId,
+      params.memberId,
+      query,
     );
   }
 }

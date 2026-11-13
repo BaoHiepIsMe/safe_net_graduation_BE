@@ -118,7 +118,6 @@ class InMemoryLocationsRepository {
             (member) =>
               sharedFamilyIds.includes(member.familyId) &&
               member.status === 'accepted' &&
-              member.sharing &&
               this.activeFamilies.has(member.familyId),
           )
           .map((member) => member.userId),
@@ -148,7 +147,7 @@ class InMemoryLocationsRepository {
     );
   }
 
-  listOwnHistory(userId: string, query: any, cursor?: any) {
+  listHistory(userId: string, query: any, cursor?: any) {
     let rows = this.history
       .filter((row) => row.userId === userId)
       .sort(
@@ -470,8 +469,11 @@ describe('Phase 4 Locations (e2e)', () => {
     await expect(submit()).resolves.toEqual([USER_A]);
     memberA.sharing = true;
 
+    // D7: a recipient with their own sharing off still sees the family map.
     memberB.sharing = false;
-    await expect(submit()).resolves.toEqual([USER_A]);
+    await expect(submit()).resolves.toEqual(
+      expect.arrayContaining([USER_A, USER_B]),
+    );
     memberB.sharing = true;
 
     for (const status of ['pending', 'rejected', 'removed']) {

@@ -15,8 +15,12 @@ import {
   IngestLocationDto,
   LocationHistoryCursor,
   LocationHistoryQueryDto,
+  LocationHistoryRange,
 } from './dto/location.dto';
-import { LOCATION_EVENT_NAME } from './locations.constants';
+import {
+  LOCATION_EVENT_NAME,
+  LOCATION_FAMILY_HISTORY_MAX_DAYS,
+} from './locations.constants';
 import {
   FamilyCurrentLocationRow,
   LocationsRepository,
@@ -109,11 +113,43 @@ export class LocationsService {
   }
 
   async getOwnHistory(userId: string, query: LocationHistoryQueryDto) {
+    return this.listHistoryPage(userId, query, {
+      from: query.from,
+      to: query.to,
+    });
+  }
+
+  async getFamilyMemberHistory(
+    viewerId: string,
+    familyId: string,
+    memberId: string,
+    query: LocationHistoryQueryDto,
+  ) {
+    await this.familyAccess.requireAcceptedMember(viewerId, familyId);
+    const target = await this.locationsRepository.findHistoryTarget(
+      familyId,
+      memberId,
+    );
+    if (!target || (target.userId !== viewerId && !target.sharing)) {
+      this.throwLocationNotFound();
+    }
+    const oldest =
+      Date.now() - LOCATION_FAMILY_HISTORY_MAX_DAYS * 24 * 60 * 60 * 1000;
+    const from = new Date(Math.max(query.from?.getTime() ?? 0, oldest));
+    return this.listHistoryPage(target.userId, query, { from, to: query.to });
+  }
+
+  private async listHistoryPage(
+    userId: string,
+    query: LocationHistoryQueryDto,
+    range: LocationHistoryRange,
+  ) {
     const cursor = query.cursor ? this.decodeCursor(query.cursor) : undefined;
-    const rows = await this.locationsRepository.listOwnHistory(
+    const rows = await this.locationsRepository.listHistory(
       userId,
       query,
       cursor,
+      range,
     );
     const hasMore = rows.length > query.limit;
     const pageRows = hasMore ? rows.slice(0, query.limit) : rows;

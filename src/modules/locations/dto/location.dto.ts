@@ -65,8 +65,25 @@ export const locationHistoryQuerySchema = z
       .regex(/^[A-Za-z0-9_-]+$/)
       .max(256)
       .optional(),
+    from: z.iso
+      .datetime({ offset: true })
+      .transform((value) => new Date(value))
+      .optional(),
+    to: z.iso
+      .datetime({ offset: true })
+      .transform((value) => new Date(value))
+      .optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    if (value.from && value.to && value.from >= value.to) {
+      context.addIssue({
+        code: 'custom',
+        path: ['from'],
+        message: 'from phải trước to',
+      });
+    }
+  });
 
 export type LocationDeviceParam = z.infer<typeof locationDeviceParamSchema>;
 export type FamilyLocationParam = z.infer<typeof familyLocationParamSchema>;
@@ -81,4 +98,9 @@ export type LocationHistoryQueryDto = z.infer<
 export interface LocationHistoryCursor {
   recordedAt: Date;
   id: string;
+}
+
+export interface LocationHistoryRange {
+  from?: Date;
+  to?: Date;
 }

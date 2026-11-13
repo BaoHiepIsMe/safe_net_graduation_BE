@@ -65,4 +65,23 @@ describe('location request validation', () => {
       1,
     );
   });
+
+  it('accepts history queries with or without from/to', () => {
+    expect(locationHistoryQuerySchema.parse({}).limit).toBe(50);
+    const parsed = locationHistoryQuerySchema.parse({
+      from: '2026-08-24T00:00:00+07:00',
+      to: '2026-08-25T00:00:00+07:00',
+    });
+    expect(parsed.from).toBeInstanceOf(Date);
+    expect(parsed.to).toBeInstanceOf(Date);
+  });
+
+  it.each([
+    [{ from: '2026-08-25T00:00:00Z', to: '2026-08-24T00:00:00Z' }],
+    [{ from: '2026-08-24T00:00:00Z', to: '2026-08-24T00:00:00Z' }],
+    [{ from: 'yesterday' }],
+    [{ to: '2026-08-24' }],
+  ])('rejects invalid history range %j', (input) => {
+    expect(locationHistoryQuerySchema.safeParse(input).success).toBe(false);
+  });
 });

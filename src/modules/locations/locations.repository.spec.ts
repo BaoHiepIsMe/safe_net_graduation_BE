@@ -6,6 +6,8 @@ const USER_A = '11111111-1111-4111-8111-111111111111';
 const USER_B = '22222222-2222-4222-8222-222222222222';
 const DEVICE_ID = '33333333-3333-4333-8333-333333333333';
 const LOCATION_ID = '44444444-4444-4444-8444-444444444444';
+const FAMILY_ID = '55555555-5555-4555-8555-555555555555';
+const MEMBER_ID = '66666666-6666-4666-8666-666666666666';
 const recordedAt = new Date('2026-08-24T04:00:00.000Z');
 const dto = { latitude: 10.7, longitude: 106.6, recordedAt };
 const history = {
@@ -99,7 +101,7 @@ describe('LocationsRepository', () => {
     expect(tx.location.create).toHaveBeenCalledTimes(1);
   });
 
-  it('fans out only through active accepted relationships with sharing enabled', async () => {
+  it('fans out to every accepted member of actively shared families of the sender', async () => {
     const { tx, repository } = setupTransaction();
     tx.familyMember.findMany
       .mockResolvedValueOnce([
@@ -121,16 +123,13 @@ describe('LocationsRepository', () => {
         }),
       }),
     );
-    expect(tx.familyMember.findMany).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({
-        where: expect.objectContaining({
-          status: 'accepted',
-          locationSharingEnabled: true,
-          family: { status: 'active' },
-        }),
-      }),
-    );
+    // D7: recipients follow the REST viewing rule, so their own sharing flag is not required.
+    const recipientWhere = tx.familyMember.findMany.mock.calls[1][0].where;
+    expect(recipientWhere).toMatchObject({
+      status: 'accepted',
+      family: { status: 'active' },
+    });
+    expect(recipientWhere).not.toHaveProperty('locationSharingEnabled');
   });
 
   it('returns no family recipients when owner global/family sharing finds no relationship', async () => {
@@ -154,7 +153,7 @@ describe('LocationsRepository', () => {
   it('uses deterministic descending cursor history ordering scoped to the owner', async () => {
     const findMany = jest.fn().mockResolvedValue([]);
     const prisma = { location: { findMany } } as unknown as PrismaService;
-    await new LocationsRepository(prisma).listOwnHistory(
+    await new LocationsRepository(prisma).listHistory(
       USER_A,
       { limit: 20 },
       { recordedAt, id: LOCATION_ID },
@@ -166,5 +165,76 @@ describe('LocationsRepository', () => {
         take: 21,
       }),
     );
+    const where = findMany.mock.calls[0][0].where;
+    expect(where).not.toHaveProperty('recordedAt');
+  });
+
+  it('filters history to [from, to) and combines it with the cursor', async () => {
+    const findMany = jest.fn().mockResolvedValue([]);
+    const prisma = { location: { findMany } } as unknown as PrismaService;
+    const from = new Date('2026-08-24T00:00:00.000Z');
+    const to = new Date('2026-08-25T00:00:00.000Z');
+    await new LocationsRepository(prisma).listHistory(
+      USER_A,
+      { limit: 20 },
+      { recordedAt, id: LOCATION_ID },
+      { from, to },
+    );
+    expect(findMany.mock.calls[0][0].where).toMatchObject({
+      userId: USER_A,
+      recordedAt: { gte: from, lt: to },
+      OR: expect.any(Array),
+    });
+    await new LocationsRepository(prisma).listHistory(
+      USER_A,
+      { limit: 20 },
+      undefined,
+      { from },
+    );
+    expect(findMany.mock.calls[1][0].where.recordedAt).toEqual({ gte: from });
+  });
+
+  it('finds the history target only for accepted members of active families', async () => {
+    const findFirst = jest.fn();
+    const prisma = { familyMember: { findFirst } } as unknown as PrismaService;
+    const repository = new LocationsRepository(prisma);
+    findFirst.mockResolvedValueOnce({
+      userId: USER_B,
+      locationSharingEnabled: true,
+      profile: { UserSetting: { locationSharingEnabled: true } },
+    });
+    await expect(
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+    ).resolves.toEqual({ userId: USER_B, sharing: true });
+    expect(findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          id: MEMBER_ID,
+          familyId: FAMILY_ID,
+          status: 'accepted',
+          family: { status: 'active' },
+        },
+      }),
+    );
+    findFirst.mockResolvedValueOnce({
+      userId: USER_B,
+      locationSharingEnabled: true,
+      profile: { UserSetting: { locationSharingEnabled: false } },
+    });
+    await expect(
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+    ).resolves.toEqual({ userId: USER_B, sharing: false });
+    findFirst.mockResolvedValueOnce({
+      userId: USER_B,
+      locationSharingEnabled: false,
+      profile: { UserSetting: { locationSharingEnabled: true } },
+    });
+    await expect(
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+    ).resolves.toEqual({ userId: USER_B, sharing: false });
+    findFirst.mockResolvedValueOnce(null);
+    await expect(
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+    ).resolves.toBeNull();
   });
 });

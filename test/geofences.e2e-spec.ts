@@ -230,7 +230,7 @@ class InMemoryLocationsRepository {
   findOwnCurrent() {
     return Promise.resolve(null);
   }
-  listOwnHistory() {
+  listHistory() {
     return Promise.resolve([]);
   }
   findFamilyCurrentLocations() {
