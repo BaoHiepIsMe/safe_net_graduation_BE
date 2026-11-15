@@ -107,6 +107,8 @@ export const ingestLocationBodySchema = {
       minimum: 0,
       maximum: 100,
     },
+    // Tỉ lệ pin 0–1 (đổi thành phần trăm); không gửi cùng batteryLevel
+    batteryRatio: { ...nullableNumber, minimum: 0, maximum: 1 },
     recordedAt: dateTime,
   },
 };

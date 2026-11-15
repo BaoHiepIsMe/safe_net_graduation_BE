@@ -26,12 +26,38 @@ describe('location request validation', () => {
     [{ ...valid, longitude: -181 }],
     [{ ...valid, longitude: 181 }],
     [{ ...valid, accuracy: -1 }],
-    [{ ...valid, speed: -1 }],
     [{ ...valid, heading: 360 }],
     [{ ...valid, latitude: Number.NaN }],
     [{ ...valid, longitude: Number.POSITIVE_INFINITY }],
   ])('rejects invalid numeric location input', (input) => {
     expect(ingestLocationSchema.safeParse(input).success).toBe(false);
+  });
+
+  it('đổi batteryRatio thành batteryLevel phần trăm', () => {
+    const { batteryLevel: _omit, ...rest } = valid;
+    const parsed = ingestLocationSchema.parse({ ...rest, batteryRatio: 0.87 });
+    expect(parsed.batteryLevel).toBe(87);
+    expect(parsed).not.toHaveProperty('batteryRatio');
+  });
+
+  it('từ chối batteryRatio ngoài 0–1 hoặc gửi cùng batteryLevel', () => {
+    const { batteryLevel: _omit, ...rest } = valid;
+    expect(
+      ingestLocationSchema.safeParse({ ...rest, batteryRatio: 1.2 }).success,
+    ).toBe(false);
+    expect(
+      ingestLocationSchema.safeParse({ ...valid, batteryRatio: 0.5 }).success,
+    ).toBe(false);
+  });
+
+  it('đổi speed và heading âm thành null', () => {
+    const parsed = ingestLocationSchema.parse({
+      ...valid,
+      speed: -1,
+      heading: -1,
+    });
+    expect(parsed.speed).toBeNull();
+    expect(parsed.heading).toBeNull();
   });
 
   it('rejects unreasonable future capture timestamps', () => {
