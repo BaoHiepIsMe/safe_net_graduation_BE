@@ -1,3 +1,4 @@
+import { LocationsController } from './locations.controller';
 import {
   currentLocationDataSchema,
   ingestLocationBodySchema,
@@ -19,6 +20,25 @@ describe('Phase 4 location Swagger schemas', () => {
     );
     expect(locationHistorySuccessSchema.properties).toHaveProperty(
       'pagination',
+    );
+  });
+
+  it('documents from/to on both history routes', () => {
+    const proto = LocationsController.prototype as unknown as Record<
+      string,
+      object
+    >;
+    const names = (handler: object) =>
+      (
+        Reflect.getMetadata('swagger/apiParameters', handler) as {
+          name: string;
+        }[]
+      ).map((item) => item.name);
+    const own = names(proto.getOwnHistory);
+    const member = names(proto.getFamilyMemberHistory);
+    expect(own).toEqual(expect.arrayContaining(['from', 'to']));
+    expect(member).toEqual(
+      expect.arrayContaining(['familyId', 'memberId', 'from', 'to']),
     );
   });
 });

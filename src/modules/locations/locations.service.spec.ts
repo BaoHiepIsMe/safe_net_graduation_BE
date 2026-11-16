@@ -35,7 +35,8 @@ function setup() {
   const repository = {
     ingest: jest.fn(),
     findOwnCurrent: jest.fn(),
-    listOwnHistory: jest.fn(),
+    listHistory: jest.fn(),
+    findHistoryTarget: jest.fn(),
     findFamilyCurrentLocations: jest.fn(),
     findFamilyMemberCurrentLocation: jest.fn(),
   };
@@ -179,7 +180,7 @@ describe('LocationsService', () => {
 
   it('returns bounded deterministic cursor history without secrets', async () => {
     const { service, repository } = setup();
-    repository.listOwnHistory.mockResolvedValue([
+    repository.listHistory.mockResolvedValue([
       location,
       { ...location, id: '77777777-7777-4777-8777-777777777777' },
     ]);
@@ -222,5 +223,118 @@ describe('LocationsService', () => {
       FAMILY_ID,
       MEMBER_ID,
     );
+  });
+
+  it('passes from/to through for own history and keeps old behaviour without them', async () => {
+    const { service, repository } = setup();
+    repository.listHistory.mockResolvedValue([]);
+    await service.getOwnHistory(USER_A, { limit: 50 });
+    expect(repository.listHistory).toHaveBeenLastCalledWith(
+      USER_A,
+      { limit: 50 },
+      undefined,
+      { from: undefined, to: undefined },
+    );
+    const from = new Date('2026-01-01T00:00:00Z');
+    const to = new Date('2026-01-02T00:00:00Z');
+    await service.getOwnHistory(USER_A, { limit: 50, from, to });
+    expect(repository.listHistory.mock.calls[1][3]).toEqual({ from, to });
+  });
+
+  describe('getFamilyMemberHistory', () => {
+    const query = { limit: 50 };
+
+    it('returns the target history for an accepted viewer, newest first', async () => {
+      const { service, repository, access } = setup();
+      repository.findHistoryTarget.mockResolvedValue({
+        userId: USER_B,
+        sharing: true,
+      });
+      repository.listHistory.mockResolvedValue([location]);
+      const result = await service.getFamilyMemberHistory(
+        USER_A,
+        FAMILY_ID,
+        MEMBER_ID,
+        query,
+      );
+      expect(access.requireAcceptedMember).toHaveBeenCalledWith(
+        USER_A,
+        FAMILY_ID,
+      );
+      expect(repository.findHistoryTarget).toHaveBeenCalledWith(
+        FAMILY_ID,
+        MEMBER_ID,
+      );
+      expect(repository.listHistory.mock.calls[0][0]).toBe(USER_B);
+      expect(result.data).toHaveLength(1);
+      expect(result.pagination).toMatchObject({ hasMore: false, limit: 50 });
+    });
+
+    it('rejects outsiders before touching data', async () => {
+      const { service, repository, access } = setup();
+      access.requireAcceptedMember.mockRejectedValueOnce(new ForbiddenError());
+      await expect(
+        service.getFamilyMemberHistory(USER_B, FAMILY_ID, MEMBER_ID, query),
+      ).rejects.toBeInstanceOf(ForbiddenError);
+      expect(repository.findHistoryTarget).not.toHaveBeenCalled();
+    });
+
+    it('returns 404 for unknown members and for members with sharing off', async () => {
+      const { service, repository } = setup();
+      repository.findHistoryTarget.mockResolvedValueOnce(null);
+      await expect(
+        service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, query),
+      ).rejects.toBeInstanceOf(NotFoundError);
+      repository.findHistoryTarget.mockResolvedValueOnce({
+        userId: USER_B,
+        sharing: false,
+      });
+      await expect(
+        service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, query),
+      ).rejects.toBeInstanceOf(NotFoundError);
+      expect(repository.listHistory).not.toHaveBeenCalled();
+    });
+
+    it('lets users read their own history even when sharing is off', async () => {
+      const { service, repository } = setup();
+      repository.findHistoryTarget.mockResolvedValue({
+        userId: USER_A,
+        sharing: false,
+      });
+      repository.listHistory.mockResolvedValue([]);
+      await expect(
+        service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, query),
+      ).resolves.toMatchObject({ data: [] });
+      expect(repository.listHistory.mock.calls[0][0]).toBe(USER_A);
+    });
+
+    it('clamps from to the last 7 days', async () => {
+      const { service, repository } = setup();
+      repository.findHistoryTarget.mockResolvedValue({
+        userId: USER_B,
+        sharing: true,
+      });
+      repository.listHistory.mockResolvedValue([]);
+      const before = Date.now();
+      await service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, {
+        limit: 50,
+        from: new Date(before - 30 * 24 * 60 * 60 * 1000),
+      });
+      const { from } = repository.listHistory.mock.calls[0][3] as {
+        from: Date;
+      };
+      const sevenDays = 7 * 24 * 60 * 60 * 1000;
+      expect(Math.abs(Date.now() - from.getTime() - sevenDays)).toBeLessThan(
+        5000,
+      );
+      const recent = new Date(before - 60 * 60 * 1000);
+      await service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, {
+        limit: 50,
+        from: recent,
+      });
+      expect(repository.listHistory.mock.calls[1][3]).toMatchObject({
+        from: recent,
+      });
+    });
   });
 });

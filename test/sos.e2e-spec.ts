@@ -47,10 +47,16 @@ class InMemorySosRepository {
       clientRequestId: dto.clientRequestId,
       requestFingerprint,
       status: 'active',
-      latitude: this.hasLocation ? 10.7 : null,
-      longitude: this.hasLocation ? 106.6 : null,
-      locationAccuracy: this.hasLocation ? 5 : null,
-      locationRecordedAt: this.hasLocation ? at : null,
+      // Mirrors the repository: a phone-supplied fix wins over tracking.
+      latitude: dto.location?.latitude ?? (this.hasLocation ? 10.7 : null),
+      longitude: dto.location?.longitude ?? (this.hasLocation ? 106.6 : null),
+      locationAccuracy: dto.location
+        ? (dto.location.accuracy ?? null)
+        : this.hasLocation
+          ? 5
+          : null,
+      locationRecordedAt:
+        dto.location?.recordedAt ?? (this.hasLocation ? at : null),
       note: dto.message ?? null,
       triggeredAt: at,
       resolvedAt: null,
@@ -480,6 +486,44 @@ describe('Phase 7 SOS / Emergency (e2e)', () => {
       .set(auth('token-a'))
       .send({})
       .expect(422);
+  });
+
+  it('uses the phone emergency location when no tracked location exists', async () => {
+    sos.hasLocation = false; // e.g. location sharing is off
+    const recordedAt = new Date(Date.now() - 1000).toISOString();
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/sos')
+      .set(auth('token-a'))
+      .send({
+        clientRequestId: crypto.randomUUID(),
+        location: {
+          latitude: 21.03,
+          longitude: 105.85,
+          accuracy: 8,
+          recordedAt,
+        },
+      })
+      .expect(201);
+    expect(response.body.data.location).toMatchObject({
+      available: true,
+      latitude: 21.03,
+      longitude: 105.85,
+      accuracy: 8,
+    });
+    await request(app.getHttpServer())
+      .patch(`/api/v1/sos/${response.body.data.id}/cancel`)
+      .set(auth('token-a'))
+      .send({})
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .post('/api/v1/sos')
+      .set(auth('token-a'))
+      .send({
+        clientRequestId: crypto.randomUUID(),
+        location: { latitude: 95, longitude: 105.85, recordedAt },
+      })
+      .expect(400);
   });
 
   it('D: unrelated users cannot read or mutate SOS and receive no notification', async () => {

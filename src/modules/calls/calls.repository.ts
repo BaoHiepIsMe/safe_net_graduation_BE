@@ -45,7 +45,7 @@ export class CallsRepository {
         this.prisma.$transaction(
           async (tx) => {
             await tx.$queryRaw(
-              Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`call-request:${callerUserId}:${dto.clientRequestId}`}, 0))`,
+              Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`call-request:${callerUserId}:${dto.clientRequestId}`}, 0))`,
             );
             const existing = await tx.callLog.findUnique({
               where: {
@@ -111,7 +111,7 @@ export class CallsRepository {
             const users = [callerUserId, calleeUserId].sort();
             for (const userId of users) {
               await tx.$queryRaw(
-                Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`call-participant:${userId}`}, 0))`,
+                Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`call-participant:${userId}`}, 0))`,
               );
             }
             const call = await tx.callLog.create({
@@ -152,7 +152,7 @@ export class CallsRepository {
       this.prisma.$transaction(
         async (tx) => {
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`call-transition:${callId}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`call-transition:${callId}`}, 0))`,
           );
           const call = await tx.callLog.findFirst({
             where: {
@@ -288,7 +288,7 @@ export class CallsRepository {
     for (const item of due) {
       const result = await this.prisma.$transaction(async (tx) => {
         await tx.$queryRaw(
-          Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`call-transition:${item.id}`}, 0))`,
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`call-transition:${item.id}`}, 0))`,
         );
         const updated = await tx.callLog.updateMany({
           where: { id: item.id, status: 'ringing', expiresAt: { lte: now } },

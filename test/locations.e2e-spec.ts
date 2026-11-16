@@ -118,7 +118,6 @@ class InMemoryLocationsRepository {
             (member) =>
               sharedFamilyIds.includes(member.familyId) &&
               member.status === 'accepted' &&
-              member.sharing &&
               this.activeFamilies.has(member.familyId),
           )
           .map((member) => member.userId),
@@ -148,7 +147,7 @@ class InMemoryLocationsRepository {
     );
   }
 
-  listOwnHistory(userId: string, query: any, cursor?: any) {
+  listHistory(userId: string, query: any, cursor?: any) {
     let rows = this.history
       .filter((row) => row.userId === userId)
       .sort(
@@ -470,8 +469,11 @@ describe('Phase 4 Locations (e2e)', () => {
     await expect(submit()).resolves.toEqual([USER_A]);
     memberA.sharing = true;
 
+    // D7: a recipient with their own sharing off still sees the family map.
     memberB.sharing = false;
-    await expect(submit()).resolves.toEqual([USER_A]);
+    await expect(submit()).resolves.toEqual(
+      expect.arrayContaining([USER_A, USER_B]),
+    );
     memberB.sharing = true;
 
     for (const status of ['pending', 'rejected', 'removed']) {
@@ -492,5 +494,28 @@ describe('Phase 4 Locations (e2e)', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  it('nhận body chạy ngầm (batteryRatio, speed/heading -1) và lưu pin phần trăm', async () => {
+    repository.deviceActive = true;
+    await request(app.getHttpServer())
+      .post(`/api/v1/devices/${DEVICE_A}/locations`)
+      .set(auth('token-a'))
+      .send({
+        latitude: 10.7,
+        longitude: 106.6,
+        accuracy: 5,
+        speed: -1,
+        heading: -1,
+        batteryRatio: 0.87,
+        recordedAt: new Date().toISOString(),
+      })
+      .expect(201);
+
+    const current = await request(app.getHttpServer())
+      .get('/api/v1/locations/me/current')
+      .set(auth('token-a'))
+      .expect(200);
+    expect(current.body.data.batteryLevel).toBe(87);
   });
 });

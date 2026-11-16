@@ -105,6 +105,53 @@ describe('SosRepository critical persistence', () => {
     };
   }
 
+  it('prefers the phone emergency location and does not link history', async () => {
+    const { tx, repository } = setup();
+    const recordedAt = new Date('2026-11-16T08:00:00Z');
+    const result = await repository.trigger(
+      ACTOR,
+      {
+        clientRequestId: REQUEST,
+        location: {
+          latitude: 21.03,
+          longitude: 105.85,
+          accuracy: 12,
+          recordedAt,
+        },
+      },
+      FINGERPRINT,
+    );
+    expect(result.outcome).toBe('created');
+    expect(tx.currentLocation.findUnique).not.toHaveBeenCalled();
+    const data = tx.sosEvent.create.mock.calls[0][0].data;
+    expect(data).toMatchObject({
+      latitude: 21.03,
+      longitude: 105.85,
+      locationAccuracy: 12,
+      locationRecordedAt: recordedAt,
+    });
+    expect(data).not.toHaveProperty('sourceLocationId');
+  });
+
+  it('stores a null accuracy when the phone omits it', async () => {
+    const { tx, repository } = setup();
+    await repository.trigger(
+      ACTOR,
+      {
+        clientRequestId: REQUEST,
+        location: {
+          latitude: 21.03,
+          longitude: 105.85,
+          recordedAt: new Date('2026-11-16T08:00:00Z'),
+        },
+      },
+      FINGERPRINT,
+    );
+    expect(tx.sosEvent.create.mock.calls[0][0].data.locationAccuracy).toBe(
+      null,
+    );
+  });
+
   it('snapshots current location and resolves only accepted active-family recipients', async () => {
     const { tx, repository } = setup();
     const result = await repository.trigger(

@@ -101,7 +101,7 @@ export class CamerasRepository {
   ) {
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(
-        Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`camera:${cameraId}`}, 0))`,
+        Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`camera:${cameraId}`}, 0))`,
       );
       const access = await tx.familyMember.findFirst({
         where: {

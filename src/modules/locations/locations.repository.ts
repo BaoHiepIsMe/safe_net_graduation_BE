@@ -5,6 +5,7 @@ import {
   IngestLocationDto,
   LocationHistoryCursor,
   LocationHistoryQueryDto,
+  LocationHistoryRange,
 } from './dto/location.dto';
 import { LOCATION_TRANSACTION_RETRY_LIMIT } from './locations.constants';
 
@@ -138,7 +139,6 @@ export class LocationsRepository {
                 where: {
                   familyId: { in: familyIds },
                   status: 'accepted',
-                  locationSharingEnabled: true,
                   family: { status: 'active' },
                 },
                 select: { userId: true },
@@ -168,11 +168,21 @@ export class LocationsRepository {
     });
   }
 
-  async listOwnHistory(
+  async listHistory(
     userId: string,
     query: LocationHistoryQueryDto,
     cursor?: LocationHistoryCursor,
+    range?: LocationHistoryRange,
   ) {
+    const rangeWhere =
+      range?.from || range?.to
+        ? {
+            recordedAt: {
+              ...(range.from ? { gte: range.from } : {}),
+              ...(range.to ? { lt: range.to } : {}),
+            },
+          }
+        : {};
     const cursorWhere = cursor
       ? {
           OR: [
@@ -182,11 +192,36 @@ export class LocationsRepository {
         }
       : {};
     return this.prisma.location.findMany({
-      where: { userId, ...cursorWhere },
+      where: { userId, ...rangeWhere, ...cursorWhere },
       select: locationHistorySelect,
       orderBy: [{ recordedAt: 'desc' }, { id: 'desc' }],
       take: query.limit + 1,
     });
+  }
+
+  async findHistoryTarget(familyId: string, memberId: string) {
+    const member = await this.prisma.familyMember.findFirst({
+      where: {
+        id: memberId,
+        familyId,
+        status: 'accepted',
+        family: { status: 'active' },
+      },
+      select: {
+        userId: true,
+        locationSharingEnabled: true,
+        profile: {
+          select: { UserSetting: { select: { locationSharingEnabled: true } } },
+        },
+      },
+    });
+    if (!member) return null;
+    return {
+      userId: member.userId,
+      sharing:
+        member.locationSharingEnabled &&
+        member.profile.UserSetting?.locationSharingEnabled === true,
+    };
   }
 
   findFamilyCurrentLocations(familyId: string) {

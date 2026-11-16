@@ -204,6 +204,27 @@ location and geofence visibility requires global and per-family sharing. A
 manual SOS location snapshot is incident-scoped explicit emergency sharing and
 does not change passive sharing settings.
 
+### Emergency location
+
+Emergency location is independent of location sharing. When the user triggers
+SOS, Flutter takes one fresh GPS fix (it still needs OS location permission)
+and sends it in `POST /api/v1/sos` as optional
+`location: { latitude, longitude, accuracy?, recordedAt }`. This applies even when
+global or per-family sharing is off.
+
+- If `location` is sent, the SOS event stores it as its own snapshot. It is
+  never written to location history, `current_locations`, the Family Map, or
+  `location.updated`.
+- If it is omitted, the server falls back to the last tracked current location.
+  That location may be stale or missing when sharing is off.
+- `location` is excluded from the SOS idempotency fingerprint. A retry with the
+  same `clientRequestId` and a slightly different fix reuses the original event
+  and keeps its original location.
+
+Fall events will follow the same rule once the fall model and ingestion API
+exist: the detector attaches its own one-shot fix to the fall event.
+`fall_events.latitude`/`longitude` already exist for this.
+
 ## Explicitly unavailable or unverified
 
 Phone fall AI and camera fall AI are deferred. Automatic fall-to-SOS, camera

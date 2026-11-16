@@ -126,6 +126,21 @@ export const triggerSosBodySchema = {
     clientRequestId: { type: 'string', format: 'uuid' },
     deviceId: { type: 'string', format: 'uuid' },
     message: { type: 'string', minLength: 1, maxLength: 500 },
+    location: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['latitude', 'longitude', 'recordedAt'],
+      description:
+        'Vị trí GPS lấy một lần lúc bấm SOS, gửi kể cả khi đã tắt chia sẻ vị trí. ' +
+        'Chỉ lưu trên sự kiện SOS, không vào lịch sử hay Family Map. ' +
+        'Không gửi thì dùng vị trí hiện tại đã theo dõi. Không tính vào idempotency.',
+      properties: {
+        latitude: { type: 'number', minimum: -90, maximum: 90 },
+        longitude: { type: 'number', minimum: -180, maximum: 180 },
+        accuracy: { type: 'number', minimum: 0, nullable: true },
+        recordedAt: { type: 'string', format: 'date-time' },
+      },
+    },
   },
 };
 

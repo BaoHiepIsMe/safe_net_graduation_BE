@@ -49,6 +49,9 @@ const memberSelect = {
       id: true,
       fullName: true,
       avatarUrl: true,
+      // FE derives sibling/elder terms (anh/chị/em, bác/chú…) from these.
+      gender: true,
+      dateOfBirth: true,
     },
   },
 } as const;

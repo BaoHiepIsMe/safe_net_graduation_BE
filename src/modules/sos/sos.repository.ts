@@ -166,7 +166,7 @@ export class SosRepository {
       this.prisma.$transaction(
         async (tx) => {
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`sos:${actorUserId}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`sos:${actorUserId}`}, 0))`,
           );
           const existing = await tx.sosEvent.findUnique({
             where: {
@@ -200,16 +200,20 @@ export class SosRepository {
           }
 
           const [current, memberships] = await Promise.all([
-            tx.currentLocation.findUnique({
-              where: { userId: actorUserId },
-              select: {
-                locationId: true,
-                latitude: true,
-                longitude: true,
-                accuracy: true,
-                recordedAt: true,
-              },
-            }),
+            // A phone-supplied emergency fix wins; the tracked current
+            // location is only a fallback.
+            dto.location
+              ? null
+              : tx.currentLocation.findUnique({
+                  where: { userId: actorUserId },
+                  select: {
+                    locationId: true,
+                    latitude: true,
+                    longitude: true,
+                    accuracy: true,
+                    recordedAt: true,
+                  },
+                }),
             tx.familyMember.findMany({
               where: {
                 userId: actorUserId,
@@ -271,11 +275,22 @@ export class SosRepository {
               familyId: primaryMembership?.familyId,
               memberId: primaryMembership?.id,
               sourceDeviceId: dto.deviceId,
-              sourceLocationId: current?.locationId,
-              latitude: current?.latitude,
-              longitude: current?.longitude,
-              locationAccuracy: current?.accuracy,
-              locationRecordedAt: current?.recordedAt,
+              ...(dto.location
+                ? {
+                    // Snapshot only: no history row, so it never leaks into
+                    // location history or the Family Map.
+                    latitude: dto.location.latitude,
+                    longitude: dto.location.longitude,
+                    locationAccuracy: dto.location.accuracy ?? null,
+                    locationRecordedAt: dto.location.recordedAt,
+                  }
+                : {
+                    sourceLocationId: current?.locationId,
+                    latitude: current?.latitude,
+                    longitude: current?.longitude,
+                    locationAccuracy: current?.accuracy,
+                    locationRecordedAt: current?.recordedAt,
+                  }),
               note: dto.message,
               recipients: {
                 create: [...recipients].map(([recipientUserId, source]) => ({

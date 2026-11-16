@@ -35,6 +35,43 @@ describe('Phase 7 SOS DTO validation', () => {
     }
   });
 
+  it('accepts an optional emergency location and rejects bad coordinates', () => {
+    const base = { clientRequestId: crypto.randomUUID() };
+    const parsed = triggerSosSchema.parse({
+      ...base,
+      location: {
+        latitude: 21.03,
+        longitude: 105.85,
+        recordedAt: '2026-11-16T08:00:00+07:00',
+      },
+    });
+    expect(parsed.location?.recordedAt).toBeInstanceOf(Date);
+    for (const location of [
+      { latitude: 91, longitude: 0, recordedAt: '2026-11-16T08:00:00Z' },
+      { latitude: 0, longitude: 181, recordedAt: '2026-11-16T08:00:00Z' },
+      {
+        latitude: 0,
+        longitude: 0,
+        accuracy: -1,
+        recordedAt: '2026-11-16T08:00:00Z',
+      },
+      { latitude: 0, longitude: 0 },
+      {
+        latitude: 0,
+        longitude: 0,
+        recordedAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      },
+      {
+        latitude: 0,
+        longitude: 0,
+        recordedAt: '2026-11-16T08:00:00Z',
+        userId: 'spoofed',
+      },
+    ]) {
+      expect(() => triggerSosSchema.parse({ ...base, location })).toThrow();
+    }
+  });
+
   it('bounds message, pagination and supported status filters', () => {
     expect(() =>
       triggerSosSchema.parse({

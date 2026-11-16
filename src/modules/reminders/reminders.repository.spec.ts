@@ -1,3 +1,4 @@
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { RemindersRepository } from './reminders.repository';
 
@@ -83,6 +84,13 @@ describe('RemindersRepository', () => {
         }),
       }),
     );
+  });
+
+  it('stores a one-time rule as SQL NULL, not JSON null (DB check constraint)', async () => {
+    const { tx, repository } = setup();
+    await repository.create(USER, dto, schedule);
+    const data = tx.reminder.create.mock.calls[0][0].data;
+    expect(data.scheduleRule).toBe(Prisma.DbNull);
   });
 
   it('rejects non-manager creation before writing', async () => {
