@@ -286,7 +286,7 @@ export class GeofencesRepository {
           for (const assignment of assignments) {
             const lockKey = `${assignment.Geofence.id}:${assignment.member_id}`;
             await tx.$executeRaw(
-              Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))`,
+              Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))`,
             );
             const state = await tx.geofenceState.findUnique({
               where: {

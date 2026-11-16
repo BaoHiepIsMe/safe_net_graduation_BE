@@ -573,8 +573,17 @@ export class FamiliesService {
     removedAt: Date | null;
     createdAt: Date | null;
     updatedAt: Date | null;
-    profile: { id: string; fullName: string | null; avatarUrl: string | null };
+    profile: {
+      id: string;
+      fullName: string | null;
+      avatarUrl: string | null;
+      gender?: string | null;
+      dateOfBirth?: Date | null;
+    };
   }) {
+    // Gender/date of birth are personal data: only share them once the person
+    // has accepted, never for pending/rejected/removed invitees.
+    const accepted = member.status === 'accepted';
     return {
       id: member.id,
       familyId: member.familyId,
@@ -588,7 +597,15 @@ export class FamiliesService {
       acceptedAt: member.acceptedAt,
       createdAt: member.createdAt,
       updatedAt: member.updatedAt,
-      profile: member.profile,
+      profile: {
+        id: member.profile.id,
+        fullName: member.profile.fullName,
+        avatarUrl: member.profile.avatarUrl,
+        gender: accepted ? (member.profile.gender ?? null) : null,
+        dateOfBirth: accepted
+          ? (member.profile.dateOfBirth?.toISOString().slice(0, 10) ?? null)
+          : null,
+      },
     };
   }
 

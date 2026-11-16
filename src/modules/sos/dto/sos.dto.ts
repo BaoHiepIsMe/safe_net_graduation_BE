@@ -1,7 +1,32 @@
 import { z } from 'zod';
+import { LOCATION_FUTURE_TOLERANCE_MS } from '../../locations/locations.constants';
 import { SOS_DEFAULT_LIMIT, SOS_MAX_LIMIT } from '../sos.constants';
 
 const uuid = z.string().uuid();
+const finiteNumber = z.number().finite();
+
+/**
+ * One-shot GPS fix taken by the phone at trigger time. It is independent of
+ * location sharing and is stored only on the SOS event (never in history).
+ */
+export const emergencyLocationSchema = z
+  .object({
+    latitude: finiteNumber.min(-90).max(90),
+    longitude: finiteNumber.min(-180).max(180),
+    accuracy: finiteNumber.min(0).nullable().optional(),
+    recordedAt: z.iso
+      .datetime({ offset: true })
+      .transform((value) => new Date(value)),
+  })
+  .strict()
+  .refine(
+    (value) =>
+      value.recordedAt.getTime() <= Date.now() + LOCATION_FUTURE_TOLERANCE_MS,
+    {
+      path: ['recordedAt'],
+      message: 'recordedAt vượt quá thời gian tương lai cho phép',
+    },
+  );
 const normalizedPhone = z
   .string()
   .trim()
@@ -56,6 +81,7 @@ export const triggerSosSchema = z
     clientRequestId: uuid,
     deviceId: uuid.optional(),
     message: z.string().trim().min(1).max(500).optional(),
+    location: emergencyLocationSchema.optional(),
   })
   .strict();
 

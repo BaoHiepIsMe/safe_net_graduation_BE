@@ -73,11 +73,23 @@ export const familyMemberDataSchema = {
     updatedAt: dateTime,
     profile: {
       type: 'object',
-      required: ['id', 'fullName', 'avatarUrl'],
+      required: ['id', 'fullName', 'avatarUrl', 'gender', 'dateOfBirth'],
       properties: {
         id: { type: 'string', format: 'uuid' },
         fullName: nullableString,
         avatarUrl: nullableString,
+        gender: {
+          type: 'string',
+          enum: ['male', 'female', 'other'],
+          nullable: true,
+          description: 'null khi thành viên chưa chấp nhận lời mời',
+        },
+        dateOfBirth: {
+          type: 'string',
+          format: 'date',
+          nullable: true,
+          description: 'YYYY-MM-DD; null khi chưa chấp nhận lời mời',
+        },
       },
     },
   },

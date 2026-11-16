@@ -34,7 +34,7 @@ export class NotificationsRepository {
     return this.prisma.$transaction(
       async (tx) => {
         await tx.$queryRaw(
-          Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`notification:${eventId}`}, 0))`,
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`notification:${eventId}`}, 0))`,
         );
         const event = await tx.geofenceEvent.findFirst({
           where: {
@@ -171,7 +171,7 @@ export class NotificationsRepository {
     return this.prisma.$transaction(
       async (tx) => {
         await tx.$queryRaw(
-          Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`notification:sos:${eventId}`}, 0))`,
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`notification:sos:${eventId}`}, 0))`,
         );
         const event = await tx.sosEvent.findUnique({
           where: { id: eventId },
@@ -256,7 +256,7 @@ export class NotificationsRepository {
     return this.prisma.$transaction(
       async (tx) => {
         await tx.$queryRaw(
-          Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`notification:reminder:${logId}`}, 0))`,
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`notification:reminder:${logId}`}, 0))`,
         );
         const log = await tx.reminderLog.findUnique({
           where: { id: logId },
@@ -358,7 +358,7 @@ export class NotificationsRepository {
     return this.prisma.$transaction(
       async (tx) => {
         await tx.$queryRaw(
-          Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`notification:message:${messageId}`}, 0))`,
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`notification:message:${messageId}`}, 0))`,
         );
         const message = await tx.message.findFirst({
           where: {
@@ -486,7 +486,7 @@ export class NotificationsRepository {
     return this.prisma.$transaction(
       async (tx) => {
         await tx.$queryRaw(
-          Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`notification:call:${callId}`}, 0))`,
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`notification:call:${callId}`}, 0))`,
         );
         const call = await tx.callLog.findFirst({
           where: { id: callId, status: 'ringing' },

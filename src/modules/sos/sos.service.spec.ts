@@ -95,6 +95,24 @@ describe('SosService', () => {
     expect(result.location).toMatchObject({ available: true, latitude: 10.7 });
   });
 
+  it('keeps the idempotency fingerprint independent of the GPS fix', async () => {
+    const { repository, service } = setup();
+    const at = new Date('2026-11-16T08:00:00Z');
+    await service.trigger(ACTOR, {
+      clientRequestId: REQUEST,
+      location: { latitude: 21.03, longitude: 105.85, recordedAt: at },
+    });
+    await service.trigger(ACTOR, {
+      clientRequestId: REQUEST,
+      location: { latitude: 21.0301, longitude: 105.8502, recordedAt: at },
+    });
+    await service.trigger(ACTOR, { clientRequestId: REQUEST });
+    const fingerprints = repository.trigger.mock.calls.map(
+      (call: unknown[]) => call[2],
+    );
+    expect(new Set(fingerprints).size).toBe(1);
+  });
+
   it('reuses the same logical SOS without another sos.created emission', async () => {
     const { repository, notifications, realtime, service } = setup();
     repository.trigger.mockResolvedValue({ outcome: 'reused', event: event() });

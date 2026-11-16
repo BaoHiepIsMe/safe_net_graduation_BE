@@ -75,13 +75,12 @@ export const ingestLocationSchema = z.preprocess(
       }
     })
     // batteryRatio (0–1) đổi thành batteryLevel phần trăm nguyên sau khi validate
-    .transform(({ batteryRatio, ...value }) => ({
-      ...value,
-      batteryLevel:
-        batteryRatio == null
-          ? value.batteryLevel
-          : Math.round(batteryRatio * 100),
-    })),
+    // Chỉ ghi đè khi có batteryRatio để batteryLevel vẫn là key optional
+    .transform(({ batteryRatio, ...value }) =>
+      batteryRatio == null
+        ? value
+        : { ...value, batteryLevel: Math.round(batteryRatio * 100) },
+    ),
 );
 
 export const locationHistoryQuerySchema = z

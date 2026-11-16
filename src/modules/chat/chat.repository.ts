@@ -56,7 +56,7 @@ export class ChatRepository {
             return { outcome: 'self' as const };
           const directKey = [actor.userId, target.userId].sort().join(':');
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`direct:${familyId}:${directKey}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`direct:${familyId}:${directKey}`}, 0))`,
           );
           const existing = await tx.conversation.findUnique({
             where: { familyId_directKey: { familyId, directKey } },
@@ -323,7 +323,7 @@ export class ChatRepository {
       this.prisma.$transaction(
         async (tx) => {
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`message:${conversationId}:${userId}:${dto.clientMessageId}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`message:${conversationId}:${userId}:${dto.clientMessageId}`}, 0))`,
           );
           const access = await this.getAccess(userId, conversationId, tx);
           if (!access) return { outcome: 'forbidden' as const };
@@ -424,7 +424,7 @@ export class ChatRepository {
   markRead(userId: string, conversationId: string, messageId: string) {
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(
-        Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`conversation-read:${conversationId}:${userId}`}, 0))`,
+        Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`conversation-read:${conversationId}:${userId}`}, 0))`,
       );
       const access = await this.getAccess(userId, conversationId, tx);
       if (!access) return { outcome: 'forbidden' as const };

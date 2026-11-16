@@ -19,7 +19,7 @@ describe('GeofencesRepository integrity architecture', () => {
   });
 
   it('uses parameterized Prisma SQL rather than unsafe interpolation', () => {
-    expect(source).toContain('Prisma.sql`SELECT pg_advisory_xact_lock');
+    expect(source).toContain('Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock');
     expect(source).toContain('await tx.$executeRaw');
     expect(source).not.toContain('$queryRawUnsafe');
     expect(source).not.toContain('$executeRawUnsafe');

@@ -83,8 +83,10 @@ const visibleReminderWhere = (userId: string) => ({
 const toScheduleData = (schedule: StoredReminderSchedule) => ({
   ...schedule,
   scheduleRule:
+    // SQL NULL, not JSON `null`: reminders_schedule_rule_check only allows
+    // NULL or a JSON object.
     schedule.scheduleRule === null
-      ? Prisma.JsonNull
+      ? Prisma.DbNull
       : (schedule.scheduleRule as Prisma.InputJsonValue),
 });
 
@@ -197,7 +199,7 @@ export class RemindersRepository {
     return this.prisma.$transaction(
       async (tx) => {
         await tx.$queryRaw(
-          Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`reminder:${reminderId}`}, 0))`,
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`reminder:${reminderId}`}, 0))`,
         );
         const existing = await tx.reminder.findUnique({
           where: { id: reminderId },
@@ -341,7 +343,7 @@ export class RemindersRepository {
       this.prisma.$transaction(
         async (tx) => {
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`reminder:${reminderId}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`reminder:${reminderId}`}, 0))`,
           );
           const reminder = await tx.reminder.findFirst({
             where: {

@@ -63,7 +63,7 @@ export class DailyStatusRepository {
       this.prisma.$transaction(
         async (tx) => {
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`daily-status:${familyId}:${memberId}:${reportDate.toISOString()}:${timezone}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`daily-status:${familyId}:${memberId}:${reportDate.toISOString()}:${timezone}`}, 0))`,
           );
           const member = await tx.familyMember.findFirst({
             where: {

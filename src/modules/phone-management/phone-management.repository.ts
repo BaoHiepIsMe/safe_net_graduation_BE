@@ -74,7 +74,7 @@ export class PhoneManagementRepository {
       this.prisma.$transaction(
         async (tx) => {
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`phone-usage:${deviceId}:${dto.clientRecordId}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`phone-usage:${deviceId}:${dto.clientRecordId}`}, 0))`,
           );
           const target = await tx.familyMember.findFirst({
             where: {
@@ -175,7 +175,7 @@ export class PhoneManagementRepository {
   ) {
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(
-        Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`phone-rule:${familyId}:${memberId}`}, 0))`,
+        Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`phone-rule:${familyId}:${memberId}`}, 0))`,
       );
       if (!(await this.hasManagerTarget(actorUserId, familyId, memberId, tx))) {
         return { outcome: 'forbidden' as const };
@@ -240,7 +240,7 @@ export class PhoneManagementRepository {
   ) {
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(
-        Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`phone-rule:${ruleId}`}, 0))`,
+        Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`phone-rule:${ruleId}`}, 0))`,
       );
       if (!(await this.hasManagerTarget(actorUserId, familyId, memberId, tx))) {
         return { outcome: 'forbidden' as const };
@@ -301,7 +301,7 @@ export class PhoneManagementRepository {
       this.prisma.$transaction(
         async (tx) => {
           await tx.$queryRaw(
-            Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`phone-command:${actorUserId}:${dto.clientRequestId}`}, 0))`,
+            Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`phone-command:${actorUserId}:${dto.clientRequestId}`}, 0))`,
           );
           const target = await this.getManagerTarget(
             actorUserId,
@@ -432,7 +432,7 @@ export class PhoneManagementRepository {
   ) {
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(
-        Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${`phone-command:${commandId}`}, 0))`,
+        Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`phone-command:${commandId}`}, 0))`,
       );
       const device = await tx.device.findFirst({
         where: { id: deviceId, userId, isActive: true },

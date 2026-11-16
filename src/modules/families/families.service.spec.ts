@@ -105,6 +105,61 @@ describe('FamiliesService', () => {
     });
   });
 
+  it('exposes gender and date of birth of accepted members', async () => {
+    const { service, repository } = setup();
+    repository.listMembers = jest.fn().mockResolvedValue({
+      members: [
+        {
+          ...member,
+          profile: {
+            ...member.profile,
+            gender: 'female',
+            dateOfBirth: new Date('2003-04-05T00:00:00.000Z'),
+          },
+        },
+      ],
+      total: 1,
+    });
+    const result = await service.listMembers(USER_ID, FAMILY_ID, {
+      page: 1,
+      limit: 20,
+    });
+    expect(result.data[0].profile).toEqual({
+      id: USER_ID,
+      fullName: 'User B',
+      avatarUrl: null,
+      gender: 'female',
+      dateOfBirth: '2003-04-05',
+    });
+  });
+
+  it('hides gender and date of birth of pending invitees', async () => {
+    const { service, repository } = setup();
+    repository.listSentInvitations.mockResolvedValue({
+      invitations: [
+        {
+          ...member,
+          status: 'pending',
+          inviter: null,
+          profile: {
+            ...member.profile,
+            gender: 'male',
+            dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+          },
+        },
+      ],
+      total: 1,
+    });
+    const result = await service.listSentInvitations(OWNER_ID, FAMILY_ID, {
+      page: 1,
+      limit: 20,
+    });
+    expect(result.data[0].profile).toMatchObject({
+      gender: null,
+      dateOfBirth: null,
+    });
+  });
+
   it('allows a manager to update a family', async () => {
     const { service, repository, access } = setup();
     repository.updateFamily.mockResolvedValue({
