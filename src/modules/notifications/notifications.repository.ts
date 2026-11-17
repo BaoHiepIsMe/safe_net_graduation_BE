@@ -112,9 +112,9 @@ export class NotificationsRepository {
         const displayName =
           event.FamilyMember.displayName ??
           event.FamilyMember.profile.fullName ??
-          'Family member';
+          'Thành viên gia đình';
         const transitionText =
-          event.event_type === 'enter' ? 'entered' : 'left';
+          event.event_type === 'enter' ? 'đã vào' : 'đã rời';
         const created = [];
         for (const recipient of recipients) {
           const existing = await tx.notification.findUnique({
@@ -134,7 +134,10 @@ export class NotificationsRepository {
               recipient_user_id: recipient.userId,
               sender_user_id: event.FamilyMember.userId,
               notification_type: type,
-              title: `Safe-zone ${event.event_type}`,
+              title:
+                event.event_type === 'enter'
+                  ? 'Đã vào vùng an toàn'
+                  : 'Đã rời vùng an toàn',
               message: `${displayName} ${transitionText} ${event.Geofence.name}`,
               related_table: NOTIFICATION_SOURCE_GEOFENCE_EVENT,
               related_id: event.id,
@@ -213,14 +216,14 @@ export class NotificationsRepository {
             select: { id: true },
           });
           if (existing) continue;
-          const displayName = event.actor.fullName ?? 'A family member';
+          const displayName = event.actor.fullName ?? 'Một thành viên gia đình';
           const notification = await tx.notification.create({
             data: {
               recipient_user_id: recipient.recipientUserId,
               sender_user_id: event.actorUserId,
               notification_type: 'sos_alert',
-              title: 'Emergency SOS',
-              message: `${displayName} needs help.`,
+              title: 'SOS khẩn cấp',
+              message: `${displayName} cần trợ giúp.`,
               related_table: NOTIFICATION_SOURCE_SOS_EVENT,
               related_id: event.id,
               metadata: {
@@ -325,7 +328,7 @@ export class NotificationsRepository {
             recipient_user_id: recipientUserId,
             sender_user_id: log.reminder.creatorUserId,
             notification_type: 'reminder',
-            title: 'Reminder due',
+            title: 'Đến giờ nhắc nhở',
             message: log.reminder.title,
             related_table: NOTIFICATION_SOURCE_REMINDER_LOG,
             related_id: log.id,
@@ -443,15 +446,16 @@ export class NotificationsRepository {
             select: { id: true },
           });
           if (existing) continue;
-          const displayName = message.sender.fullName ?? 'A family member';
+          const displayName =
+            message.sender.fullName ?? 'Một thành viên gia đình';
           const notification = await tx.notification.create({
             data: {
               family_id: message.conversation.familyId,
               recipient_user_id: recipient.userId,
               sender_user_id: message.senderUserId,
               notification_type: 'message',
-              title: 'New message',
-              message: `New message from ${displayName}`,
+              title: 'Tin nhắn mới',
+              message: `Tin nhắn mới từ ${displayName}`,
               related_table: NOTIFICATION_SOURCE_MESSAGE,
               related_id: message.id,
               metadata: {
@@ -560,15 +564,18 @@ export class NotificationsRepository {
           select: { id: true },
         });
         if (existing) return [];
-        const displayName = call.caller.fullName ?? 'A family member';
+        const displayName = call.caller.fullName ?? 'Một thành viên gia đình';
         const notification = await tx.notification.create({
           data: {
             family_id: call.familyId,
             recipient_user_id: call.calleeUserId,
             sender_user_id: call.callerUserId,
             notification_type: 'call_incoming',
-            title: `Incoming ${call.callType} call`,
-            message: `${displayName} is calling`,
+            title:
+              call.callType === 'video'
+                ? 'Cuộc gọi video đến'
+                : 'Cuộc gọi thoại đến',
+            message: `${displayName} đang gọi`,
             related_table: NOTIFICATION_SOURCE_CALL,
             related_id: call.id,
             metadata: {
