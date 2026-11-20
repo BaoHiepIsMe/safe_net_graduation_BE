@@ -18,7 +18,13 @@ export const notificationDataSchema = {
     familyId: { type: 'string', format: 'uuid', nullable: true },
     type: {
       type: 'string',
-      enum: ['geofence_enter', 'geofence_exit', 'sos_alert', 'reminder'],
+      enum: [
+        'geofence_enter',
+        'geofence_exit',
+        'sos_alert',
+        'reminder',
+        'location_signal_lost',
+      ],
     },
     title: { type: 'string', maxLength: 150 },
     message: { type: 'string' },

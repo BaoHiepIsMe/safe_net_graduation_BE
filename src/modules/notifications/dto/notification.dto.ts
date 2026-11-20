@@ -30,6 +30,7 @@ export const notificationListQuerySchema = z
         'reminder',
         'message',
         'call_incoming',
+        'location_signal_lost',
       ])
       .optional(),
   })

@@ -149,3 +149,25 @@ export const locationHistorySuccessSchema = {
     },
   },
 };
+
+export const setLocationViewersBodySchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['viewerUserIds'],
+  properties: {
+    viewerUserIds: {
+      type: 'array',
+      maxItems: 100,
+      items: { type: 'string', format: 'uuid' },
+    },
+  },
+};
+
+export const locationViewersSuccessSchema = {
+  type: 'object',
+  required: ['success', 'data'],
+  properties: {
+    success: { type: 'boolean', example: true },
+    data: setLocationViewersBodySchema,
+  },
+};

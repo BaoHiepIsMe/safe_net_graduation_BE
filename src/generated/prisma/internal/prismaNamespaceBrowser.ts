@@ -81,7 +81,8 @@ export const ModelName = {
   SosContact: 'SosContact',
   SosEvent: 'SosEvent',
   SosRecipient: 'SosRecipient',
-  UserSetting: 'UserSetting'
+  UserSetting: 'UserSetting',
+  LocationShareViewer: 'LocationShareViewer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -341,6 +342,7 @@ export const GeofenceScalarFieldEnum = {
   center_latitude: 'center_latitude',
   center_longitude: 'center_longitude',
   radius_meters: 'radius_meters',
+  icon: 'icon',
   is_active: 'is_active',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -609,6 +611,10 @@ export const UserSettingScalarFieldEnum = {
   smsNotificationsEnabled: 'smsNotificationsEnabled',
   emailNotificationsEnabled: 'emailNotificationsEnabled',
   locationSharingEnabled: 'locationSharingEnabled',
+  sharingMode: 'sharingMode',
+  locationVisibility: 'locationVisibility',
+  notifyOnZoneExit: 'notifyOnZoneExit',
+  notifyOnSignalLost: 'notifyOnSignalLost',
   darkMode: 'darkMode',
   quietHoursStart: 'quietHoursStart',
   quietHoursEnd: 'quietHoursEnd',
@@ -616,6 +622,16 @@ export const UserSettingScalarFieldEnum = {
 } as const
 
 export type UserSettingScalarFieldEnum = (typeof UserSettingScalarFieldEnum)[keyof typeof UserSettingScalarFieldEnum]
+
+
+export const LocationShareViewerScalarFieldEnum = {
+  id: 'id',
+  ownerUserId: 'ownerUserId',
+  viewerUserId: 'viewerUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type LocationShareViewerScalarFieldEnum = (typeof LocationShareViewerScalarFieldEnum)[keyof typeof LocationShareViewerScalarFieldEnum]
 
 
 export const SortOrder = {

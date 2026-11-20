@@ -32,6 +32,10 @@ export type UserSettingMinAggregateOutputType = {
   smsNotificationsEnabled: boolean | null
   emailNotificationsEnabled: boolean | null
   locationSharingEnabled: boolean | null
+  sharingMode: string | null
+  locationVisibility: string | null
+  notifyOnZoneExit: boolean | null
+  notifyOnSignalLost: boolean | null
   darkMode: boolean | null
   quietHoursStart: Date | null
   quietHoursEnd: Date | null
@@ -46,6 +50,10 @@ export type UserSettingMaxAggregateOutputType = {
   smsNotificationsEnabled: boolean | null
   emailNotificationsEnabled: boolean | null
   locationSharingEnabled: boolean | null
+  sharingMode: string | null
+  locationVisibility: string | null
+  notifyOnZoneExit: boolean | null
+  notifyOnSignalLost: boolean | null
   darkMode: boolean | null
   quietHoursStart: Date | null
   quietHoursEnd: Date | null
@@ -60,6 +68,10 @@ export type UserSettingCountAggregateOutputType = {
   smsNotificationsEnabled: number
   emailNotificationsEnabled: number
   locationSharingEnabled: number
+  sharingMode: number
+  locationVisibility: number
+  notifyOnZoneExit: number
+  notifyOnSignalLost: number
   darkMode: number
   quietHoursStart: number
   quietHoursEnd: number
@@ -76,6 +88,10 @@ export type UserSettingMinAggregateInputType = {
   smsNotificationsEnabled?: true
   emailNotificationsEnabled?: true
   locationSharingEnabled?: true
+  sharingMode?: true
+  locationVisibility?: true
+  notifyOnZoneExit?: true
+  notifyOnSignalLost?: true
   darkMode?: true
   quietHoursStart?: true
   quietHoursEnd?: true
@@ -90,6 +106,10 @@ export type UserSettingMaxAggregateInputType = {
   smsNotificationsEnabled?: true
   emailNotificationsEnabled?: true
   locationSharingEnabled?: true
+  sharingMode?: true
+  locationVisibility?: true
+  notifyOnZoneExit?: true
+  notifyOnSignalLost?: true
   darkMode?: true
   quietHoursStart?: true
   quietHoursEnd?: true
@@ -104,6 +124,10 @@ export type UserSettingCountAggregateInputType = {
   smsNotificationsEnabled?: true
   emailNotificationsEnabled?: true
   locationSharingEnabled?: true
+  sharingMode?: true
+  locationVisibility?: true
+  notifyOnZoneExit?: true
+  notifyOnSignalLost?: true
   darkMode?: true
   quietHoursStart?: true
   quietHoursEnd?: true
@@ -191,6 +215,10 @@ export type UserSettingGroupByOutputType = {
   smsNotificationsEnabled: boolean
   emailNotificationsEnabled: boolean
   locationSharingEnabled: boolean
+  sharingMode: string
+  locationVisibility: string
+  notifyOnZoneExit: boolean
+  notifyOnSignalLost: boolean
   darkMode: boolean
   quietHoursStart: Date | null
   quietHoursEnd: Date | null
@@ -226,6 +254,10 @@ export type UserSettingWhereInput = {
   smsNotificationsEnabled?: Prisma.BoolFilter<"UserSetting"> | boolean
   emailNotificationsEnabled?: Prisma.BoolFilter<"UserSetting"> | boolean
   locationSharingEnabled?: Prisma.BoolFilter<"UserSetting"> | boolean
+  sharingMode?: Prisma.StringFilter<"UserSetting"> | string
+  locationVisibility?: Prisma.StringFilter<"UserSetting"> | string
+  notifyOnZoneExit?: Prisma.BoolFilter<"UserSetting"> | boolean
+  notifyOnSignalLost?: Prisma.BoolFilter<"UserSetting"> | boolean
   darkMode?: Prisma.BoolFilter<"UserSetting"> | boolean
   quietHoursStart?: Prisma.DateTimeNullableFilter<"UserSetting"> | Date | string | null
   quietHoursEnd?: Prisma.DateTimeNullableFilter<"UserSetting"> | Date | string | null
@@ -241,6 +273,10 @@ export type UserSettingOrderByWithRelationInput = {
   smsNotificationsEnabled?: Prisma.SortOrder
   emailNotificationsEnabled?: Prisma.SortOrder
   locationSharingEnabled?: Prisma.SortOrder
+  sharingMode?: Prisma.SortOrder
+  locationVisibility?: Prisma.SortOrder
+  notifyOnZoneExit?: Prisma.SortOrder
+  notifyOnSignalLost?: Prisma.SortOrder
   darkMode?: Prisma.SortOrder
   quietHoursStart?: Prisma.SortOrderInput | Prisma.SortOrder
   quietHoursEnd?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -259,6 +295,10 @@ export type UserSettingWhereUniqueInput = Prisma.AtLeast<{
   smsNotificationsEnabled?: Prisma.BoolFilter<"UserSetting"> | boolean
   emailNotificationsEnabled?: Prisma.BoolFilter<"UserSetting"> | boolean
   locationSharingEnabled?: Prisma.BoolFilter<"UserSetting"> | boolean
+  sharingMode?: Prisma.StringFilter<"UserSetting"> | string
+  locationVisibility?: Prisma.StringFilter<"UserSetting"> | string
+  notifyOnZoneExit?: Prisma.BoolFilter<"UserSetting"> | boolean
+  notifyOnSignalLost?: Prisma.BoolFilter<"UserSetting"> | boolean
   darkMode?: Prisma.BoolFilter<"UserSetting"> | boolean
   quietHoursStart?: Prisma.DateTimeNullableFilter<"UserSetting"> | Date | string | null
   quietHoursEnd?: Prisma.DateTimeNullableFilter<"UserSetting"> | Date | string | null
@@ -274,6 +314,10 @@ export type UserSettingOrderByWithAggregationInput = {
   smsNotificationsEnabled?: Prisma.SortOrder
   emailNotificationsEnabled?: Prisma.SortOrder
   locationSharingEnabled?: Prisma.SortOrder
+  sharingMode?: Prisma.SortOrder
+  locationVisibility?: Prisma.SortOrder
+  notifyOnZoneExit?: Prisma.SortOrder
+  notifyOnSignalLost?: Prisma.SortOrder
   darkMode?: Prisma.SortOrder
   quietHoursStart?: Prisma.SortOrderInput | Prisma.SortOrder
   quietHoursEnd?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -294,6 +338,10 @@ export type UserSettingScalarWhereWithAggregatesInput = {
   smsNotificationsEnabled?: Prisma.BoolWithAggregatesFilter<"UserSetting"> | boolean
   emailNotificationsEnabled?: Prisma.BoolWithAggregatesFilter<"UserSetting"> | boolean
   locationSharingEnabled?: Prisma.BoolWithAggregatesFilter<"UserSetting"> | boolean
+  sharingMode?: Prisma.StringWithAggregatesFilter<"UserSetting"> | string
+  locationVisibility?: Prisma.StringWithAggregatesFilter<"UserSetting"> | string
+  notifyOnZoneExit?: Prisma.BoolWithAggregatesFilter<"UserSetting"> | boolean
+  notifyOnSignalLost?: Prisma.BoolWithAggregatesFilter<"UserSetting"> | boolean
   darkMode?: Prisma.BoolWithAggregatesFilter<"UserSetting"> | boolean
   quietHoursStart?: Prisma.DateTimeNullableWithAggregatesFilter<"UserSetting"> | Date | string | null
   quietHoursEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"UserSetting"> | Date | string | null
@@ -307,6 +355,10 @@ export type UserSettingCreateInput = {
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: string
+  locationVisibility?: string
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: Date | string | null
   quietHoursEnd?: Date | string | null
@@ -322,6 +374,10 @@ export type UserSettingUncheckedCreateInput = {
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: string
+  locationVisibility?: string
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: Date | string | null
   quietHoursEnd?: Date | string | null
@@ -335,6 +391,10 @@ export type UserSettingUpdateInput = {
   smsNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locationSharingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharingMode?: Prisma.StringFieldUpdateOperationsInput | string
+  locationVisibility?: Prisma.StringFieldUpdateOperationsInput | string
+  notifyOnZoneExit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifyOnSignalLost?: Prisma.BoolFieldUpdateOperationsInput | boolean
   darkMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   quietHoursStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   quietHoursEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -350,6 +410,10 @@ export type UserSettingUncheckedUpdateInput = {
   smsNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locationSharingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharingMode?: Prisma.StringFieldUpdateOperationsInput | string
+  locationVisibility?: Prisma.StringFieldUpdateOperationsInput | string
+  notifyOnZoneExit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifyOnSignalLost?: Prisma.BoolFieldUpdateOperationsInput | boolean
   darkMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   quietHoursStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   quietHoursEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -364,6 +428,10 @@ export type UserSettingCreateManyInput = {
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: string
+  locationVisibility?: string
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: Date | string | null
   quietHoursEnd?: Date | string | null
@@ -377,6 +445,10 @@ export type UserSettingUpdateManyMutationInput = {
   smsNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locationSharingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharingMode?: Prisma.StringFieldUpdateOperationsInput | string
+  locationVisibility?: Prisma.StringFieldUpdateOperationsInput | string
+  notifyOnZoneExit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifyOnSignalLost?: Prisma.BoolFieldUpdateOperationsInput | boolean
   darkMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   quietHoursStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   quietHoursEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -391,6 +463,10 @@ export type UserSettingUncheckedUpdateManyInput = {
   smsNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locationSharingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharingMode?: Prisma.StringFieldUpdateOperationsInput | string
+  locationVisibility?: Prisma.StringFieldUpdateOperationsInput | string
+  notifyOnZoneExit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifyOnSignalLost?: Prisma.BoolFieldUpdateOperationsInput | boolean
   darkMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   quietHoursStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   quietHoursEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -410,6 +486,10 @@ export type UserSettingCountOrderByAggregateInput = {
   smsNotificationsEnabled?: Prisma.SortOrder
   emailNotificationsEnabled?: Prisma.SortOrder
   locationSharingEnabled?: Prisma.SortOrder
+  sharingMode?: Prisma.SortOrder
+  locationVisibility?: Prisma.SortOrder
+  notifyOnZoneExit?: Prisma.SortOrder
+  notifyOnSignalLost?: Prisma.SortOrder
   darkMode?: Prisma.SortOrder
   quietHoursStart?: Prisma.SortOrder
   quietHoursEnd?: Prisma.SortOrder
@@ -424,6 +504,10 @@ export type UserSettingMaxOrderByAggregateInput = {
   smsNotificationsEnabled?: Prisma.SortOrder
   emailNotificationsEnabled?: Prisma.SortOrder
   locationSharingEnabled?: Prisma.SortOrder
+  sharingMode?: Prisma.SortOrder
+  locationVisibility?: Prisma.SortOrder
+  notifyOnZoneExit?: Prisma.SortOrder
+  notifyOnSignalLost?: Prisma.SortOrder
   darkMode?: Prisma.SortOrder
   quietHoursStart?: Prisma.SortOrder
   quietHoursEnd?: Prisma.SortOrder
@@ -438,6 +522,10 @@ export type UserSettingMinOrderByAggregateInput = {
   smsNotificationsEnabled?: Prisma.SortOrder
   emailNotificationsEnabled?: Prisma.SortOrder
   locationSharingEnabled?: Prisma.SortOrder
+  sharingMode?: Prisma.SortOrder
+  locationVisibility?: Prisma.SortOrder
+  notifyOnZoneExit?: Prisma.SortOrder
+  notifyOnSignalLost?: Prisma.SortOrder
   darkMode?: Prisma.SortOrder
   quietHoursStart?: Prisma.SortOrder
   quietHoursEnd?: Prisma.SortOrder
@@ -483,6 +571,10 @@ export type UserSettingCreateWithoutProfileInput = {
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: string
+  locationVisibility?: string
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: Date | string | null
   quietHoursEnd?: Date | string | null
@@ -496,6 +588,10 @@ export type UserSettingUncheckedCreateWithoutProfileInput = {
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: string
+  locationVisibility?: string
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: Date | string | null
   quietHoursEnd?: Date | string | null
@@ -525,6 +621,10 @@ export type UserSettingUpdateWithoutProfileInput = {
   smsNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locationSharingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharingMode?: Prisma.StringFieldUpdateOperationsInput | string
+  locationVisibility?: Prisma.StringFieldUpdateOperationsInput | string
+  notifyOnZoneExit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifyOnSignalLost?: Prisma.BoolFieldUpdateOperationsInput | boolean
   darkMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   quietHoursStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   quietHoursEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -538,6 +638,10 @@ export type UserSettingUncheckedUpdateWithoutProfileInput = {
   smsNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   emailNotificationsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locationSharingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sharingMode?: Prisma.StringFieldUpdateOperationsInput | string
+  locationVisibility?: Prisma.StringFieldUpdateOperationsInput | string
+  notifyOnZoneExit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifyOnSignalLost?: Prisma.BoolFieldUpdateOperationsInput | boolean
   darkMode?: Prisma.BoolFieldUpdateOperationsInput | boolean
   quietHoursStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   quietHoursEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -554,6 +658,10 @@ export type UserSettingSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: boolean
+  locationVisibility?: boolean
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: boolean
   quietHoursEnd?: boolean
@@ -569,6 +677,10 @@ export type UserSettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: boolean
+  locationVisibility?: boolean
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: boolean
   quietHoursEnd?: boolean
@@ -584,6 +696,10 @@ export type UserSettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: boolean
+  locationVisibility?: boolean
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: boolean
   quietHoursEnd?: boolean
@@ -599,13 +715,17 @@ export type UserSettingSelectScalar = {
   smsNotificationsEnabled?: boolean
   emailNotificationsEnabled?: boolean
   locationSharingEnabled?: boolean
+  sharingMode?: boolean
+  locationVisibility?: boolean
+  notifyOnZoneExit?: boolean
+  notifyOnSignalLost?: boolean
   darkMode?: boolean
   quietHoursStart?: boolean
   quietHoursEnd?: boolean
   updatedAt?: boolean
 }
 
-export type UserSettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "theme" | "language" | "pushNotificationsEnabled" | "smsNotificationsEnabled" | "emailNotificationsEnabled" | "locationSharingEnabled" | "darkMode" | "quietHoursStart" | "quietHoursEnd" | "updatedAt", ExtArgs["result"]["userSetting"]>
+export type UserSettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "theme" | "language" | "pushNotificationsEnabled" | "smsNotificationsEnabled" | "emailNotificationsEnabled" | "locationSharingEnabled" | "sharingMode" | "locationVisibility" | "notifyOnZoneExit" | "notifyOnSignalLost" | "darkMode" | "quietHoursStart" | "quietHoursEnd" | "updatedAt", ExtArgs["result"]["userSetting"]>
 export type UserSettingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Profile?: boolean | Prisma.ProfileDefaultArgs<ExtArgs>
 }
@@ -629,6 +749,10 @@ export type $UserSettingPayload<ExtArgs extends runtime.Types.Extensions.Interna
     smsNotificationsEnabled: boolean
     emailNotificationsEnabled: boolean
     locationSharingEnabled: boolean
+    sharingMode: string
+    locationVisibility: string
+    notifyOnZoneExit: boolean
+    notifyOnSignalLost: boolean
     darkMode: boolean
     quietHoursStart: Date | null
     quietHoursEnd: Date | null
@@ -1064,6 +1188,10 @@ export interface UserSettingFieldRefs {
   readonly smsNotificationsEnabled: Prisma.FieldRef<"UserSetting", 'Boolean'>
   readonly emailNotificationsEnabled: Prisma.FieldRef<"UserSetting", 'Boolean'>
   readonly locationSharingEnabled: Prisma.FieldRef<"UserSetting", 'Boolean'>
+  readonly sharingMode: Prisma.FieldRef<"UserSetting", 'String'>
+  readonly locationVisibility: Prisma.FieldRef<"UserSetting", 'String'>
+  readonly notifyOnZoneExit: Prisma.FieldRef<"UserSetting", 'Boolean'>
+  readonly notifyOnSignalLost: Prisma.FieldRef<"UserSetting", 'Boolean'>
   readonly darkMode: Prisma.FieldRef<"UserSetting", 'Boolean'>
   readonly quietHoursStart: Prisma.FieldRef<"UserSetting", 'DateTime'>
   readonly quietHoursEnd: Prisma.FieldRef<"UserSetting", 'DateTime'>

@@ -30,6 +30,8 @@ function setupTransaction(overrides: Record<string, unknown> = {}) {
     },
     location: { create: jest.fn().mockResolvedValue(history) },
     familyMember: { findMany: jest.fn().mockResolvedValue([]) },
+    userSetting: { findUnique: jest.fn().mockResolvedValue(null) },
+    locationShareViewer: { findMany: jest.fn().mockResolvedValue([]) },
     $queryRaw: jest.fn().mockResolvedValue([{ user_id: USER_A }]),
     ...overrides,
   };
@@ -204,7 +206,7 @@ describe('LocationsRepository', () => {
       profile: { UserSetting: { locationSharingEnabled: true } },
     });
     await expect(
-      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID, USER_A),
     ).resolves.toEqual({ userId: USER_B, sharing: true });
     expect(findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -222,7 +224,7 @@ describe('LocationsRepository', () => {
       profile: { UserSetting: { locationSharingEnabled: false } },
     });
     await expect(
-      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID, USER_A),
     ).resolves.toEqual({ userId: USER_B, sharing: false });
     findFirst.mockResolvedValueOnce({
       userId: USER_B,
@@ -230,11 +232,11 @@ describe('LocationsRepository', () => {
       profile: { UserSetting: { locationSharingEnabled: true } },
     });
     await expect(
-      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID, USER_A),
     ).resolves.toEqual({ userId: USER_B, sharing: false });
     findFirst.mockResolvedValueOnce(null);
     await expect(
-      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
+      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID, USER_A),
     ).resolves.toBeNull();
   });
 });

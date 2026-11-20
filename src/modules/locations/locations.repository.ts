@@ -7,7 +7,21 @@ import {
   LocationHistoryQueryDto,
   LocationHistoryRange,
 } from './dto/location.dto';
-import { LOCATION_TRANSACTION_RETRY_LIMIT } from './locations.constants';
+import {
+  LOCATION_TRANSACTION_RETRY_LIMIT,
+  SIGNAL_LOSS_MAX_AGE_MS,
+  SIGNAL_LOSS_THRESHOLD_MS,
+} from './locations.constants';
+
+export interface SignalLossCandidateRow {
+  user_id: string;
+  location_id: string;
+  latitude: Prisma.Decimal;
+  longitude: Prisma.Decimal;
+  last_location_at: Date;
+  last_seen_at: Date;
+  sharing_mode: string;
+}
 
 export const locationHistorySelect = {
   id: true,
@@ -146,6 +160,20 @@ export class LocationsRepository {
               recipientUserIds = [
                 ...new Set(recipients.map((item) => item.userId)),
               ];
+              const setting = await tx.userSetting.findUnique({
+                where: { userId },
+                select: { locationVisibility: true },
+              });
+              if (setting?.locationVisibility === 'selected') {
+                const viewers = await tx.locationShareViewer.findMany({
+                  where: { ownerUserId: userId },
+                  select: { viewerUserId: true },
+                });
+                const allowed = new Set(viewers.map((v) => v.viewerUserId));
+                recipientUserIds = recipientUserIds.filter((id) =>
+                  allowed.has(id),
+                );
+              }
             }
           }
 
@@ -199,7 +227,11 @@ export class LocationsRepository {
     });
   }
 
-  async findHistoryTarget(familyId: string, memberId: string) {
+  async findHistoryTarget(
+    familyId: string,
+    memberId: string,
+    viewerId: string,
+  ) {
     const member = await this.prisma.familyMember.findFirst({
       where: {
         id: memberId,
@@ -211,20 +243,38 @@ export class LocationsRepository {
         userId: true,
         locationSharingEnabled: true,
         profile: {
-          select: { UserSetting: { select: { locationSharingEnabled: true } } },
+          select: {
+            UserSetting: {
+              select: {
+                locationSharingEnabled: true,
+                locationVisibility: true,
+              },
+            },
+          },
         },
       },
     });
     if (!member) return null;
+    let visible = true;
+    if (
+      member.userId !== viewerId &&
+      member.profile.UserSetting?.locationVisibility === 'selected'
+    ) {
+      visible =
+        (await this.prisma.locationShareViewer.count({
+          where: { ownerUserId: member.userId, viewerUserId: viewerId },
+        })) > 0;
+    }
     return {
       userId: member.userId,
       sharing:
         member.locationSharingEnabled &&
-        member.profile.UserSetting?.locationSharingEnabled === true,
+        member.profile.UserSetting?.locationSharingEnabled === true &&
+        visible,
     };
   }
 
-  findFamilyCurrentLocations(familyId: string) {
+  findFamilyCurrentLocations(familyId: string, viewerId: string) {
     return this.prisma.$queryRaw<FamilyCurrentLocationRow[]>(Prisma.sql`
       SELECT
         fm."id" AS member_id,
@@ -250,11 +300,24 @@ export class LocationsRepository {
         AND fm."status" = 'accepted'
         AND fm."location_sharing_enabled" = true
         AND us."location_sharing_enabled" = true
+        AND (
+          fm."user_id" = ${viewerId}::uuid
+          OR us."location_visibility" = 'all'
+          OR EXISTS (
+            SELECT 1 FROM "public"."location_share_viewers" v
+            WHERE v."owner_user_id" = fm."user_id"
+              AND v."viewer_user_id" = ${viewerId}::uuid
+          )
+        )
       ORDER BY fm."created_at" ASC, fm."id" ASC
     `);
   }
 
-  async findFamilyMemberCurrentLocation(familyId: string, memberId: string) {
+  async findFamilyMemberCurrentLocation(
+    familyId: string,
+    memberId: string,
+    viewerId: string,
+  ) {
     const rows = await this.prisma.$queryRaw<FamilyCurrentLocationRow[]>(
       Prisma.sql`
         SELECT
@@ -282,10 +345,112 @@ export class LocationsRepository {
           AND fm."status" = 'accepted'
           AND fm."location_sharing_enabled" = true
           AND us."location_sharing_enabled" = true
+          AND (
+          fm."user_id" = ${viewerId}::uuid
+          OR us."location_visibility" = 'all'
+          OR EXISTS (
+            SELECT 1 FROM "public"."location_share_viewers" v
+            WHERE v."owner_user_id" = fm."user_id"
+              AND v."viewer_user_id" = ${viewerId}::uuid
+          )
+        )
         LIMIT 1
       `,
     );
     return rows[0] ?? null;
+  }
+
+  /**
+   * Sharing phones whose last accepted location is older than their mode's
+   * threshold (but not dormant) and that nobody was told about yet. iOS is
+   * left out until it tracks in the background. Newest silences first so a
+   * pile of old ones cannot starve a fresh alert.
+   */
+  listSignalLossCandidates(now: Date, limit: number) {
+    const continuous = SIGNAL_LOSS_THRESHOLD_MS.continuous / 1000;
+    const saver = SIGNAL_LOSS_THRESHOLD_MS.battery_saver / 1000;
+    const maxAge = SIGNAL_LOSS_MAX_AGE_MS / 1000;
+    return this.prisma.$queryRaw<SignalLossCandidateRow[]>(Prisma.sql`
+      SELECT
+        c."user_id",
+        c."location_id",
+        c."latitude",
+        c."longitude",
+        c."updated_at" AS last_location_at,
+        d."last_seen_at",
+        us."sharing_mode"
+      FROM "public"."current_locations" c
+      JOIN "public"."devices" d
+        ON d."id" = c."device_id" AND d."is_active" = true
+        AND d."device_type" <> 'ios'
+      JOIN "public"."user_settings" us ON us."user_id" = c."user_id"
+      WHERE us."location_sharing_enabled" = true
+        AND us."notify_on_signal_lost" = true
+        AND c."updated_at" >= ${now}::timestamptz - make_interval(secs => ${maxAge}::double precision)
+        AND c."updated_at" < ${now}::timestamptz - make_interval(
+          secs => CASE us."sharing_mode"
+            WHEN 'battery_saver' THEN ${saver}::double precision
+            ELSE ${continuous}::double precision
+          END
+        )
+        AND EXISTS (
+          SELECT 1
+          FROM "public"."family_members" me
+          JOIN "public"."families" f
+            ON f."id" = me."family_id" AND f."status" = 'active'
+          JOIN "public"."family_members" other
+            ON other."family_id" = me."family_id"
+            AND other."user_id" <> me."user_id"
+            AND other."status" = 'accepted'
+          WHERE me."user_id" = c."user_id"
+            AND me."status" = 'accepted'
+            AND me."location_sharing_enabled" = true
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM "public"."notifications" n
+          WHERE n."related_table" = 'location_signal'
+            AND n."related_id" = c."location_id"
+        )
+      ORDER BY c."updated_at" DESC
+      LIMIT ${limit}
+    `);
+  }
+
+  async listViewerUserIds(ownerUserId: string) {
+    const rows = await this.prisma.locationShareViewer.findMany({
+      where: { ownerUserId },
+      select: { viewerUserId: true },
+      orderBy: { createdAt: 'asc' },
+    });
+    return rows.map((row) => row.viewerUserId);
+  }
+
+  /** User ids that share an active family with [userId] (excluding them). */
+  async findFamilyPeerUserIds(userId: string) {
+    const rows = await this.prisma.familyMember.findMany({
+      where: {
+        status: 'accepted',
+        userId: { not: userId },
+        family: {
+          status: 'active',
+          members: { some: { userId, status: 'accepted' } },
+        },
+      },
+      select: { userId: true },
+    });
+    return [...new Set(rows.map((row) => row.userId))];
+  }
+
+  async replaceViewers(ownerUserId: string, viewerUserIds: string[]) {
+    await this.prisma.$transaction([
+      this.prisma.locationShareViewer.deleteMany({ where: { ownerUserId } }),
+      this.prisma.locationShareViewer.createMany({
+        data: viewerUserIds.map((viewerUserId) => ({
+          ownerUserId,
+          viewerUserId,
+        })),
+      }),
+    ]);
   }
 
   private async withTransactionRetry<T>(work: () => Promise<T>): Promise<T> {

@@ -129,6 +129,7 @@ export class LocationsService {
     const target = await this.locationsRepository.findHistoryTarget(
       familyId,
       memberId,
+      viewerId,
     );
     if (!target || (target.userId !== viewerId && !target.sharing)) {
       this.throwLocationNotFound();
@@ -166,8 +167,10 @@ export class LocationsService {
 
   async getFamilyCurrent(userId: string, familyId: string) {
     await this.familyAccess.requireAcceptedMember(userId, familyId);
-    const rows =
-      await this.locationsRepository.findFamilyCurrentLocations(familyId);
+    const rows = await this.locationsRepository.findFamilyCurrentLocations(
+      familyId,
+      userId,
+    );
     return rows.map((row) => this.mapFamilyCurrent(row));
   }
 
@@ -180,9 +183,31 @@ export class LocationsService {
     const row = await this.locationsRepository.findFamilyMemberCurrentLocation(
       familyId,
       memberId,
+      userId,
     );
     if (!row) this.throwLocationNotFound();
     return this.mapFamilyCurrent(row);
+  }
+
+  async getViewers(userId: string) {
+    return {
+      viewerUserIds: await this.locationsRepository.listViewerUserIds(userId),
+    };
+  }
+
+  async setViewers(userId: string, viewerUserIds: string[]) {
+    const peers = new Set(
+      await this.locationsRepository.findFamilyPeerUserIds(userId),
+    );
+    const invalid = viewerUserIds.filter((id) => !peers.has(id));
+    if (invalid.length > 0) {
+      throw new ValidationError(
+        { invalidUserIds: invalid },
+        'Chỉ chọn được thành viên cùng gia đình',
+      );
+    }
+    await this.locationsRepository.replaceViewers(userId, viewerUserIds);
+    return { viewerUserIds };
   }
 
   private encodeCursor(row: { id: string; recordedAt: Date }): string {

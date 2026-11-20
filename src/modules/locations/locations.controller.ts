@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -18,6 +18,7 @@ import {
   ingestLocationSchema,
   locationDeviceParamSchema,
   locationHistoryQuerySchema,
+  setLocationViewersSchema,
 } from './dto/location.dto';
 import type {
   FamilyLocationParam,
@@ -25,6 +26,7 @@ import type {
   IngestLocationDto,
   LocationDeviceParam,
   LocationHistoryQueryDto,
+  SetLocationViewersDto,
 } from './dto/location.dto';
 import { LocationsService } from './locations.service';
 import {
@@ -34,6 +36,8 @@ import {
   ingestLocationBodySchema,
   ingestLocationSuccessSchema,
   locationHistorySuccessSchema,
+  locationViewersSuccessSchema,
+  setLocationViewersBodySchema,
 } from './locations.swagger';
 
 @ApiBearerAuth('JWT-auth')
@@ -56,6 +60,30 @@ export class LocationsController {
     dto: IngestLocationDto,
   ) {
     return this.locationsService.ingest(user.id, params.deviceId, dto);
+  }
+
+  @Get('locations/me/viewers')
+  @ApiOperation({ summary: 'Danh sách người được xem vị trí của tôi' })
+  @ApiResponse({ status: 200, schema: locationViewersSuccessSchema })
+  @ApiStandardErrors(401, 429, 500)
+  getViewers(@CurrentUser() user: AuthUser) {
+    return this.locationsService.getViewers(user.id);
+  }
+
+  @Put('locations/me/viewers')
+  @ApiOperation({
+    summary:
+      'Đặt danh sách người được xem vị trí (khi locationVisibility=selected)',
+  })
+  @ApiBody({ schema: setLocationViewersBodySchema })
+  @ApiResponse({ status: 200, schema: locationViewersSuccessSchema })
+  @ApiStandardErrors(400, 401, 429, 500)
+  setViewers(
+    @CurrentUser() user: AuthUser,
+    @Body(new ZodValidationPipe(setLocationViewersSchema))
+    dto: SetLocationViewersDto,
+  ) {
+    return this.locationsService.setViewers(user.id, dto.viewerUserIds);
   }
 
   @Get('locations/me/current')

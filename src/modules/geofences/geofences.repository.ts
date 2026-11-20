@@ -35,6 +35,7 @@ const geofenceSelect = {
   center_latitude: true,
   center_longitude: true,
   radius_meters: true,
+  icon: true,
   is_active: true,
   created_at: true,
   updated_at: true,
@@ -76,6 +77,7 @@ export class GeofencesRepository {
           center_latitude: dto.centerLatitude,
           center_longitude: dto.centerLongitude,
           radius_meters: dto.radiusMeters,
+          icon: dto.icon,
           GeofenceMember: {
             create: dto.members.map((item) => ({
               family_id: familyId,
@@ -131,6 +133,7 @@ export class GeofencesRepository {
           center_latitude: dto.centerLatitude,
           center_longitude: dto.centerLongitude,
           radius_meters: dto.radiusMeters,
+          icon: dto.icon,
           is_active: dto.isActive,
           updated_at: new Date(),
         },

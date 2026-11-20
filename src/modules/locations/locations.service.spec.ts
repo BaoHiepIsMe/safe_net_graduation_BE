@@ -222,6 +222,7 @@ describe('LocationsService', () => {
     expect(repository.findFamilyMemberCurrentLocation).toHaveBeenCalledWith(
       FAMILY_ID,
       MEMBER_ID,
+      USER_A,
     );
   });
 
@@ -264,6 +265,7 @@ describe('LocationsService', () => {
       expect(repository.findHistoryTarget).toHaveBeenCalledWith(
         FAMILY_ID,
         MEMBER_ID,
+        USER_A,
       );
       expect(repository.listHistory.mock.calls[0][0]).toBe(USER_B);
       expect(result.data).toHaveLength(1);

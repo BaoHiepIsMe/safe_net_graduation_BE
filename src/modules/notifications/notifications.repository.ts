@@ -8,6 +8,7 @@ import {
 import {
   NOTIFICATION_SOURCE_CALL,
   NOTIFICATION_SOURCE_GEOFENCE_EVENT,
+  NOTIFICATION_SOURCE_LOCATION_SIGNAL,
   NOTIFICATION_SOURCE_REMINDER_LOG,
   NOTIFICATION_SOURCE_MESSAGE,
   NOTIFICATION_SOURCE_SOS_EVENT,
@@ -83,12 +84,38 @@ export class NotificationsRepository {
           return [];
         }
 
+        // The mover's privacy: exit alerts can be switched off, and with
+        // "selected" visibility only the chosen people are told.
+        const subjectUserId = event.FamilyMember.userId;
+        const subject = await tx.userSetting.findUnique({
+          where: { userId: subjectUserId },
+          select: { notifyOnZoneExit: true, locationVisibility: true },
+        });
+        if (
+          event.event_type === 'exit' &&
+          subject?.notifyOnZoneExit === false
+        ) {
+          return [];
+        }
+        const allowedViewers =
+          subject?.locationVisibility === 'selected'
+            ? (
+                await tx.locationShareViewer.findMany({
+                  where: { ownerUserId: subjectUserId },
+                  select: { viewerUserId: true },
+                })
+              ).map((v) => v.viewerUserId)
+            : null;
+
         const recipients = await tx.familyMember.findMany({
           where: {
             familyId: event.family_id,
             status: 'accepted',
             locationSharingEnabled: true,
             family: { status: 'active' },
+            ...(allowedViewers
+              ? { userId: { in: [...allowedViewers, subjectUserId] } }
+              : {}),
           },
           distinct: ['userId'],
           select: {
@@ -147,6 +174,149 @@ export class NotificationsRepository {
                 memberId: event.member_id,
                 transition: event.event_type,
                 occurredAt: event.detected_at.toISOString(),
+              },
+            },
+            select: safeNotificationSelect,
+          });
+          const pushEnabled =
+            recipient.profile.UserSetting?.pushNotificationsEnabled !== false;
+          if (pushEnabled && recipient.profile.Device.length > 0) {
+            await tx.notificationDelivery.createMany({
+              data: recipient.profile.Device.map((device) => ({
+                notificationId: notification.id,
+                deviceId: device.id,
+              })),
+              skipDuplicates: true,
+            });
+          }
+          created.push({ notification, recipientUserId: recipient.userId });
+        }
+        return created;
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  }
+
+  /**
+   * Tells the family that [input.userId]'s phone went silent. One notification
+   * per recipient per silence: the key is the last location id, which changes
+   * as soon as the phone reports again.
+   */
+  async createFromSignalLoss(input: {
+    userId: string;
+    locationId: string;
+    reason: 'no_connection' | 'no_location';
+    silentMinutes: number;
+    lastLocationAt: Date;
+    lastSeenAt: Date;
+    latitude: number;
+    longitude: number;
+  }) {
+    return this.prisma.$transaction(
+      async (tx) => {
+        await tx.$queryRaw(
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`notification:signal:${input.locationId}`}, 0))`,
+        );
+        const owner = await tx.userSetting.findUnique({
+          where: { userId: input.userId },
+          select: {
+            locationSharingEnabled: true,
+            notifyOnSignalLost: true,
+            locationVisibility: true,
+          },
+        });
+        if (!owner?.locationSharingEnabled || !owner.notifyOnSignalLost) {
+          return [];
+        }
+        const ownerMemberships = await tx.familyMember.findMany({
+          where: {
+            userId: input.userId,
+            status: 'accepted',
+            locationSharingEnabled: true,
+            family: { status: 'active' },
+          },
+          select: {
+            id: true,
+            familyId: true,
+            displayName: true,
+            profile: { select: { fullName: true } },
+          },
+        });
+        if (ownerMemberships.length === 0) return [];
+        const allowedViewers =
+          owner.locationVisibility === 'selected'
+            ? (
+                await tx.locationShareViewer.findMany({
+                  where: { ownerUserId: input.userId },
+                  select: { viewerUserId: true },
+                })
+              ).map((v) => v.viewerUserId)
+            : null;
+        const recipients = await tx.familyMember.findMany({
+          where: {
+            familyId: { in: ownerMemberships.map((m) => m.familyId) },
+            status: 'accepted',
+            userId: { not: input.userId },
+            family: { status: 'active' },
+            ...(allowedViewers ? { userId: { in: allowedViewers } } : {}),
+          },
+          distinct: ['userId'],
+          select: {
+            userId: true,
+            familyId: true,
+            profile: {
+              select: {
+                UserSetting: { select: { pushNotificationsEnabled: true } },
+                Device: {
+                  where: { isActive: true, fcmToken: { not: null } },
+                  select: { id: true },
+                },
+              },
+            },
+          },
+        });
+
+        const name =
+          ownerMemberships[0].displayName ??
+          ownerMemberships[0].profile.fullName ??
+          'Thành viên gia đình';
+        const message =
+          input.reason === 'no_connection'
+            ? `${name} đã khoảng ${input.silentMinutes} phút không gửi vị trí. Có thể điện thoại đã tắt, hết mạng hoặc ứng dụng bị đóng.`
+            : `${name} đang mở ứng dụng nhưng không lấy được vị trí. Có thể đã tắt GPS hoặc thu hồi quyền vị trí.`;
+        const created = [];
+        for (const recipient of recipients) {
+          const existing = await tx.notification.findUnique({
+            where: {
+              recipient_user_id_related_table_related_id: {
+                recipient_user_id: recipient.userId,
+                related_table: NOTIFICATION_SOURCE_LOCATION_SIGNAL,
+                related_id: input.locationId,
+              },
+            },
+            select: { id: true },
+          });
+          if (existing) continue;
+          const memberId = ownerMemberships.find(
+            (m) => m.familyId === recipient.familyId,
+          )?.id;
+          const notification = await tx.notification.create({
+            data: {
+              family_id: recipient.familyId,
+              recipient_user_id: recipient.userId,
+              sender_user_id: input.userId,
+              notification_type: 'location_signal_lost',
+              title: 'Mất tín hiệu vị trí',
+              message,
+              related_table: NOTIFICATION_SOURCE_LOCATION_SIGNAL,
+              related_id: input.locationId,
+              metadata: {
+                memberId,
+                reason: input.reason,
+                lastLocationAt: input.lastLocationAt.toISOString(),
+                lastSeenAt: input.lastSeenAt.toISOString(),
+                latitude: input.latitude,
+                longitude: input.longitude,
               },
             },
             select: safeNotificationSelect,

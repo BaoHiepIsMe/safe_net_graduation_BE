@@ -95,6 +95,10 @@ export class ProfilesController {
         smsNotificationsEnabled: { type: 'boolean' },
         emailNotificationsEnabled: { type: 'boolean' },
         locationSharingEnabled: { type: 'boolean' },
+        sharingMode: { type: 'string', enum: ['continuous', 'battery_saver'] },
+        locationVisibility: { type: 'string', enum: ['all', 'selected'] },
+        notifyOnZoneExit: { type: 'boolean' },
+        notifyOnSignalLost: { type: 'boolean' },
         darkMode: { type: 'boolean' },
         theme: { type: 'string', enum: ['light', 'dark', 'system'] },
         quietHoursStart: {

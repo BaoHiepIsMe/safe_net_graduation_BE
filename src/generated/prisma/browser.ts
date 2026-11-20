@@ -172,3 +172,8 @@ export type SosRecipient = Prisma.SosRecipientModel
  * 
  */
 export type UserSetting = Prisma.UserSettingModel
+/**
+ * Model LocationShareViewer
+ * 
+ */
+export type LocationShareViewer = Prisma.LocationShareViewerModel

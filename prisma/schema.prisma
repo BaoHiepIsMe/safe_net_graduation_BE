@@ -144,6 +144,7 @@ model CurrentLocation {
 
   @@index([memberId], map: "idx_current_locations_member")
   @@index([deviceId], map: "idx_current_locations_device")
+  @@index([updatedAt], map: "idx_current_locations_updated_at")
   @@map("current_locations")
   @@schema("public")
 }
@@ -363,6 +364,7 @@ model Geofence {
   center_latitude  Decimal          @db.Decimal(10, 7)
   center_longitude Decimal          @db.Decimal(10, 7)
   radius_meters    Int
+  icon             String?          @db.VarChar(30)
   is_active        Boolean          @default(true)
   created_at       DateTime         @default(now()) @db.Timestamptz(6)
   updated_at       DateTime         @default(now()) @db.Timestamptz(6)
@@ -604,6 +606,8 @@ model Profile {
   sosEventsHandled                                           SosEvent[]              @relation("sos_events_handled_by")
   SosRecipient                                               SosRecipient[]
   UserSetting                                                UserSetting?
+  sharedLocationViewers                                      LocationShareViewer[]   @relation("location_share_owner")
+  locationsSharedWithMe                                      LocationShareViewer[]   @relation("location_share_viewer")
 
   @@index([email], map: "idx_profiles_email")
   @@index([phoneNumber], map: "idx_profiles_phone")
@@ -752,6 +756,10 @@ model UserSetting {
   smsNotificationsEnabled   Boolean   @default(true) @map("sms_notifications_enabled")
   emailNotificationsEnabled Boolean   @default(true) @map("email_notifications_enabled")
   locationSharingEnabled    Boolean   @default(true) @map("location_sharing_enabled")
+  sharingMode               String    @default("continuous") @map("sharing_mode") @db.VarChar(20)
+  locationVisibility        String    @default("all") @map("location_visibility") @db.VarChar(20)
+  notifyOnZoneExit          Boolean   @default(true) @map("notify_on_zone_exit")
+  notifyOnSignalLost        Boolean   @default(true) @map("notify_on_signal_lost")
   darkMode                  Boolean   @default(false) @map("dark_mode")
   quietHoursStart           DateTime? @map("quiet_hours_start") @db.Time(6)
   quietHoursEnd             DateTime? @map("quiet_hours_end") @db.Time(6)
@@ -759,5 +767,19 @@ model UserSetting {
   Profile                   Profile   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("user_settings")
+  @@schema("public")
+}
+
+model LocationShareViewer {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerUserId  String   @map("owner_user_id") @db.Uuid
+  viewerUserId String   @map("viewer_user_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  owner        Profile  @relation("location_share_owner", fields: [ownerUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  viewer       Profile  @relation("location_share_viewer", fields: [viewerUserId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([ownerUserId, viewerUserId])
+  @@index([viewerUserId], map: "idx_location_share_viewers_viewer")
+  @@map("location_share_viewers")
   @@schema("public")
 }

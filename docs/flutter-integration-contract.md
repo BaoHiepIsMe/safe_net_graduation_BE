@@ -204,6 +204,46 @@ location and geofence visibility requires global and per-family sharing. A
 manual SOS location snapshot is incident-scoped explicit emergency sharing and
 does not change passive sharing settings.
 
+### Sharing controls
+
+`PATCH /profiles/settings` (also returned by `GET /profiles/settings`) carries
+three sharing fields:
+
+- `locationVisibility`: `all` (default, every accepted family member) or
+  `selected` (only users listed by `/locations/me/viewers`). It applies to
+  current location, location history, realtime location events, and geofence
+  notifications about the owner. The owner always sees their own data.
+- `sharingMode`: `continuous` (default) or `battery_saver`. The BE only stores
+  it; the phone decides how often to report (battery saver reports less often).
+- `notifyOnZoneExit`: when `false`, the owner's safe-zone exit events are still
+  recorded but produce no notifications. Enter events are unaffected.
+
+`GET /locations/me/viewers` returns `{ viewerUserIds }`. `PUT` replaces the list
+with `{ viewerUserIds }`; every id must belong to someone who shares an active
+family with the caller, otherwise `400 VALIDATION_ERROR`. The list is kept when
+visibility is `all`, so switching back to `selected` restores it.
+
+### Signal-loss alerts
+
+A sweep runs every minute (disable with `SIGNAL_LOSS_ALERTS_ENABLED=false`). It
+creates a `location_signal_lost` notification for the other accepted family
+members of a sharing user whose last accepted location is older than 8 minutes
+(`continuous`) or 25 minutes (`battery_saver`), once per silence. The phone
+reports every 2 minutes (10 in battery saver); alerts for iOS devices are
+skipped until iOS tracks in the background.
+
+`metadata.reason` is `no_connection` (the device heartbeat is stale too) or
+`no_location` (the app is alive but sends no position). Both are guesses about
+the cause. `metadata` also has `memberId`, `lastLocationAt`, `lastSeenAt`,
+`latitude`, `longitude`. With `locationVisibility=selected` only the chosen
+viewers are told. The owner can opt out with `notifyOnSignalLost=false` in
+`PATCH /profiles/settings`.
+
+### Safe zone icon
+
+Geofences accept and return an optional `icon` (`home`, `school`, `work`,
+`shop`, `hospital`, `other`, or `null`). Clients show a default icon for `null`.
+
 ### Emergency location
 
 Emergency location is independent of location sharing. When the user triggers

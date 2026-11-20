@@ -257,6 +257,8 @@ export type ProfileWhereInput = {
   sosEventsHandled?: Prisma.SosEventListRelationFilter
   SosRecipient?: Prisma.SosRecipientListRelationFilter
   UserSetting?: Prisma.XOR<Prisma.UserSettingNullableScalarRelationFilter, Prisma.UserSettingWhereInput> | null
+  sharedLocationViewers?: Prisma.LocationShareViewerListRelationFilter
+  locationsSharedWithMe?: Prisma.LocationShareViewerListRelationFilter
 }
 
 export type ProfileOrderByWithRelationInput = {
@@ -298,6 +300,8 @@ export type ProfileOrderByWithRelationInput = {
   sosEventsHandled?: Prisma.SosEventOrderByRelationAggregateInput
   SosRecipient?: Prisma.SosRecipientOrderByRelationAggregateInput
   UserSetting?: Prisma.UserSettingOrderByWithRelationInput
+  sharedLocationViewers?: Prisma.LocationShareViewerOrderByRelationAggregateInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerOrderByRelationAggregateInput
 }
 
 export type ProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -342,6 +346,8 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   sosEventsHandled?: Prisma.SosEventListRelationFilter
   SosRecipient?: Prisma.SosRecipientListRelationFilter
   UserSetting?: Prisma.XOR<Prisma.UserSettingNullableScalarRelationFilter, Prisma.UserSettingWhereInput> | null
+  sharedLocationViewers?: Prisma.LocationShareViewerListRelationFilter
+  locationsSharedWithMe?: Prisma.LocationShareViewerListRelationFilter
 }, "id" | "email" | "phoneNumber">
 
 export type ProfileOrderByWithAggregationInput = {
@@ -417,6 +423,8 @@ export type ProfileCreateInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateInput = {
@@ -458,6 +466,8 @@ export type ProfileUncheckedCreateInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUpdateInput = {
@@ -499,6 +509,8 @@ export type ProfileUpdateInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateInput = {
@@ -540,6 +552,8 @@ export type ProfileUncheckedUpdateInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateManyInput = {
@@ -1024,6 +1038,34 @@ export type ProfileUpdateOneRequiredWithoutUserSettingNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutUserSettingInput, Prisma.ProfileUpdateWithoutUserSettingInput>, Prisma.ProfileUncheckedUpdateWithoutUserSettingInput>
 }
 
+export type ProfileCreateNestedOneWithoutSharedLocationViewersInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutSharedLocationViewersInput, Prisma.ProfileUncheckedCreateWithoutSharedLocationViewersInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutSharedLocationViewersInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileCreateNestedOneWithoutLocationsSharedWithMeInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLocationsSharedWithMeInput, Prisma.ProfileUncheckedCreateWithoutLocationsSharedWithMeInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLocationsSharedWithMeInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneRequiredWithoutSharedLocationViewersNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutSharedLocationViewersInput, Prisma.ProfileUncheckedCreateWithoutSharedLocationViewersInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutSharedLocationViewersInput
+  upsert?: Prisma.ProfileUpsertWithoutSharedLocationViewersInput
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutSharedLocationViewersInput, Prisma.ProfileUpdateWithoutSharedLocationViewersInput>, Prisma.ProfileUncheckedUpdateWithoutSharedLocationViewersInput>
+}
+
+export type ProfileUpdateOneRequiredWithoutLocationsSharedWithMeNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLocationsSharedWithMeInput, Prisma.ProfileUncheckedCreateWithoutLocationsSharedWithMeInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLocationsSharedWithMeInput
+  upsert?: Prisma.ProfileUpsertWithoutLocationsSharedWithMeInput
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutLocationsSharedWithMeInput, Prisma.ProfileUpdateWithoutLocationsSharedWithMeInput>, Prisma.ProfileUncheckedUpdateWithoutLocationsSharedWithMeInput>
+}
+
 export type ProfileCreateWithoutBiometricSettingInput = {
   id: string
   fullName?: string | null
@@ -1062,6 +1104,8 @@ export type ProfileCreateWithoutBiometricSettingInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutBiometricSettingInput = {
@@ -1102,6 +1146,8 @@ export type ProfileUncheckedCreateWithoutBiometricSettingInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutBiometricSettingInput = {
@@ -1158,6 +1204,8 @@ export type ProfileUpdateWithoutBiometricSettingInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutBiometricSettingInput = {
@@ -1198,6 +1246,8 @@ export type ProfileUncheckedUpdateWithoutBiometricSettingInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
@@ -1238,6 +1288,8 @@ export type ProfileCreateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
@@ -1278,6 +1330,8 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_caller_idToprofiles
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutCall_logs_call_logs_caller_idToprofilesInput = {
@@ -1323,6 +1377,8 @@ export type ProfileCreateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutCall_logs_call_logs_receiver_idToprofilesInput = {
@@ -1363,6 +1419,8 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_receiver_idToprofil
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutCall_logs_call_logs_receiver_idToprofilesInput = {
@@ -1419,6 +1477,8 @@ export type ProfileUpdateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
@@ -1459,6 +1519,8 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_caller_idToprofiles
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUpsertWithoutCall_logs_call_logs_receiver_idToprofilesInput = {
@@ -1510,6 +1572,8 @@ export type ProfileUpdateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_receiver_idToprofilesInput = {
@@ -1550,6 +1614,8 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_receiver_idToprofil
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutCallActiveParticipantInput = {
@@ -1590,6 +1656,8 @@ export type ProfileCreateWithoutCallActiveParticipantInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutCallActiveParticipantInput = {
@@ -1630,6 +1698,8 @@ export type ProfileUncheckedCreateWithoutCallActiveParticipantInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutCallActiveParticipantInput = {
@@ -1686,6 +1756,8 @@ export type ProfileUpdateWithoutCallActiveParticipantInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutCallActiveParticipantInput = {
@@ -1726,6 +1798,8 @@ export type ProfileUncheckedUpdateWithoutCallActiveParticipantInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutCameraInput = {
@@ -1766,6 +1840,8 @@ export type ProfileCreateWithoutCameraInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutCameraInput = {
@@ -1806,6 +1882,8 @@ export type ProfileUncheckedCreateWithoutCameraInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutCameraInput = {
@@ -1862,6 +1940,8 @@ export type ProfileUpdateWithoutCameraInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutCameraInput = {
@@ -1902,6 +1982,8 @@ export type ProfileUncheckedUpdateWithoutCameraInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutConversationMemberInput = {
@@ -1942,6 +2024,8 @@ export type ProfileCreateWithoutConversationMemberInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutConversationMemberInput = {
@@ -1982,6 +2066,8 @@ export type ProfileUncheckedCreateWithoutConversationMemberInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutConversationMemberInput = {
@@ -2038,6 +2124,8 @@ export type ProfileUpdateWithoutConversationMemberInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutConversationMemberInput = {
@@ -2078,6 +2166,8 @@ export type ProfileUncheckedUpdateWithoutConversationMemberInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutCurrentLocationInput = {
@@ -2118,6 +2208,8 @@ export type ProfileCreateWithoutCurrentLocationInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutCurrentLocationInput = {
@@ -2158,6 +2250,8 @@ export type ProfileUncheckedCreateWithoutCurrentLocationInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutCurrentLocationInput = {
@@ -2214,6 +2308,8 @@ export type ProfileUpdateWithoutCurrentLocationInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutCurrentLocationInput = {
@@ -2254,6 +2350,8 @@ export type ProfileUncheckedUpdateWithoutCurrentLocationInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutDailyStatusReportsInput = {
@@ -2294,6 +2392,8 @@ export type ProfileCreateWithoutDailyStatusReportsInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutDailyStatusReportsInput = {
@@ -2334,6 +2434,8 @@ export type ProfileUncheckedCreateWithoutDailyStatusReportsInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutDailyStatusReportsInput = {
@@ -2390,6 +2492,8 @@ export type ProfileUpdateWithoutDailyStatusReportsInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutDailyStatusReportsInput = {
@@ -2430,6 +2534,8 @@ export type ProfileUncheckedUpdateWithoutDailyStatusReportsInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutDeviceInput = {
@@ -2470,6 +2576,8 @@ export type ProfileCreateWithoutDeviceInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutDeviceInput = {
@@ -2510,6 +2618,8 @@ export type ProfileUncheckedCreateWithoutDeviceInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutDeviceInput = {
@@ -2566,6 +2676,8 @@ export type ProfileUpdateWithoutDeviceInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutDeviceInput = {
@@ -2606,6 +2718,8 @@ export type ProfileUncheckedUpdateWithoutDeviceInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutFallEventInput = {
@@ -2646,6 +2760,8 @@ export type ProfileCreateWithoutFallEventInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutFallEventInput = {
@@ -2686,6 +2802,8 @@ export type ProfileUncheckedCreateWithoutFallEventInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutFallEventInput = {
@@ -2742,6 +2860,8 @@ export type ProfileUpdateWithoutFallEventInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutFallEventInput = {
@@ -2782,6 +2902,8 @@ export type ProfileUncheckedUpdateWithoutFallEventInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutFamilyInput = {
@@ -2822,6 +2944,8 @@ export type ProfileCreateWithoutFamilyInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutFamilyInput = {
@@ -2862,6 +2986,8 @@ export type ProfileUncheckedCreateWithoutFamilyInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutFamilyInput = {
@@ -2918,6 +3044,8 @@ export type ProfileUpdateWithoutFamilyInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutFamilyInput = {
@@ -2958,6 +3086,8 @@ export type ProfileUncheckedUpdateWithoutFamilyInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutFamily_members_family_members_invited_by_user_idToprofilesInput = {
@@ -2998,6 +3128,8 @@ export type ProfileCreateWithoutFamily_members_family_members_invited_by_user_id
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutFamily_members_family_members_invited_by_user_idToprofilesInput = {
@@ -3038,6 +3170,8 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_invited_b
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutFamily_members_family_members_invited_by_user_idToprofilesInput = {
@@ -3083,6 +3217,8 @@ export type ProfileCreateWithoutFamily_members_family_members_user_idToprofilesI
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutFamily_members_family_members_user_idToprofilesInput = {
@@ -3123,6 +3259,8 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_user_idTo
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutFamily_members_family_members_user_idToprofilesInput = {
@@ -3179,6 +3317,8 @@ export type ProfileUpdateWithoutFamily_members_family_members_invited_by_user_id
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutFamily_members_family_members_invited_by_user_idToprofilesInput = {
@@ -3219,6 +3359,8 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_invited_b
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUpsertWithoutFamily_members_family_members_user_idToprofilesInput = {
@@ -3270,6 +3412,8 @@ export type ProfileUpdateWithoutFamily_members_family_members_user_idToprofilesI
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutFamily_members_family_members_user_idToprofilesInput = {
@@ -3310,6 +3454,8 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_user_idTo
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutGeofenceInput = {
@@ -3350,6 +3496,8 @@ export type ProfileCreateWithoutGeofenceInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutGeofenceInput = {
@@ -3390,6 +3538,8 @@ export type ProfileUncheckedCreateWithoutGeofenceInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutGeofenceInput = {
@@ -3446,6 +3596,8 @@ export type ProfileUpdateWithoutGeofenceInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutGeofenceInput = {
@@ -3486,6 +3638,8 @@ export type ProfileUncheckedUpdateWithoutGeofenceInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutLocationInput = {
@@ -3526,6 +3680,8 @@ export type ProfileCreateWithoutLocationInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutLocationInput = {
@@ -3566,6 +3722,8 @@ export type ProfileUncheckedCreateWithoutLocationInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutLocationInput = {
@@ -3622,6 +3780,8 @@ export type ProfileUpdateWithoutLocationInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutLocationInput = {
@@ -3662,6 +3822,8 @@ export type ProfileUncheckedUpdateWithoutLocationInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutMessageInput = {
@@ -3702,6 +3864,8 @@ export type ProfileCreateWithoutMessageInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutMessageInput = {
@@ -3742,6 +3906,8 @@ export type ProfileUncheckedCreateWithoutMessageInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutMessageInput = {
@@ -3798,6 +3964,8 @@ export type ProfileUpdateWithoutMessageInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutMessageInput = {
@@ -3838,6 +4006,8 @@ export type ProfileUncheckedUpdateWithoutMessageInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutNotifications_notifications_recipient_user_idToprofilesInput = {
@@ -3878,6 +4048,8 @@ export type ProfileCreateWithoutNotifications_notifications_recipient_user_idTop
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutNotifications_notifications_recipient_user_idToprofilesInput = {
@@ -3918,6 +4090,8 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_recipient_u
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutNotifications_notifications_recipient_user_idToprofilesInput = {
@@ -3963,6 +4137,8 @@ export type ProfileCreateWithoutNotifications_notifications_sender_user_idToprof
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutNotifications_notifications_sender_user_idToprofilesInput = {
@@ -4003,6 +4179,8 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_sender_user
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutNotifications_notifications_sender_user_idToprofilesInput = {
@@ -4059,6 +4237,8 @@ export type ProfileUpdateWithoutNotifications_notifications_recipient_user_idTop
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutNotifications_notifications_recipient_user_idToprofilesInput = {
@@ -4099,6 +4279,8 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_recipient_u
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUpsertWithoutNotifications_notifications_sender_user_idToprofilesInput = {
@@ -4150,6 +4332,8 @@ export type ProfileUpdateWithoutNotifications_notifications_sender_user_idToprof
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutNotifications_notifications_sender_user_idToprofilesInput = {
@@ -4190,6 +4374,8 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_sender_user
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutPhoneCommandInput = {
@@ -4230,6 +4416,8 @@ export type ProfileCreateWithoutPhoneCommandInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutPhoneCommandInput = {
@@ -4270,6 +4458,8 @@ export type ProfileUncheckedCreateWithoutPhoneCommandInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutPhoneCommandInput = {
@@ -4326,6 +4516,8 @@ export type ProfileUpdateWithoutPhoneCommandInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutPhoneCommandInput = {
@@ -4366,6 +4558,8 @@ export type ProfileUncheckedUpdateWithoutPhoneCommandInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutPhoneRuleInput = {
@@ -4406,6 +4600,8 @@ export type ProfileCreateWithoutPhoneRuleInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutPhoneRuleInput = {
@@ -4446,6 +4642,8 @@ export type ProfileUncheckedCreateWithoutPhoneRuleInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutPhoneRuleInput = {
@@ -4502,6 +4700,8 @@ export type ProfileUpdateWithoutPhoneRuleInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutPhoneRuleInput = {
@@ -4542,6 +4742,8 @@ export type ProfileUncheckedUpdateWithoutPhoneRuleInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutRemindersCreatedInput = {
@@ -4582,6 +4784,8 @@ export type ProfileCreateWithoutRemindersCreatedInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutRemindersCreatedInput = {
@@ -4622,6 +4826,8 @@ export type ProfileUncheckedCreateWithoutRemindersCreatedInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutRemindersCreatedInput = {
@@ -4678,6 +4884,8 @@ export type ProfileUpdateWithoutRemindersCreatedInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutRemindersCreatedInput = {
@@ -4718,6 +4926,8 @@ export type ProfileUncheckedUpdateWithoutRemindersCreatedInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutSosContactsOwnedInput = {
@@ -4758,6 +4968,8 @@ export type ProfileCreateWithoutSosContactsOwnedInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutSosContactsOwnedInput = {
@@ -4798,6 +5010,8 @@ export type ProfileUncheckedCreateWithoutSosContactsOwnedInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutSosContactsOwnedInput = {
@@ -4843,6 +5057,8 @@ export type ProfileCreateWithoutSosContactsLinkedInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutSosContactsLinkedInput = {
@@ -4883,6 +5099,8 @@ export type ProfileUncheckedCreateWithoutSosContactsLinkedInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutSosContactsLinkedInput = {
@@ -4939,6 +5157,8 @@ export type ProfileUpdateWithoutSosContactsOwnedInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSosContactsOwnedInput = {
@@ -4979,6 +5199,8 @@ export type ProfileUncheckedUpdateWithoutSosContactsOwnedInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUpsertWithoutSosContactsLinkedInput = {
@@ -5030,6 +5252,8 @@ export type ProfileUpdateWithoutSosContactsLinkedInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSosContactsLinkedInput = {
@@ -5070,6 +5294,8 @@ export type ProfileUncheckedUpdateWithoutSosContactsLinkedInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutSosEventsTriggeredInput = {
@@ -5110,6 +5336,8 @@ export type ProfileCreateWithoutSosEventsTriggeredInput = {
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutSosEventsTriggeredInput = {
@@ -5150,6 +5378,8 @@ export type ProfileUncheckedCreateWithoutSosEventsTriggeredInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutSosEventsTriggeredInput = {
@@ -5195,6 +5425,8 @@ export type ProfileCreateWithoutSosEventsHandledInput = {
   sosEventsTriggered?: Prisma.SosEventCreateNestedManyWithoutActorInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutSosEventsHandledInput = {
@@ -5235,6 +5467,8 @@ export type ProfileUncheckedCreateWithoutSosEventsHandledInput = {
   sosEventsTriggered?: Prisma.SosEventUncheckedCreateNestedManyWithoutActorInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutSosEventsHandledInput = {
@@ -5291,6 +5525,8 @@ export type ProfileUpdateWithoutSosEventsTriggeredInput = {
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSosEventsTriggeredInput = {
@@ -5331,6 +5567,8 @@ export type ProfileUncheckedUpdateWithoutSosEventsTriggeredInput = {
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUpsertWithoutSosEventsHandledInput = {
@@ -5382,6 +5620,8 @@ export type ProfileUpdateWithoutSosEventsHandledInput = {
   sosEventsTriggered?: Prisma.SosEventUpdateManyWithoutActorNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSosEventsHandledInput = {
@@ -5422,6 +5662,8 @@ export type ProfileUncheckedUpdateWithoutSosEventsHandledInput = {
   sosEventsTriggered?: Prisma.SosEventUncheckedUpdateManyWithoutActorNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutSosRecipientInput = {
@@ -5462,6 +5704,8 @@ export type ProfileCreateWithoutSosRecipientInput = {
   sosEventsTriggered?: Prisma.SosEventCreateNestedManyWithoutActorInput
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutSosRecipientInput = {
@@ -5502,6 +5746,8 @@ export type ProfileUncheckedCreateWithoutSosRecipientInput = {
   sosEventsTriggered?: Prisma.SosEventUncheckedCreateNestedManyWithoutActorInput
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutSosRecipientInput = {
@@ -5558,6 +5804,8 @@ export type ProfileUpdateWithoutSosRecipientInput = {
   sosEventsTriggered?: Prisma.SosEventUpdateManyWithoutActorNestedInput
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutSosRecipientInput = {
@@ -5598,6 +5846,8 @@ export type ProfileUncheckedUpdateWithoutSosRecipientInput = {
   sosEventsTriggered?: Prisma.SosEventUncheckedUpdateManyWithoutActorNestedInput
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileCreateWithoutUserSettingInput = {
@@ -5638,6 +5888,8 @@ export type ProfileCreateWithoutUserSettingInput = {
   sosEventsTriggered?: Prisma.SosEventCreateNestedManyWithoutActorInput
   sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileUncheckedCreateWithoutUserSettingInput = {
@@ -5678,6 +5930,8 @@ export type ProfileUncheckedCreateWithoutUserSettingInput = {
   sosEventsTriggered?: Prisma.SosEventUncheckedCreateNestedManyWithoutActorInput
   sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
   SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
 }
 
 export type ProfileCreateOrConnectWithoutUserSettingInput = {
@@ -5734,6 +5988,8 @@ export type ProfileUpdateWithoutUserSettingInput = {
   sosEventsTriggered?: Prisma.SosEventUpdateManyWithoutActorNestedInput
   sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutUserSettingInput = {
@@ -5774,6 +6030,376 @@ export type ProfileUncheckedUpdateWithoutUserSettingInput = {
   sosEventsTriggered?: Prisma.SosEventUncheckedUpdateManyWithoutActorNestedInput
   sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
   SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
+}
+
+export type ProfileCreateWithoutSharedLocationViewersInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
+}
+
+export type ProfileUncheckedCreateWithoutSharedLocationViewersInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraUncheckedCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceUncheckedCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactUncheckedCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactUncheckedCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
+}
+
+export type ProfileCreateOrConnectWithoutSharedLocationViewersInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutSharedLocationViewersInput, Prisma.ProfileUncheckedCreateWithoutSharedLocationViewersInput>
+}
+
+export type ProfileCreateWithoutLocationsSharedWithMeInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+}
+
+export type ProfileUncheckedCreateWithoutLocationsSharedWithMeInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraUncheckedCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceUncheckedCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactUncheckedCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactUncheckedCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+}
+
+export type ProfileCreateOrConnectWithoutLocationsSharedWithMeInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLocationsSharedWithMeInput, Prisma.ProfileUncheckedCreateWithoutLocationsSharedWithMeInput>
+}
+
+export type ProfileUpsertWithoutSharedLocationViewersInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutSharedLocationViewersInput, Prisma.ProfileUncheckedUpdateWithoutSharedLocationViewersInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutSharedLocationViewersInput, Prisma.ProfileUncheckedCreateWithoutSharedLocationViewersInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutSharedLocationViewersInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutSharedLocationViewersInput, Prisma.ProfileUncheckedUpdateWithoutSharedLocationViewersInput>
+}
+
+export type ProfileUpdateWithoutSharedLocationViewersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutSharedLocationViewersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUncheckedUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUncheckedUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUncheckedUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUncheckedUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
+}
+
+export type ProfileUpsertWithoutLocationsSharedWithMeInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutLocationsSharedWithMeInput, Prisma.ProfileUncheckedUpdateWithoutLocationsSharedWithMeInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLocationsSharedWithMeInput, Prisma.ProfileUncheckedCreateWithoutLocationsSharedWithMeInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutLocationsSharedWithMeInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutLocationsSharedWithMeInput, Prisma.ProfileUncheckedUpdateWithoutLocationsSharedWithMeInput>
+}
+
+export type ProfileUpdateWithoutLocationsSharedWithMeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutLocationsSharedWithMeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUncheckedUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUncheckedUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUncheckedUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUncheckedUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 
@@ -5806,6 +6432,8 @@ export type ProfileCountOutputType = {
   sosEventsTriggered: number
   sosEventsHandled: number
   SosRecipient: number
+  sharedLocationViewers: number
+  locationsSharedWithMe: number
 }
 
 export type ProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5833,6 +6461,8 @@ export type ProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   sosEventsTriggered?: boolean | ProfileCountOutputTypeCountSosEventsTriggeredArgs
   sosEventsHandled?: boolean | ProfileCountOutputTypeCountSosEventsHandledArgs
   SosRecipient?: boolean | ProfileCountOutputTypeCountSosRecipientArgs
+  sharedLocationViewers?: boolean | ProfileCountOutputTypeCountSharedLocationViewersArgs
+  locationsSharedWithMe?: boolean | ProfileCountOutputTypeCountLocationsSharedWithMeArgs
 }
 
 /**
@@ -6013,6 +6643,20 @@ export type ProfileCountOutputTypeCountSosRecipientArgs<ExtArgs extends runtime.
   where?: Prisma.SosRecipientWhereInput
 }
 
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountSharedLocationViewersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LocationShareViewerWhereInput
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountLocationsSharedWithMeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LocationShareViewerWhereInput
+}
+
 
 export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -6053,6 +6697,8 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   sosEventsHandled?: boolean | Prisma.Profile$sosEventsHandledArgs<ExtArgs>
   SosRecipient?: boolean | Prisma.Profile$SosRecipientArgs<ExtArgs>
   UserSetting?: boolean | Prisma.Profile$UserSettingArgs<ExtArgs>
+  sharedLocationViewers?: boolean | Prisma.Profile$sharedLocationViewersArgs<ExtArgs>
+  locationsSharedWithMe?: boolean | Prisma.Profile$locationsSharedWithMeArgs<ExtArgs>
   _count?: boolean | Prisma.ProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["profile"]>
 
@@ -6127,6 +6773,8 @@ export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   sosEventsHandled?: boolean | Prisma.Profile$sosEventsHandledArgs<ExtArgs>
   SosRecipient?: boolean | Prisma.Profile$SosRecipientArgs<ExtArgs>
   UserSetting?: boolean | Prisma.Profile$UserSettingArgs<ExtArgs>
+  sharedLocationViewers?: boolean | Prisma.Profile$sharedLocationViewersArgs<ExtArgs>
+  locationsSharedWithMe?: boolean | Prisma.Profile$locationsSharedWithMeArgs<ExtArgs>
   _count?: boolean | Prisma.ProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -6162,6 +6810,8 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     sosEventsHandled: Prisma.$SosEventPayload<ExtArgs>[]
     SosRecipient: Prisma.$SosRecipientPayload<ExtArgs>[]
     UserSetting: Prisma.$UserSettingPayload<ExtArgs> | null
+    sharedLocationViewers: Prisma.$LocationShareViewerPayload<ExtArgs>[]
+    locationsSharedWithMe: Prisma.$LocationShareViewerPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -6596,6 +7246,8 @@ export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends runtime.
   sosEventsHandled<T extends Prisma.Profile$sosEventsHandledArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$sosEventsHandledArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SosEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   SosRecipient<T extends Prisma.Profile$SosRecipientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$SosRecipientArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SosRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   UserSetting<T extends Prisma.Profile$UserSettingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$UserSettingArgs<ExtArgs>>): Prisma.Prisma__UserSettingClient<runtime.Types.Result.GetResult<Prisma.$UserSettingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sharedLocationViewers<T extends Prisma.Profile$sharedLocationViewersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$sharedLocationViewersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LocationShareViewerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  locationsSharedWithMe<T extends Prisma.Profile$locationsSharedWithMeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$locationsSharedWithMeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LocationShareViewerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7659,6 +8311,54 @@ export type Profile$UserSettingArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.UserSettingInclude<ExtArgs> | null
   where?: Prisma.UserSettingWhereInput
+}
+
+/**
+ * Profile.sharedLocationViewers
+ */
+export type Profile$sharedLocationViewersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LocationShareViewer
+   */
+  select?: Prisma.LocationShareViewerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LocationShareViewer
+   */
+  omit?: Prisma.LocationShareViewerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LocationShareViewerInclude<ExtArgs> | null
+  where?: Prisma.LocationShareViewerWhereInput
+  orderBy?: Prisma.LocationShareViewerOrderByWithRelationInput | Prisma.LocationShareViewerOrderByWithRelationInput[]
+  cursor?: Prisma.LocationShareViewerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LocationShareViewerScalarFieldEnum | Prisma.LocationShareViewerScalarFieldEnum[]
+}
+
+/**
+ * Profile.locationsSharedWithMe
+ */
+export type Profile$locationsSharedWithMeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LocationShareViewer
+   */
+  select?: Prisma.LocationShareViewerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LocationShareViewer
+   */
+  omit?: Prisma.LocationShareViewerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LocationShareViewerInclude<ExtArgs> | null
+  where?: Prisma.LocationShareViewerWhereInput
+  orderBy?: Prisma.LocationShareViewerOrderByWithRelationInput | Prisma.LocationShareViewerOrderByWithRelationInput[]
+  cursor?: Prisma.LocationShareViewerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LocationShareViewerScalarFieldEnum | Prisma.LocationShareViewerScalarFieldEnum[]
 }
 
 /**

@@ -35,6 +35,15 @@ export class NotificationsService {
     return created;
   }
 
+  async processSignalLoss(
+    input: Parameters<NotificationsRepository['createFromSignalLoss']>[0],
+  ) {
+    const created = await this.repository.createFromSignalLoss(input);
+    this.emitCreated(created);
+    await this.deliverCreated(created);
+    return created;
+  }
+
   async processSosEvent(eventId: string, afterNotificationCommit?: () => void) {
     const created = await this.repository.createFromSosEvent(eventId);
     this.emitCreated(created);

@@ -43,6 +43,8 @@ describe('NotificationsRepository geofence privacy and idempotency', () => {
               : { notify_on_enter: true, notify_on_exit: true },
           ),
       },
+      userSetting: { findUnique: jest.fn().mockResolvedValue(null) },
+      locationShareViewer: { findMany: jest.fn().mockResolvedValue([]) },
       familyMember: {
         findMany: jest.fn().mockResolvedValue([
           {
@@ -123,6 +125,51 @@ describe('NotificationsRepository geofence privacy and idempotency', () => {
       isActive: true,
       fcmToken: { not: null },
     });
+  });
+
+  it('sends no exit notification when the mover turned exit alerts off', async () => {
+    const fixture = setup();
+    fixture.tx.geofenceEvent.findFirst.mockResolvedValue({
+      ...(await fixture.tx.geofenceEvent.findFirst()),
+      event_type: 'exit',
+    });
+    fixture.tx.userSetting.findUnique.mockResolvedValue({
+      notifyOnZoneExit: false,
+      locationVisibility: 'all',
+    });
+    await expect(
+      fixture.repository.createFromGeofenceEvent(EVENT_ID),
+    ).resolves.toEqual([]);
+    expect(fixture.tx.notification.create).not.toHaveBeenCalled();
+  });
+
+  it('still notifies on enter when exit alerts are off', async () => {
+    const fixture = setup();
+    fixture.tx.userSetting.findUnique.mockResolvedValue({
+      notifyOnZoneExit: false,
+      locationVisibility: 'all',
+    });
+    const created = await fixture.repository.createFromGeofenceEvent(EVENT_ID);
+    expect(created).toHaveLength(1);
+  });
+
+  it('only notifies the selected viewers (and the mover) when visibility is selected', async () => {
+    const fixture = setup();
+    fixture.tx.userSetting.findUnique.mockResolvedValue({
+      notifyOnZoneExit: true,
+      locationVisibility: 'selected',
+    });
+    fixture.tx.locationShareViewer.findMany.mockResolvedValue([
+      { viewerUserId: RECIPIENT_ID },
+    ]);
+    await fixture.repository.createFromGeofenceEvent(EVENT_ID);
+    expect(fixture.tx.familyMember.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          userId: { in: [RECIPIENT_ID, OWNER_ID] },
+        }),
+      }),
+    );
   });
 
   it('creates a stable EXIT notification from an enabled exit assignment', async () => {

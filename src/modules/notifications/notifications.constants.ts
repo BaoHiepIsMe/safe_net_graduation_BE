@@ -6,6 +6,7 @@ export const NOTIFICATION_SOURCE_SOS_EVENT = 'sos_event';
 export const NOTIFICATION_SOURCE_REMINDER_LOG = 'reminder_log';
 export const NOTIFICATION_SOURCE_MESSAGE = 'message';
 export const NOTIFICATION_SOURCE_CALL = 'call_log';
+export const NOTIFICATION_SOURCE_LOCATION_SIGNAL = 'location_signal';
 export const NOTIFICATION_DELIVERY_MAX_ATTEMPTS = 2;
 
 export type NotificationType =
@@ -14,4 +15,5 @@ export type NotificationType =
   | 'sos_alert'
   | 'reminder'
   | 'message'
-  | 'call_incoming';
+  | 'call_incoming'
+  | 'location_signal_lost';

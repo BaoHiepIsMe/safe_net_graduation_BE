@@ -146,6 +146,7 @@ export class GeofencesService {
       centerLatitude: Number(row.center_latitude),
       centerLongitude: Number(row.center_longitude),
       radiusMeters: row.radius_meters,
+      icon: row.icon ?? null,
       isActive: row.is_active,
       members: row.GeofenceMember.map((assignment: any) => ({
         memberId: assignment.member_id,
