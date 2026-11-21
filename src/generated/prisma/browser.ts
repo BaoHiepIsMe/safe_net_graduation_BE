@@ -78,6 +78,11 @@ export type Family = Prisma.FamilyModel
  */
 export type FamilyMember = Prisma.FamilyMemberModel
 /**
+ * Model FamilyMemberCareScope
+ * 
+ */
+export type FamilyMemberCareScope = Prisma.FamilyMemberCareScopeModel
+/**
  * Model GeofenceEvent
  * 
  */

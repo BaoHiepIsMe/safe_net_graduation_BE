@@ -8,6 +8,11 @@ import {
   NotFoundError,
   ValidationError,
 } from '../../common/errors/app.error';
+import { isEffectiveCareRecipient, isMinor } from '../../common/utils/age.util';
+import {
+  HiredScopeActor,
+  isWithinHiredScope,
+} from '../families/care-scope.util';
 import { DailyStatusRepository } from './daily-status.repository';
 import { dailyStatusWindow } from './daily-status-window';
 import type {
@@ -72,13 +77,21 @@ export class DailyStatusService {
       memberId,
       familyId,
     );
-    if (!subject) this.denied();
+    if (
+      !subject ||
+      !isEffectiveCareRecipient({
+        isCareRecipient: subject.isCareRecipient,
+        dateOfBirth: subject.profile?.dateOfBirth,
+      })
+    ) {
+      this.denied();
+    }
     if (subject.userId !== userId) {
       const viewer = await this.repository.findCurrentMembership(
         userId,
         familyId,
       );
-      if (viewer?.role !== 'manager') this.denied();
+      if (!this.canViewerManage(viewer, subject.id)) this.denied();
     }
     const cursor = query.cursor ? this.decodeCursor(query.cursor) : undefined;
     return this.page(
@@ -113,18 +126,20 @@ export class DailyStatusService {
       report.familyId,
     );
     if (
-      viewer?.role !== 'manager' ||
+      !this.canViewerManage(viewer, report.member.id) ||
       report.family.status !== 'active' ||
       report.member.status !== 'accepted' ||
-      !['child', 'elder'].includes(report.member.role)
+      !isEffectiveCareRecipient({
+        isCareRecipient: report.member.isCareRecipient,
+        dateOfBirth: report.member.profile?.dateOfBirth,
+      })
     ) {
       this.denied();
     }
 
-    const locationAllowed =
-      report.member.profile.UserSetting?.locationSharingEnabled !== false &&
-      report.member.locationSharingEnabled !== false &&
-      viewer.locationSharingEnabled !== false;
+    // The subject is a care recipient the viewer canManage: their own sharing
+    // switches cannot hide location parts from the report.
+    const locationAllowed = viewer.locationSharingEnabled !== false;
     const sosAllowed =
       (await this.repository.countSosNotAuthorizedForViewer(report, userId)) ===
       0;
@@ -133,8 +148,21 @@ export class DailyStatusService {
       geofence: locationAllowed,
       sos: sosAllowed,
       reminders: true,
-      phoneUsage: report.member.role === 'child',
+      phoneUsage: isMinor(report.member.profile?.dateOfBirth),
     });
+  }
+
+  /** canManage for a target already known to be a care recipient. */
+  private canViewerManage(
+    viewer: (HiredScopeActor & { id: string; canManageCare: boolean }) | null,
+    targetMemberId: string,
+  ): viewer is HiredScopeActor & { id: string; canManageCare: boolean } {
+    return (
+      viewer !== null &&
+      viewer.canManageCare &&
+      viewer.id !== targetMemberId &&
+      isWithinHiredScope(viewer, targetMemberId)
+    );
   }
 
   private page(rows: any[], query: DailyStatusHistoryQueryDto) {

@@ -149,7 +149,6 @@ liveDescribe('Supabase registration and profile transaction', () => {
       fullName: 'SafeNet Registration Integration',
       gender: 'female',
       dateOfBirth: '2000-02-29',
-      role: 'guardian',
     });
     const result = await service.register(dto);
     userId = result.user.id;
@@ -196,7 +195,7 @@ liveDescribe('Supabase registration and profile transaction', () => {
       phoneNumber: dto.phoneNumber,
       fullName: dto.fullName,
       gender: dto.gender,
-      role: dto.role,
+      uiMode: 'adult',
       dateOfBirth: new Date('2000-02-29T00:00:00.000Z'),
     });
     expect(await prisma.userSetting.count({ where: { userId } })).toBe(1);
@@ -331,34 +330,34 @@ liveDescribe('Supabase registration and profile transaction', () => {
     expect(login.session.tokenType).toBe('bearer');
   });
 
-  it.each(['personal', 'parent', 'guardian'] as const)(
-    'registers with role %s, stores it in public.profiles.role, and logs in immediately by email and phone',
-    async (role) => {
-      const roleDto = registerSchema.parse({
+  it.each(['adult', 'assisted'] as const)(
+    'registers with uiMode %s, stores it in public.profiles.ui_mode, and logs in immediately by email and phone',
+    async (uiMode) => {
+      const uiModeDto = registerSchema.parse({
         email: email(),
         phoneNumber: nextPhone(),
         password: password(),
-        fullName: `SafeNet Role ${role}`,
+        fullName: `SafeNet UiMode ${uiMode}`,
         gender: 'male',
         dateOfBirth: '1995-05-20',
-        role,
+        uiMode,
       });
-      const registered = await service.register(roleDto);
-      expect(registered.user.role).toBe(role);
+      const registered = await service.register(uiModeDto);
+      expect(registered.user.uiMode).toBe(uiMode);
       expect(registered.session).toBeNull();
 
-      const rows = await prisma.$queryRaw<Array<{ role: string | null }>>`
-        SELECT role FROM public.profiles WHERE email = ${roleDto.email}
+      const rows = await prisma.$queryRaw<Array<{ ui_mode: string }>>`
+        SELECT ui_mode FROM public.profiles WHERE email = ${uiModeDto.email}
       `;
-      expect(rows).toEqual([{ role }]);
+      expect(rows).toEqual([{ ui_mode: uiMode }]);
 
       const emailLogin = await service.login({
-        email: roleDto.email,
-        password: roleDto.password,
+        email: uiModeDto.email,
+        password: uiModeDto.password,
       });
       const phoneLogin = await service.login({
-        phoneNumber: roleDto.phoneNumber,
-        password: roleDto.password,
+        phoneNumber: uiModeDto.phoneNumber,
+        password: uiModeDto.password,
       });
       expect(emailLogin.user.id).toBe(registered.user.id);
       expect(phoneLogin.user.id).toBe(registered.user.id);

@@ -409,6 +409,7 @@ export const ModelName = {
   FallEvent: 'FallEvent',
   Family: 'Family',
   FamilyMember: 'FamilyMember',
+  FamilyMemberCareScope: 'FamilyMemberCareScope',
   GeofenceEvent: 'GeofenceEvent',
   GeofenceMember: 'GeofenceMember',
   Geofence: 'Geofence',
@@ -444,7 +445,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "biometricSetting" | "callLog" | "callActiveParticipant" | "camera" | "conversationMember" | "conversation" | "currentLocation" | "dailyStatusReport" | "device" | "fallEvent" | "family" | "familyMember" | "geofenceEvent" | "geofenceMember" | "geofence" | "geofenceState" | "location" | "message" | "notification" | "notificationDelivery" | "phoneCommand" | "phoneRule" | "phoneUsageLog" | "profile" | "reminderLog" | "reminderTarget" | "reminder" | "sosContact" | "sosEvent" | "sosRecipient" | "userSetting" | "locationShareViewer"
+    modelProps: "biometricSetting" | "callLog" | "callActiveParticipant" | "camera" | "conversationMember" | "conversation" | "currentLocation" | "dailyStatusReport" | "device" | "fallEvent" | "family" | "familyMember" | "familyMemberCareScope" | "geofenceEvent" | "geofenceMember" | "geofence" | "geofenceState" | "location" | "message" | "notification" | "notificationDelivery" | "phoneCommand" | "phoneRule" | "phoneUsageLog" | "profile" | "reminderLog" | "reminderTarget" | "reminder" | "sosContact" | "sosEvent" | "sosRecipient" | "userSetting" | "locationShareViewer"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1333,6 +1334,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FamilyMemberCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FamilyMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    FamilyMemberCareScope: {
+      payload: Prisma.$FamilyMemberCareScopePayload<ExtArgs>
+      fields: Prisma.FamilyMemberCareScopeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FamilyMemberCareScopeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FamilyMemberCareScopeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        findFirst: {
+          args: Prisma.FamilyMemberCareScopeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FamilyMemberCareScopeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        findMany: {
+          args: Prisma.FamilyMemberCareScopeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>[]
+        }
+        create: {
+          args: Prisma.FamilyMemberCareScopeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        createMany: {
+          args: Prisma.FamilyMemberCareScopeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FamilyMemberCareScopeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>[]
+        }
+        delete: {
+          args: Prisma.FamilyMemberCareScopeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        update: {
+          args: Prisma.FamilyMemberCareScopeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        deleteMany: {
+          args: Prisma.FamilyMemberCareScopeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FamilyMemberCareScopeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FamilyMemberCareScopeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>[]
+        }
+        upsert: {
+          args: Prisma.FamilyMemberCareScopeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        aggregate: {
+          args: Prisma.FamilyMemberCareScopeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFamilyMemberCareScope>
+        }
+        groupBy: {
+          args: Prisma.FamilyMemberCareScopeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyMemberCareScopeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FamilyMemberCareScopeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyMemberCareScopeCountAggregateOutputType> | number
         }
       }
     }
@@ -3048,6 +3123,11 @@ export const FamilyMemberScalarFieldEnum = {
   familyLabel: 'familyLabel',
   displayName: 'displayName',
   status: 'status',
+  canManageCare: 'canManageCare',
+  careGrantedBy: 'careGrantedBy',
+  isCareRecipient: 'isCareRecipient',
+  careRecipientSetBy: 'careRecipientSetBy',
+  isHired: 'isHired',
   locationSharingEnabled: 'locationSharingEnabled',
   invitedAt: 'invitedAt',
   acceptedAt: 'acceptedAt',
@@ -3057,6 +3137,14 @@ export const FamilyMemberScalarFieldEnum = {
 } as const
 
 export type FamilyMemberScalarFieldEnum = (typeof FamilyMemberScalarFieldEnum)[keyof typeof FamilyMemberScalarFieldEnum]
+
+
+export const FamilyMemberCareScopeScalarFieldEnum = {
+  memberId: 'memberId',
+  targetMemberId: 'targetMemberId'
+} as const
+
+export type FamilyMemberCareScopeScalarFieldEnum = (typeof FamilyMemberCareScopeScalarFieldEnum)[keyof typeof FamilyMemberCareScopeScalarFieldEnum]
 
 
 export const GeofenceEventScalarFieldEnum = {
@@ -3252,6 +3340,7 @@ export const ProfileScalarFieldEnum = {
   dateOfBirth: 'dateOfBirth',
   gender: 'gender',
   role: 'role',
+  uiMode: 'uiMode',
   accountStatus: 'accountStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -3695,6 +3784,7 @@ export type GlobalOmitConfig = {
   fallEvent?: Prisma.FallEventOmit
   family?: Prisma.FamilyOmit
   familyMember?: Prisma.FamilyMemberOmit
+  familyMemberCareScope?: Prisma.FamilyMemberCareScopeOmit
   geofenceEvent?: Prisma.GeofenceEventOmit
   geofenceMember?: Prisma.GeofenceMemberOmit
   geofence?: Prisma.GeofenceOmit

@@ -1,9 +1,6 @@
-export const FAMILY_ROLES = ['manager', 'adult', 'child', 'elder'] as const;
-
-export const INVITABLE_FAMILY_ROLES = ['adult', 'child', 'elder'] as const;
-
 export const MEMBERSHIP_STATUSES = [
   'pending',
+  'requested',
   'accepted',
   'rejected',
   'removed',
@@ -18,7 +15,14 @@ export const FAMILY_LABELS = [
   'grandmother',
   'caregiver',
   'other',
+  'husband',
+  'wife',
+  'brother',
+  'sister',
+  'grandchild',
 ] as const;
+
+export type FamilyLabelType = (typeof FAMILY_LABELS)[number];
 
 export const ACTIVE_FAMILY_STATUS = 'active';
 export const ARCHIVED_FAMILY_STATUS = 'archived';
@@ -31,15 +35,7 @@ export const INVITE_CODE_LENGTH = 8;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-export function deriveRoleFromLabel(
-  label: (typeof FAMILY_LABELS)[number],
-): (typeof INVITABLE_FAMILY_ROLES)[number] {
-  if (label === 'son' || label === 'daughter') return 'child';
-  if (label === 'grandfather' || label === 'grandmother') return 'elder';
-  return 'adult';
-}
-
-/** Invitations expire INVITATION_TTL_DAYS after the last send (`invitedAt`). */
+/** Invitations and join requests expire INVITATION_TTL_DAYS after the last send (`invitedAt`). */
 export function invitationExpiresAt(invitedAt: Date): Date {
   return new Date(invitedAt.getTime() + INVITATION_TTL_DAYS * DAY_MS);
 }

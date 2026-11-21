@@ -42,14 +42,17 @@ const report = (overrides: Record<string, unknown> = {}) => ({
   generatedAt: new Date('2026-09-02T01:00:00.000Z'),
   createdAt: new Date('2026-09-02T01:00:00.000Z'),
   subject: { id: SUBJECT, fullName: 'Subject', avatarUrl: null },
-  family: { status: 'active' },
+  family: { status: 'active', ownerUserId: MANAGER },
   member: {
     id: MEMBER,
     userId: SUBJECT,
-    role: 'child',
+    isCareRecipient: false,
     status: 'accepted',
     locationSharingEnabled: true,
-    profile: { UserSetting: { locationSharingEnabled: true } },
+    profile: {
+      dateOfBirth: new Date('2018-01-01'),
+      UserSetting: { locationSharingEnabled: true },
+    },
   },
   ...overrides,
 });
@@ -62,12 +65,18 @@ describe('DailyStatusService authorization and privacy', () => {
       listMember: jest.fn().mockResolvedValue([]),
       findAccessReport: jest.fn().mockResolvedValue(report()),
       findCurrentMembership: jest.fn().mockResolvedValue({
-        role: 'manager',
+        canManageCare: true,
+        isHired: false,
+        careScopes: [],
+        family: { ownerUserId: MANAGER },
         locationSharingEnabled: true,
       }),
-      findCurrentSubject: jest
-        .fn()
-        .mockResolvedValue({ id: MEMBER, userId: SUBJECT, role: 'child' }),
+      findCurrentSubject: jest.fn().mockResolvedValue({
+        id: MEMBER,
+        userId: SUBJECT,
+        isCareRecipient: false,
+        profile: { dateOfBirth: new Date('2018-01-01') },
+      }),
       countSosNotAuthorizedForViewer: jest.fn().mockResolvedValue(0),
     };
     return {
@@ -97,7 +106,7 @@ describe('DailyStatusService authorization and privacy', () => {
     expect(repository.findCurrentMembership).not.toHaveBeenCalled();
   });
 
-  it('allows a current manager but applies source-domain privacy', async () => {
+  it('shows location parts to a manager even when the care recipient turned sharing off', async () => {
     const { repository, service } = setup();
     repository.findAccessReport.mockResolvedValue(
       report({
@@ -110,14 +119,12 @@ describe('DailyStatusService authorization and privacy', () => {
     repository.countSosNotAuthorizedForViewer.mockResolvedValue(1);
     await expect(service.detail(MANAGER, REPORT)).resolves.toMatchObject({
       dataAvailability: {
-        location: 'restricted',
-        geofence: 'restricted',
+        location: 'available',
+        geofence: 'available',
         sos: 'restricted',
         reminders: 'available',
         phoneUsage: 'available',
       },
-      locationSummary: null,
-      geofenceSummary: null,
       sosSummary: null,
       reminderSummary: { occurrenceCount: 2 },
       phoneUsageSummary: { totalUsageSeconds: 100 },
@@ -125,26 +132,64 @@ describe('DailyStatusService authorization and privacy', () => {
   });
 
   it.each([
-    ['adult', 'accepted'],
-    ['manager', 'removed'],
-    ['manager', 'pending'],
-    ['manager', 'rejected'],
-  ])('denies a %s viewer with %s relationship', async (role, status) => {
-    const { repository, service } = setup();
-    repository.findCurrentMembership.mockResolvedValue(
-      status === 'accepted' ? { role, locationSharingEnabled: true } : null,
-    );
-    await expect(service.detail(MANAGER, REPORT)).rejects.toMatchObject({
-      code: ErrorCode.DAILY_STATUS_ACCESS_DENIED,
-    });
-  });
+    [false, 'accepted'],
+    [true, 'removed'],
+    [true, 'pending'],
+    [true, 'rejected'],
+  ])(
+    'denies a viewer (canManageCare=%s) with %s relationship',
+    async (canManageCare, status) => {
+      const { repository, service } = setup();
+      repository.findCurrentMembership.mockResolvedValue(
+        status === 'accepted'
+          ? { canManageCare, isHired: false, locationSharingEnabled: true }
+          : null,
+      );
+      await expect(service.detail(MANAGER, REPORT)).rejects.toMatchObject({
+        code: ErrorCode.DAILY_STATUS_ACCESS_DENIED,
+      });
+    },
+  );
 
   it('requires current manager authorization for member history', async () => {
     const { repository, service } = setup();
-    repository.findCurrentMembership.mockResolvedValue({ role: 'adult' });
+    repository.findCurrentMembership.mockResolvedValue({
+      canManageCare: false,
+      isHired: false,
+    });
     await expect(
       service.memberHistory(MANAGER, FAMILY, MEMBER, { limit: 30 }),
     ).rejects.toMatchObject({ code: ErrorCode.DAILY_STATUS_ACCESS_DENIED });
+  });
+
+  it('hides phoneUsage for an adult care recipient and denies hired caregivers outside care scope', async () => {
+    const { repository, service } = setup();
+    repository.findAccessReport.mockResolvedValue(
+      report({
+        member: {
+          ...report().member,
+          isCareRecipient: true,
+          profile: {
+            dateOfBirth: new Date('1950-01-01'),
+            UserSetting: { locationSharingEnabled: true },
+          },
+        },
+      }),
+    );
+    const elderDetail = await service.detail(MANAGER, REPORT);
+    expect(elderDetail.phoneUsageSummary).toBeNull();
+    expect(elderDetail.dataAvailability.phoneUsage).toBe('restricted');
+
+    repository.findCurrentMembership.mockResolvedValue({
+      canManageCare: true,
+      isHired: true,
+      careScopes: [],
+      family: { ownerUserId: '99999999-9999-4999-8999-999999999999' },
+      locationSharingEnabled: true,
+    });
+    await expect(service.detail(MANAGER, REPORT)).rejects.toMatchObject({
+      code: ErrorCode.DAILY_STATUS_ACCESS_DENIED,
+    });
   });
 
   it('returns only minimized overview data in history', async () => {

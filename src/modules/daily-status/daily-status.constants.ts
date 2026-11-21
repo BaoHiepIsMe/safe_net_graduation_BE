@@ -6,6 +6,4 @@ export const DAILY_STATUS_SCHEMA_VERSION = 1;
 export const DAILY_STATUS_TOP_APPS_LIMIT = 5;
 export const DAILY_STATUS_TRANSACTION_RETRY_LIMIT = 3;
 
-export const DAILY_STATUS_ELIGIBLE_ROLES = ['child', 'elder'] as const;
-
 export type DailyStatusAvailability = 'available' | 'no_data';

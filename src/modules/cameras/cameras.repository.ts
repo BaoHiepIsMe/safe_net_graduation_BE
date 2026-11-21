@@ -31,7 +31,14 @@ export class CamerasRepository {
         status: 'accepted',
         family: { status: 'active' },
       },
-      select: { id: true, role: true },
+      select: {
+        id: true,
+        userId: true,
+        canManageCare: true,
+        isHired: true,
+        profile: { select: { dateOfBirth: true } },
+        family: { select: { ownerUserId: true } },
+      },
     });
   }
 
@@ -42,8 +49,11 @@ export class CamerasRepository {
           userId,
           familyId,
           status: 'accepted',
-          role: 'manager',
           family: { status: 'active' },
+          OR: [
+            { canManageCare: true, isHired: false },
+            { family: { ownerUserId: userId } },
+          ],
         },
         select: { id: true },
       });
@@ -108,8 +118,11 @@ export class CamerasRepository {
           userId,
           familyId,
           status: 'accepted',
-          role: 'manager',
           family: { status: 'active' },
+          OR: [
+            { canManageCare: true, isHired: false },
+            { family: { ownerUserId: userId } },
+          ],
         },
         select: { id: true },
       });

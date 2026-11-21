@@ -40,7 +40,9 @@ class InMemoryGeofencesRepository {
       FamilyMember: {
         userId: MEMBER_USER,
         displayName: 'Member B',
-        role: 'adult',
+        canManageCare: false,
+        isCareRecipient: true,
+        isHired: false,
         profile: { fullName: 'Member B', avatarUrl: null },
       },
     };
@@ -262,14 +264,22 @@ describe('Phase 5 Geofences (e2e)', () => {
         )
           return Promise.reject(new ForbiddenError());
         return Promise.resolve({
-          role: userId === MANAGER ? 'manager' : 'adult',
+          canManageCare: userId === MANAGER,
+          isCareRecipient: userId !== MANAGER,
+          isHired: false,
         });
       }),
-      requireManager: jest.fn((userId: string, familyId: string) => {
+      requireCareManager: jest.fn((userId: string, familyId: string) => {
         if (familyId !== FAMILY || userId !== MANAGER)
           return Promise.reject(new ForbiddenError());
-        return Promise.resolve({ role: 'manager' });
+        return Promise.resolve({ canManageCare: true });
       }),
+      canManage: jest.fn(
+        (userId: string, memberId: string, familyId?: string) =>
+          Promise.resolve(
+            familyId === FAMILY && userId === MANAGER && memberId === MEMBER,
+          ),
+      ),
     };
     const fixture = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(SupabaseService)

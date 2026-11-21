@@ -3,6 +3,7 @@ import {
   calendarDateSchema,
   fullNameSchema,
   genderSchema,
+  uiModeSchema,
 } from '../../../common/schemas/profile.schema';
 
 const timeSchema = z
@@ -17,6 +18,7 @@ export const updateProfileSchema = z
     avatarUrl: z.string().trim().url().max(2048).nullable().optional(),
     dateOfBirth: calendarDateSchema.nullable().optional(),
     gender: genderSchema.nullable().optional(),
+    uiMode: uiModeSchema.optional(),
   })
   .strict()
   .refine((value) => Object.keys(value).length > 0, {

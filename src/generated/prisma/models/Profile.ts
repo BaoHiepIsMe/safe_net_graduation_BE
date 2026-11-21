@@ -33,6 +33,7 @@ export type ProfileMinAggregateOutputType = {
   dateOfBirth: Date | null
   gender: string | null
   role: string | null
+  uiMode: string | null
   accountStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -47,6 +48,7 @@ export type ProfileMaxAggregateOutputType = {
   dateOfBirth: Date | null
   gender: string | null
   role: string | null
+  uiMode: string | null
   accountStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,6 +63,7 @@ export type ProfileCountAggregateOutputType = {
   dateOfBirth: number
   gender: number
   role: number
+  uiMode: number
   accountStatus: number
   createdAt: number
   updatedAt: number
@@ -77,6 +80,7 @@ export type ProfileMinAggregateInputType = {
   dateOfBirth?: true
   gender?: true
   role?: true
+  uiMode?: true
   accountStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -91,6 +95,7 @@ export type ProfileMaxAggregateInputType = {
   dateOfBirth?: true
   gender?: true
   role?: true
+  uiMode?: true
   accountStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -105,6 +110,7 @@ export type ProfileCountAggregateInputType = {
   dateOfBirth?: true
   gender?: true
   role?: true
+  uiMode?: true
   accountStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -192,6 +198,7 @@ export type ProfileGroupByOutputType = {
   dateOfBirth: Date | null
   gender: string | null
   role: string | null
+  uiMode: string
   accountStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -227,6 +234,7 @@ export type ProfileWhereInput = {
   dateOfBirth?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   gender?: Prisma.StringNullableFilter<"Profile"> | string | null
   role?: Prisma.StringNullableFilter<"Profile"> | string | null
+  uiMode?: Prisma.StringFilter<"Profile"> | string
   accountStatus?: Prisma.StringNullableFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
@@ -242,6 +250,8 @@ export type ProfileWhereInput = {
   FallEvent?: Prisma.FallEventListRelationFilter
   Family?: Prisma.FamilyListRelationFilter
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberListRelationFilter
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberListRelationFilter
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberListRelationFilter
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberListRelationFilter
   Geofence?: Prisma.GeofenceListRelationFilter
   Location?: Prisma.LocationListRelationFilter
@@ -270,6 +280,7 @@ export type ProfileOrderByWithRelationInput = {
   dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   gender?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrderInput | Prisma.SortOrder
+  uiMode?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -285,6 +296,8 @@ export type ProfileOrderByWithRelationInput = {
   FallEvent?: Prisma.FallEventOrderByRelationAggregateInput
   Family?: Prisma.FamilyOrderByRelationAggregateInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberOrderByRelationAggregateInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberOrderByRelationAggregateInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberOrderByRelationAggregateInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberOrderByRelationAggregateInput
   Geofence?: Prisma.GeofenceOrderByRelationAggregateInput
   Location?: Prisma.LocationOrderByRelationAggregateInput
@@ -316,6 +329,7 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   dateOfBirth?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   gender?: Prisma.StringNullableFilter<"Profile"> | string | null
   role?: Prisma.StringNullableFilter<"Profile"> | string | null
+  uiMode?: Prisma.StringFilter<"Profile"> | string
   accountStatus?: Prisma.StringNullableFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableFilter<"Profile"> | Date | string | null
@@ -331,6 +345,8 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   FallEvent?: Prisma.FallEventListRelationFilter
   Family?: Prisma.FamilyListRelationFilter
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberListRelationFilter
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberListRelationFilter
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberListRelationFilter
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberListRelationFilter
   Geofence?: Prisma.GeofenceListRelationFilter
   Location?: Prisma.LocationListRelationFilter
@@ -359,6 +375,7 @@ export type ProfileOrderByWithAggregationInput = {
   dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   gender?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrderInput | Prisma.SortOrder
+  uiMode?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -379,6 +396,7 @@ export type ProfileScalarWhereWithAggregatesInput = {
   dateOfBirth?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
   gender?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   role?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
+  uiMode?: Prisma.StringWithAggregatesFilter<"Profile"> | string
   accountStatus?: Prisma.StringNullableWithAggregatesFilter<"Profile"> | string | null
   createdAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
@@ -393,6 +411,7 @@ export type ProfileCreateInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -408,6 +427,8 @@ export type ProfileCreateInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -436,6 +457,7 @@ export type ProfileUncheckedCreateInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -451,6 +473,8 @@ export type ProfileUncheckedCreateInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -479,6 +503,7 @@ export type ProfileUpdateInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -494,6 +519,8 @@ export type ProfileUpdateInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -522,6 +549,7 @@ export type ProfileUncheckedUpdateInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -537,6 +565,8 @@ export type ProfileUncheckedUpdateInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -565,6 +595,7 @@ export type ProfileCreateManyInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -579,6 +610,7 @@ export type ProfileUpdateManyMutationInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -593,6 +625,7 @@ export type ProfileUncheckedUpdateManyInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -617,6 +650,7 @@ export type ProfileCountOrderByAggregateInput = {
   dateOfBirth?: Prisma.SortOrder
   gender?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  uiMode?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -631,6 +665,7 @@ export type ProfileMaxOrderByAggregateInput = {
   dateOfBirth?: Prisma.SortOrder
   gender?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  uiMode?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -645,6 +680,7 @@ export type ProfileMinOrderByAggregateInput = {
   dateOfBirth?: Prisma.SortOrder
   gender?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  uiMode?: Prisma.SortOrder
   accountStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -812,6 +848,18 @@ export type ProfileCreateNestedOneWithoutFamily_members_family_members_invited_b
   connect?: Prisma.ProfileWhereUniqueInput
 }
 
+export type ProfileCreateNestedOneWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutFamily_members_family_members_care_granted_byToprofilesInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileCreateNestedOneWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
 export type ProfileCreateNestedOneWithoutFamily_members_family_members_user_idToprofilesInput = {
   create?: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_user_idToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_user_idToprofilesInput>
   connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutFamily_members_family_members_user_idToprofilesInput
@@ -826,6 +874,26 @@ export type ProfileUpdateOneWithoutFamily_members_family_members_invited_by_user
   delete?: Prisma.ProfileWhereInput | boolean
   connect?: Prisma.ProfileWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutFamily_members_family_members_invited_by_user_idToprofilesInput, Prisma.ProfileUpdateWithoutFamily_members_family_members_invited_by_user_idToprofilesInput>, Prisma.ProfileUncheckedUpdateWithoutFamily_members_family_members_invited_by_user_idToprofilesInput>
+}
+
+export type ProfileUpdateOneWithoutFamily_members_family_members_care_granted_byToprofilesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutFamily_members_family_members_care_granted_byToprofilesInput
+  upsert?: Prisma.ProfileUpsertWithoutFamily_members_family_members_care_granted_byToprofilesInput
+  disconnect?: Prisma.ProfileWhereInput | boolean
+  delete?: Prisma.ProfileWhereInput | boolean
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutFamily_members_family_members_care_granted_byToprofilesInput, Prisma.ProfileUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput>, Prisma.ProfileUncheckedUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput>
+}
+
+export type ProfileUpdateOneWithoutFamily_members_family_members_care_recipient_set_byToprofilesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput
+  upsert?: Prisma.ProfileUpsertWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput
+  disconnect?: Prisma.ProfileWhereInput | boolean
+  delete?: Prisma.ProfileWhereInput | boolean
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput, Prisma.ProfileUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>, Prisma.ProfileUncheckedUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>
 }
 
 export type ProfileUpdateOneRequiredWithoutFamily_members_family_members_user_idToprofilesNestedInput = {
@@ -1075,6 +1143,7 @@ export type ProfileCreateWithoutBiometricSettingInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1089,6 +1158,8 @@ export type ProfileCreateWithoutBiometricSettingInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -1117,6 +1188,7 @@ export type ProfileUncheckedCreateWithoutBiometricSettingInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1131,6 +1203,8 @@ export type ProfileUncheckedCreateWithoutBiometricSettingInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -1175,6 +1249,7 @@ export type ProfileUpdateWithoutBiometricSettingInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1189,6 +1264,8 @@ export type ProfileUpdateWithoutBiometricSettingInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -1217,6 +1294,7 @@ export type ProfileUncheckedUpdateWithoutBiometricSettingInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1231,6 +1309,8 @@ export type ProfileUncheckedUpdateWithoutBiometricSettingInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1259,6 +1339,7 @@ export type ProfileCreateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1273,6 +1354,8 @@ export type ProfileCreateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -1301,6 +1384,7 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_caller_idToprofiles
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1315,6 +1399,8 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_caller_idToprofiles
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -1348,6 +1434,7 @@ export type ProfileCreateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1362,6 +1449,8 @@ export type ProfileCreateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -1390,6 +1479,7 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_receiver_idToprofil
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1404,6 +1494,8 @@ export type ProfileUncheckedCreateWithoutCall_logs_call_logs_receiver_idToprofil
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -1448,6 +1540,7 @@ export type ProfileUpdateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1462,6 +1555,8 @@ export type ProfileUpdateWithoutCall_logs_call_logs_caller_idToprofilesInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -1490,6 +1585,7 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_caller_idToprofiles
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1504,6 +1600,8 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_caller_idToprofiles
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1543,6 +1641,7 @@ export type ProfileUpdateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1557,6 +1656,8 @@ export type ProfileUpdateWithoutCall_logs_call_logs_receiver_idToprofilesInput =
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -1585,6 +1686,7 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_receiver_idToprofil
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1599,6 +1701,8 @@ export type ProfileUncheckedUpdateWithoutCall_logs_call_logs_receiver_idToprofil
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1627,6 +1731,7 @@ export type ProfileCreateWithoutCallActiveParticipantInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1641,6 +1746,8 @@ export type ProfileCreateWithoutCallActiveParticipantInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -1669,6 +1776,7 @@ export type ProfileUncheckedCreateWithoutCallActiveParticipantInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1683,6 +1791,8 @@ export type ProfileUncheckedCreateWithoutCallActiveParticipantInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -1727,6 +1837,7 @@ export type ProfileUpdateWithoutCallActiveParticipantInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1741,6 +1852,8 @@ export type ProfileUpdateWithoutCallActiveParticipantInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -1769,6 +1882,7 @@ export type ProfileUncheckedUpdateWithoutCallActiveParticipantInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1783,6 +1897,8 @@ export type ProfileUncheckedUpdateWithoutCallActiveParticipantInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1811,6 +1927,7 @@ export type ProfileCreateWithoutCameraInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1825,6 +1942,8 @@ export type ProfileCreateWithoutCameraInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -1853,6 +1972,7 @@ export type ProfileUncheckedCreateWithoutCameraInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -1867,6 +1987,8 @@ export type ProfileUncheckedCreateWithoutCameraInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -1911,6 +2033,7 @@ export type ProfileUpdateWithoutCameraInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1925,6 +2048,8 @@ export type ProfileUpdateWithoutCameraInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -1953,6 +2078,7 @@ export type ProfileUncheckedUpdateWithoutCameraInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1967,6 +2093,8 @@ export type ProfileUncheckedUpdateWithoutCameraInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1995,6 +2123,7 @@ export type ProfileCreateWithoutConversationMemberInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2009,6 +2138,8 @@ export type ProfileCreateWithoutConversationMemberInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -2037,6 +2168,7 @@ export type ProfileUncheckedCreateWithoutConversationMemberInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2051,6 +2183,8 @@ export type ProfileUncheckedCreateWithoutConversationMemberInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -2095,6 +2229,7 @@ export type ProfileUpdateWithoutConversationMemberInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2109,6 +2244,8 @@ export type ProfileUpdateWithoutConversationMemberInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -2137,6 +2274,7 @@ export type ProfileUncheckedUpdateWithoutConversationMemberInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2151,6 +2289,8 @@ export type ProfileUncheckedUpdateWithoutConversationMemberInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2179,6 +2319,7 @@ export type ProfileCreateWithoutCurrentLocationInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2193,6 +2334,8 @@ export type ProfileCreateWithoutCurrentLocationInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -2221,6 +2364,7 @@ export type ProfileUncheckedCreateWithoutCurrentLocationInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2235,6 +2379,8 @@ export type ProfileUncheckedCreateWithoutCurrentLocationInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -2279,6 +2425,7 @@ export type ProfileUpdateWithoutCurrentLocationInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2293,6 +2440,8 @@ export type ProfileUpdateWithoutCurrentLocationInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -2321,6 +2470,7 @@ export type ProfileUncheckedUpdateWithoutCurrentLocationInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2335,6 +2485,8 @@ export type ProfileUncheckedUpdateWithoutCurrentLocationInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2363,6 +2515,7 @@ export type ProfileCreateWithoutDailyStatusReportsInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2377,6 +2530,8 @@ export type ProfileCreateWithoutDailyStatusReportsInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -2405,6 +2560,7 @@ export type ProfileUncheckedCreateWithoutDailyStatusReportsInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2419,6 +2575,8 @@ export type ProfileUncheckedCreateWithoutDailyStatusReportsInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -2463,6 +2621,7 @@ export type ProfileUpdateWithoutDailyStatusReportsInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2477,6 +2636,8 @@ export type ProfileUpdateWithoutDailyStatusReportsInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -2505,6 +2666,7 @@ export type ProfileUncheckedUpdateWithoutDailyStatusReportsInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2519,6 +2681,8 @@ export type ProfileUncheckedUpdateWithoutDailyStatusReportsInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2547,6 +2711,7 @@ export type ProfileCreateWithoutDeviceInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2561,6 +2726,8 @@ export type ProfileCreateWithoutDeviceInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -2589,6 +2756,7 @@ export type ProfileUncheckedCreateWithoutDeviceInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2603,6 +2771,8 @@ export type ProfileUncheckedCreateWithoutDeviceInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -2647,6 +2817,7 @@ export type ProfileUpdateWithoutDeviceInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2661,6 +2832,8 @@ export type ProfileUpdateWithoutDeviceInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -2689,6 +2862,7 @@ export type ProfileUncheckedUpdateWithoutDeviceInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2703,6 +2877,8 @@ export type ProfileUncheckedUpdateWithoutDeviceInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2731,6 +2907,7 @@ export type ProfileCreateWithoutFallEventInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2745,6 +2922,8 @@ export type ProfileCreateWithoutFallEventInput = {
   Device?: Prisma.DeviceCreateNestedManyWithoutOwnerInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -2773,6 +2952,7 @@ export type ProfileUncheckedCreateWithoutFallEventInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2787,6 +2967,8 @@ export type ProfileUncheckedCreateWithoutFallEventInput = {
   Device?: Prisma.DeviceUncheckedCreateNestedManyWithoutOwnerInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -2831,6 +3013,7 @@ export type ProfileUpdateWithoutFallEventInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2845,6 +3028,8 @@ export type ProfileUpdateWithoutFallEventInput = {
   Device?: Prisma.DeviceUpdateManyWithoutOwnerNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -2873,6 +3058,7 @@ export type ProfileUncheckedUpdateWithoutFallEventInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2887,6 +3073,8 @@ export type ProfileUncheckedUpdateWithoutFallEventInput = {
   Device?: Prisma.DeviceUncheckedUpdateManyWithoutOwnerNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2915,6 +3103,7 @@ export type ProfileCreateWithoutFamilyInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2929,6 +3118,8 @@ export type ProfileCreateWithoutFamilyInput = {
   Device?: Prisma.DeviceCreateNestedManyWithoutOwnerInput
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -2957,6 +3148,7 @@ export type ProfileUncheckedCreateWithoutFamilyInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -2971,6 +3163,8 @@ export type ProfileUncheckedCreateWithoutFamilyInput = {
   Device?: Prisma.DeviceUncheckedCreateNestedManyWithoutOwnerInput
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -3015,6 +3209,7 @@ export type ProfileUpdateWithoutFamilyInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3029,6 +3224,8 @@ export type ProfileUpdateWithoutFamilyInput = {
   Device?: Prisma.DeviceUpdateManyWithoutOwnerNestedInput
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -3057,6 +3254,7 @@ export type ProfileUncheckedUpdateWithoutFamilyInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3071,6 +3269,8 @@ export type ProfileUncheckedUpdateWithoutFamilyInput = {
   Device?: Prisma.DeviceUncheckedUpdateManyWithoutOwnerNestedInput
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3099,6 +3299,7 @@ export type ProfileCreateWithoutFamily_members_family_members_invited_by_user_id
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3113,6 +3314,8 @@ export type ProfileCreateWithoutFamily_members_family_members_invited_by_user_id
   Device?: Prisma.DeviceCreateNestedManyWithoutOwnerInput
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -3141,6 +3344,7 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_invited_b
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3155,6 +3359,8 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_invited_b
   Device?: Prisma.DeviceUncheckedCreateNestedManyWithoutOwnerInput
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -3179,7 +3385,7 @@ export type ProfileCreateOrConnectWithoutFamily_members_family_members_invited_b
   create: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_invited_by_user_idToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_invited_by_user_idToprofilesInput>
 }
 
-export type ProfileCreateWithoutFamily_members_family_members_user_idToprofilesInput = {
+export type ProfileCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
   id: string
   fullName?: string | null
   email?: string | null
@@ -3188,6 +3394,7 @@ export type ProfileCreateWithoutFamily_members_family_members_user_idToprofilesI
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3203,6 +3410,198 @@ export type ProfileCreateWithoutFamily_members_family_members_user_idToprofilesI
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
+}
+
+export type ProfileUncheckedCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  uiMode?: string
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraUncheckedCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceUncheckedCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactUncheckedCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactUncheckedCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
+}
+
+export type ProfileCreateOrConnectWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput>
+}
+
+export type ProfileCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  uiMode?: string
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerCreateNestedManyWithoutViewerInput
+}
+
+export type ProfileUncheckedCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  uiMode?: string
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraUncheckedCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceUncheckedCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
+  Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
+  Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
+  Message?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_recipient_user_idToprofilesInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedCreateNestedManyWithoutProfiles_notifications_sender_user_idToprofilesInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedCreateNestedManyWithoutCreatorInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedCreateNestedManyWithoutCreatorInput
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatorInput
+  sosContactsOwned?: Prisma.SosContactUncheckedCreateNestedManyWithoutOwnerInput
+  sosContactsLinked?: Prisma.SosContactUncheckedCreateNestedManyWithoutLinkedUserInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedCreateNestedManyWithoutActorInput
+  sosEventsHandled?: Prisma.SosEventUncheckedCreateNestedManyWithoutHandlerInput
+  SosRecipient?: Prisma.SosRecipientUncheckedCreateNestedManyWithoutRecipientInput
+  UserSetting?: Prisma.UserSettingUncheckedCreateNestedOneWithoutProfileInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutOwnerInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedCreateNestedManyWithoutViewerInput
+}
+
+export type ProfileCreateOrConnectWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>
+}
+
+export type ProfileCreateWithoutFamily_members_family_members_user_idToprofilesInput = {
+  id: string
+  fullName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  avatarUrl?: string | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  role?: string | null
+  uiMode?: string
+  accountStatus?: string | null
+  createdAt?: Date | string | null
+  updatedAt?: Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingCreateNestedOneWithoutProfileInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCallerInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogCreateNestedManyWithoutCalleeInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantCreateNestedManyWithoutUserInput
+  Camera?: Prisma.CameraCreateNestedManyWithoutCreatorInput
+  ConversationMember?: Prisma.ConversationMemberCreateNestedManyWithoutProfileInput
+  CurrentLocation?: Prisma.CurrentLocationCreateNestedOneWithoutOwnerInput
+  dailyStatusReports?: Prisma.DailyStatusReportCreateNestedManyWithoutSubjectInput
+  Device?: Prisma.DeviceCreateNestedManyWithoutOwnerInput
+  FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
+  Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
   Message?: Prisma.MessageCreateNestedManyWithoutSenderInput
@@ -3230,6 +3629,7 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_user_idTo
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3245,6 +3645,8 @@ export type ProfileUncheckedCreateWithoutFamily_members_family_members_user_idTo
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
   Message?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -3288,6 +3690,7 @@ export type ProfileUpdateWithoutFamily_members_family_members_invited_by_user_id
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3302,6 +3705,8 @@ export type ProfileUpdateWithoutFamily_members_family_members_invited_by_user_id
   Device?: Prisma.DeviceUpdateManyWithoutOwnerNestedInput
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -3330,6 +3735,7 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_invited_b
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3344,6 +3750,210 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_invited_b
   Device?: Prisma.DeviceUncheckedUpdateManyWithoutOwnerNestedInput
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUncheckedUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUncheckedUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
+}
+
+export type ProfileUpsertWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput, Prisma.ProfileUncheckedUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_granted_byToprofilesInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput, Prisma.ProfileUncheckedUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput>
+}
+
+export type ProfileUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutFamily_members_family_members_care_granted_byToprofilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUncheckedUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUncheckedUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUncheckedUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUncheckedUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUncheckedUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUncheckedUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUncheckedUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUncheckedUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUncheckedUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUncheckedUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUncheckedUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUncheckedUpdateManyWithoutViewerNestedInput
+}
+
+export type ProfileUpsertWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput, Prisma.ProfileUncheckedUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput, Prisma.ProfileUncheckedCreateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput, Prisma.ProfileUncheckedUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput>
+}
+
+export type ProfileUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
+  Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
+  Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
+  Message?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  notifications_notifications_recipient_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_recipient_user_idToprofilesNestedInput
+  notifications_notifications_sender_user_idToprofiles?: Prisma.NotificationUpdateManyWithoutProfiles_notifications_sender_user_idToprofilesNestedInput
+  PhoneCommand?: Prisma.PhoneCommandUpdateManyWithoutCreatorNestedInput
+  PhoneRule?: Prisma.PhoneRuleUpdateManyWithoutCreatorNestedInput
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatorNestedInput
+  sosContactsOwned?: Prisma.SosContactUpdateManyWithoutOwnerNestedInput
+  sosContactsLinked?: Prisma.SosContactUpdateManyWithoutLinkedUserNestedInput
+  sosEventsTriggered?: Prisma.SosEventUpdateManyWithoutActorNestedInput
+  sosEventsHandled?: Prisma.SosEventUpdateManyWithoutHandlerNestedInput
+  SosRecipient?: Prisma.SosRecipientUpdateManyWithoutRecipientNestedInput
+  UserSetting?: Prisma.UserSettingUpdateOneWithoutProfileNestedInput
+  sharedLocationViewers?: Prisma.LocationShareViewerUpdateManyWithoutOwnerNestedInput
+  locationsSharedWithMe?: Prisma.LocationShareViewerUpdateManyWithoutViewerNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutFamily_members_family_members_care_recipient_set_byToprofilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
+  accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  BiometricSetting?: Prisma.BiometricSettingUncheckedUpdateOneWithoutProfileNestedInput
+  call_logs_call_logs_caller_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCallerNestedInput
+  call_logs_call_logs_receiver_idToprofiles?: Prisma.CallLogUncheckedUpdateManyWithoutCalleeNestedInput
+  CallActiveParticipant?: Prisma.CallActiveParticipantUncheckedUpdateManyWithoutUserNestedInput
+  Camera?: Prisma.CameraUncheckedUpdateManyWithoutCreatorNestedInput
+  ConversationMember?: Prisma.ConversationMemberUncheckedUpdateManyWithoutProfileNestedInput
+  CurrentLocation?: Prisma.CurrentLocationUncheckedUpdateOneWithoutOwnerNestedInput
+  dailyStatusReports?: Prisma.DailyStatusReportUncheckedUpdateManyWithoutSubjectNestedInput
+  Device?: Prisma.DeviceUncheckedUpdateManyWithoutOwnerNestedInput
+  FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
+  Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
+  family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3383,6 +3993,7 @@ export type ProfileUpdateWithoutFamily_members_family_members_user_idToprofilesI
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3398,6 +4009,8 @@ export type ProfileUpdateWithoutFamily_members_family_members_user_idToprofilesI
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
   Message?: Prisma.MessageUpdateManyWithoutSenderNestedInput
@@ -3425,6 +4038,7 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_user_idTo
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3440,6 +4054,8 @@ export type ProfileUncheckedUpdateWithoutFamily_members_family_members_user_idTo
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
   Message?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -3467,6 +4083,7 @@ export type ProfileCreateWithoutGeofenceInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3482,6 +4099,8 @@ export type ProfileCreateWithoutGeofenceInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
   Message?: Prisma.MessageCreateNestedManyWithoutSenderInput
@@ -3509,6 +4128,7 @@ export type ProfileUncheckedCreateWithoutGeofenceInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3524,6 +4144,8 @@ export type ProfileUncheckedCreateWithoutGeofenceInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
   Message?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -3567,6 +4189,7 @@ export type ProfileUpdateWithoutGeofenceInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3582,6 +4205,8 @@ export type ProfileUpdateWithoutGeofenceInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
   Message?: Prisma.MessageUpdateManyWithoutSenderNestedInput
@@ -3609,6 +4234,7 @@ export type ProfileUncheckedUpdateWithoutGeofenceInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3624,6 +4250,8 @@ export type ProfileUncheckedUpdateWithoutGeofenceInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
   Message?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -3651,6 +4279,7 @@ export type ProfileCreateWithoutLocationInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3666,6 +4295,8 @@ export type ProfileCreateWithoutLocationInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Message?: Prisma.MessageCreateNestedManyWithoutSenderInput
@@ -3693,6 +4324,7 @@ export type ProfileUncheckedCreateWithoutLocationInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3708,6 +4340,8 @@ export type ProfileUncheckedCreateWithoutLocationInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Message?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -3751,6 +4385,7 @@ export type ProfileUpdateWithoutLocationInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3766,6 +4401,8 @@ export type ProfileUpdateWithoutLocationInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Message?: Prisma.MessageUpdateManyWithoutSenderNestedInput
@@ -3793,6 +4430,7 @@ export type ProfileUncheckedUpdateWithoutLocationInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3808,6 +4446,8 @@ export type ProfileUncheckedUpdateWithoutLocationInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Message?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -3835,6 +4475,7 @@ export type ProfileCreateWithoutMessageInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3850,6 +4491,8 @@ export type ProfileCreateWithoutMessageInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -3877,6 +4520,7 @@ export type ProfileUncheckedCreateWithoutMessageInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -3892,6 +4536,8 @@ export type ProfileUncheckedCreateWithoutMessageInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -3935,6 +4581,7 @@ export type ProfileUpdateWithoutMessageInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3950,6 +4597,8 @@ export type ProfileUpdateWithoutMessageInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -3977,6 +4626,7 @@ export type ProfileUncheckedUpdateWithoutMessageInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3992,6 +4642,8 @@ export type ProfileUncheckedUpdateWithoutMessageInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4019,6 +4671,7 @@ export type ProfileCreateWithoutNotifications_notifications_recipient_user_idTop
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4034,6 +4687,8 @@ export type ProfileCreateWithoutNotifications_notifications_recipient_user_idTop
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -4061,6 +4716,7 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_recipient_u
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4076,6 +4732,8 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_recipient_u
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4108,6 +4766,7 @@ export type ProfileCreateWithoutNotifications_notifications_sender_user_idToprof
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4123,6 +4782,8 @@ export type ProfileCreateWithoutNotifications_notifications_sender_user_idToprof
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -4150,6 +4811,7 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_sender_user
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4165,6 +4827,8 @@ export type ProfileUncheckedCreateWithoutNotifications_notifications_sender_user
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4208,6 +4872,7 @@ export type ProfileUpdateWithoutNotifications_notifications_recipient_user_idTop
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4223,6 +4888,8 @@ export type ProfileUpdateWithoutNotifications_notifications_recipient_user_idTop
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -4250,6 +4917,7 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_recipient_u
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4265,6 +4933,8 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_recipient_u
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4303,6 +4973,7 @@ export type ProfileUpdateWithoutNotifications_notifications_sender_user_idToprof
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4318,6 +4989,8 @@ export type ProfileUpdateWithoutNotifications_notifications_sender_user_idToprof
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -4345,6 +5018,7 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_sender_user
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4360,6 +5034,8 @@ export type ProfileUncheckedUpdateWithoutNotifications_notifications_sender_user
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4387,6 +5063,7 @@ export type ProfileCreateWithoutPhoneCommandInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4402,6 +5079,8 @@ export type ProfileCreateWithoutPhoneCommandInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -4429,6 +5108,7 @@ export type ProfileUncheckedCreateWithoutPhoneCommandInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4444,6 +5124,8 @@ export type ProfileUncheckedCreateWithoutPhoneCommandInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4487,6 +5169,7 @@ export type ProfileUpdateWithoutPhoneCommandInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4502,6 +5185,8 @@ export type ProfileUpdateWithoutPhoneCommandInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -4529,6 +5214,7 @@ export type ProfileUncheckedUpdateWithoutPhoneCommandInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4544,6 +5230,8 @@ export type ProfileUncheckedUpdateWithoutPhoneCommandInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4571,6 +5259,7 @@ export type ProfileCreateWithoutPhoneRuleInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4586,6 +5275,8 @@ export type ProfileCreateWithoutPhoneRuleInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -4613,6 +5304,7 @@ export type ProfileUncheckedCreateWithoutPhoneRuleInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4628,6 +5320,8 @@ export type ProfileUncheckedCreateWithoutPhoneRuleInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4671,6 +5365,7 @@ export type ProfileUpdateWithoutPhoneRuleInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4686,6 +5381,8 @@ export type ProfileUpdateWithoutPhoneRuleInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -4713,6 +5410,7 @@ export type ProfileUncheckedUpdateWithoutPhoneRuleInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4728,6 +5426,8 @@ export type ProfileUncheckedUpdateWithoutPhoneRuleInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4755,6 +5455,7 @@ export type ProfileCreateWithoutRemindersCreatedInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4770,6 +5471,8 @@ export type ProfileCreateWithoutRemindersCreatedInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -4797,6 +5500,7 @@ export type ProfileUncheckedCreateWithoutRemindersCreatedInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4812,6 +5516,8 @@ export type ProfileUncheckedCreateWithoutRemindersCreatedInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4855,6 +5561,7 @@ export type ProfileUpdateWithoutRemindersCreatedInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4870,6 +5577,8 @@ export type ProfileUpdateWithoutRemindersCreatedInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -4897,6 +5606,7 @@ export type ProfileUncheckedUpdateWithoutRemindersCreatedInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4912,6 +5622,8 @@ export type ProfileUncheckedUpdateWithoutRemindersCreatedInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4939,6 +5651,7 @@ export type ProfileCreateWithoutSosContactsOwnedInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4954,6 +5667,8 @@ export type ProfileCreateWithoutSosContactsOwnedInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -4981,6 +5696,7 @@ export type ProfileUncheckedCreateWithoutSosContactsOwnedInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -4996,6 +5712,8 @@ export type ProfileUncheckedCreateWithoutSosContactsOwnedInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -5028,6 +5746,7 @@ export type ProfileCreateWithoutSosContactsLinkedInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5043,6 +5762,8 @@ export type ProfileCreateWithoutSosContactsLinkedInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -5070,6 +5791,7 @@ export type ProfileUncheckedCreateWithoutSosContactsLinkedInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5085,6 +5807,8 @@ export type ProfileUncheckedCreateWithoutSosContactsLinkedInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -5128,6 +5852,7 @@ export type ProfileUpdateWithoutSosContactsOwnedInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5143,6 +5868,8 @@ export type ProfileUpdateWithoutSosContactsOwnedInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -5170,6 +5897,7 @@ export type ProfileUncheckedUpdateWithoutSosContactsOwnedInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5185,6 +5913,8 @@ export type ProfileUncheckedUpdateWithoutSosContactsOwnedInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5223,6 +5953,7 @@ export type ProfileUpdateWithoutSosContactsLinkedInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5238,6 +5969,8 @@ export type ProfileUpdateWithoutSosContactsLinkedInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -5265,6 +5998,7 @@ export type ProfileUncheckedUpdateWithoutSosContactsLinkedInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5280,6 +6014,8 @@ export type ProfileUncheckedUpdateWithoutSosContactsLinkedInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5307,6 +6043,7 @@ export type ProfileCreateWithoutSosEventsTriggeredInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5322,6 +6059,8 @@ export type ProfileCreateWithoutSosEventsTriggeredInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -5349,6 +6088,7 @@ export type ProfileUncheckedCreateWithoutSosEventsTriggeredInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5364,6 +6104,8 @@ export type ProfileUncheckedCreateWithoutSosEventsTriggeredInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -5396,6 +6138,7 @@ export type ProfileCreateWithoutSosEventsHandledInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5411,6 +6154,8 @@ export type ProfileCreateWithoutSosEventsHandledInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -5438,6 +6183,7 @@ export type ProfileUncheckedCreateWithoutSosEventsHandledInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5453,6 +6199,8 @@ export type ProfileUncheckedCreateWithoutSosEventsHandledInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -5496,6 +6244,7 @@ export type ProfileUpdateWithoutSosEventsTriggeredInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5511,6 +6260,8 @@ export type ProfileUpdateWithoutSosEventsTriggeredInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -5538,6 +6289,7 @@ export type ProfileUncheckedUpdateWithoutSosEventsTriggeredInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5553,6 +6305,8 @@ export type ProfileUncheckedUpdateWithoutSosEventsTriggeredInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5591,6 +6345,7 @@ export type ProfileUpdateWithoutSosEventsHandledInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5606,6 +6361,8 @@ export type ProfileUpdateWithoutSosEventsHandledInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -5633,6 +6390,7 @@ export type ProfileUncheckedUpdateWithoutSosEventsHandledInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5648,6 +6406,8 @@ export type ProfileUncheckedUpdateWithoutSosEventsHandledInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5675,6 +6435,7 @@ export type ProfileCreateWithoutSosRecipientInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5690,6 +6451,8 @@ export type ProfileCreateWithoutSosRecipientInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -5717,6 +6480,7 @@ export type ProfileUncheckedCreateWithoutSosRecipientInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5732,6 +6496,8 @@ export type ProfileUncheckedCreateWithoutSosRecipientInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -5775,6 +6541,7 @@ export type ProfileUpdateWithoutSosRecipientInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5790,6 +6557,8 @@ export type ProfileUpdateWithoutSosRecipientInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -5817,6 +6586,7 @@ export type ProfileUncheckedUpdateWithoutSosRecipientInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5832,6 +6602,8 @@ export type ProfileUncheckedUpdateWithoutSosRecipientInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5859,6 +6631,7 @@ export type ProfileCreateWithoutUserSettingInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5874,6 +6647,8 @@ export type ProfileCreateWithoutUserSettingInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -5901,6 +6676,7 @@ export type ProfileUncheckedCreateWithoutUserSettingInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -5916,6 +6692,8 @@ export type ProfileUncheckedCreateWithoutUserSettingInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -5959,6 +6737,7 @@ export type ProfileUpdateWithoutUserSettingInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5974,6 +6753,8 @@ export type ProfileUpdateWithoutUserSettingInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -6001,6 +6782,7 @@ export type ProfileUncheckedUpdateWithoutUserSettingInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6016,6 +6798,8 @@ export type ProfileUncheckedUpdateWithoutUserSettingInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -6043,6 +6827,7 @@ export type ProfileCreateWithoutSharedLocationViewersInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -6058,6 +6843,8 @@ export type ProfileCreateWithoutSharedLocationViewersInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -6085,6 +6872,7 @@ export type ProfileUncheckedCreateWithoutSharedLocationViewersInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -6100,6 +6888,8 @@ export type ProfileUncheckedCreateWithoutSharedLocationViewersInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -6132,6 +6922,7 @@ export type ProfileCreateWithoutLocationsSharedWithMeInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -6147,6 +6938,8 @@ export type ProfileCreateWithoutLocationsSharedWithMeInput = {
   FallEvent?: Prisma.FallEventCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationCreateNestedManyWithoutOwnerInput
@@ -6174,6 +6967,7 @@ export type ProfileUncheckedCreateWithoutLocationsSharedWithMeInput = {
   dateOfBirth?: Date | string | null
   gender?: string | null
   role?: string | null
+  uiMode?: string
   accountStatus?: string | null
   createdAt?: Date | string | null
   updatedAt?: Date | string | null
@@ -6189,6 +6983,8 @@ export type ProfileUncheckedCreateWithoutLocationsSharedWithMeInput = {
   FallEvent?: Prisma.FallEventUncheckedCreateNestedManyWithoutProfileInput
   Family?: Prisma.FamilyUncheckedCreateNestedManyWithoutOwnerInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutInviterInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareGrantedByProfileInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutCareRecipientSetByProfileInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedCreateNestedManyWithoutProfileInput
   Geofence?: Prisma.GeofenceUncheckedCreateNestedManyWithoutProfileInput
   Location?: Prisma.LocationUncheckedCreateNestedManyWithoutOwnerInput
@@ -6232,6 +7028,7 @@ export type ProfileUpdateWithoutSharedLocationViewersInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6247,6 +7044,8 @@ export type ProfileUpdateWithoutSharedLocationViewersInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -6274,6 +7073,7 @@ export type ProfileUncheckedUpdateWithoutSharedLocationViewersInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6289,6 +7089,8 @@ export type ProfileUncheckedUpdateWithoutSharedLocationViewersInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -6327,6 +7129,7 @@ export type ProfileUpdateWithoutLocationsSharedWithMeInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6342,6 +7145,8 @@ export type ProfileUpdateWithoutLocationsSharedWithMeInput = {
   FallEvent?: Prisma.FallEventUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUpdateManyWithoutOwnerNestedInput
@@ -6369,6 +7174,7 @@ export type ProfileUncheckedUpdateWithoutLocationsSharedWithMeInput = {
   dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uiMode?: Prisma.StringFieldUpdateOperationsInput | string
   accountStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6384,6 +7190,8 @@ export type ProfileUncheckedUpdateWithoutLocationsSharedWithMeInput = {
   FallEvent?: Prisma.FallEventUncheckedUpdateManyWithoutProfileNestedInput
   Family?: Prisma.FamilyUncheckedUpdateManyWithoutOwnerNestedInput
   family_members_family_members_invited_by_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutInviterNestedInput
+  family_members_family_members_care_granted_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareGrantedByProfileNestedInput
+  family_members_family_members_care_recipient_set_byToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutCareRecipientSetByProfileNestedInput
   family_members_family_members_user_idToprofiles?: Prisma.FamilyMemberUncheckedUpdateManyWithoutProfileNestedInput
   Geofence?: Prisma.GeofenceUncheckedUpdateManyWithoutProfileNestedInput
   Location?: Prisma.LocationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -6418,6 +7226,8 @@ export type ProfileCountOutputType = {
   FallEvent: number
   Family: number
   family_members_family_members_invited_by_user_idToprofiles: number
+  family_members_family_members_care_granted_byToprofiles: number
+  family_members_family_members_care_recipient_set_byToprofiles: number
   family_members_family_members_user_idToprofiles: number
   Geofence: number
   Location: number
@@ -6447,6 +7257,8 @@ export type ProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   FallEvent?: boolean | ProfileCountOutputTypeCountFallEventArgs
   Family?: boolean | ProfileCountOutputTypeCountFamilyArgs
   family_members_family_members_invited_by_user_idToprofiles?: boolean | ProfileCountOutputTypeCountFamily_members_family_members_invited_by_user_idToprofilesArgs
+  family_members_family_members_care_granted_byToprofiles?: boolean | ProfileCountOutputTypeCountFamily_members_family_members_care_granted_byToprofilesArgs
+  family_members_family_members_care_recipient_set_byToprofiles?: boolean | ProfileCountOutputTypeCountFamily_members_family_members_care_recipient_set_byToprofilesArgs
   family_members_family_members_user_idToprofiles?: boolean | ProfileCountOutputTypeCountFamily_members_family_members_user_idToprofilesArgs
   Geofence?: boolean | ProfileCountOutputTypeCountGeofenceArgs
   Location?: boolean | ProfileCountOutputTypeCountLocationArgs
@@ -6542,6 +7354,20 @@ export type ProfileCountOutputTypeCountFamilyArgs<ExtArgs extends runtime.Types.
  * ProfileCountOutputType without action
  */
 export type ProfileCountOutputTypeCountFamily_members_family_members_invited_by_user_idToprofilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyMemberWhereInput
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountFamily_members_family_members_care_granted_byToprofilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyMemberWhereInput
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountFamily_members_family_members_care_recipient_set_byToprofilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.FamilyMemberWhereInput
 }
 
@@ -6667,6 +7493,7 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   dateOfBirth?: boolean
   gender?: boolean
   role?: boolean
+  uiMode?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -6682,6 +7509,8 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   FallEvent?: boolean | Prisma.Profile$FallEventArgs<ExtArgs>
   Family?: boolean | Prisma.Profile$FamilyArgs<ExtArgs>
   family_members_family_members_invited_by_user_idToprofiles?: boolean | Prisma.Profile$family_members_family_members_invited_by_user_idToprofilesArgs<ExtArgs>
+  family_members_family_members_care_granted_byToprofiles?: boolean | Prisma.Profile$family_members_family_members_care_granted_byToprofilesArgs<ExtArgs>
+  family_members_family_members_care_recipient_set_byToprofiles?: boolean | Prisma.Profile$family_members_family_members_care_recipient_set_byToprofilesArgs<ExtArgs>
   family_members_family_members_user_idToprofiles?: boolean | Prisma.Profile$family_members_family_members_user_idToprofilesArgs<ExtArgs>
   Geofence?: boolean | Prisma.Profile$GeofenceArgs<ExtArgs>
   Location?: boolean | Prisma.Profile$LocationArgs<ExtArgs>
@@ -6711,6 +7540,7 @@ export type ProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   dateOfBirth?: boolean
   gender?: boolean
   role?: boolean
+  uiMode?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -6725,6 +7555,7 @@ export type ProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   dateOfBirth?: boolean
   gender?: boolean
   role?: boolean
+  uiMode?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -6739,12 +7570,13 @@ export type ProfileSelectScalar = {
   dateOfBirth?: boolean
   gender?: boolean
   role?: boolean
+  uiMode?: boolean
   accountStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "email" | "phoneNumber" | "avatarUrl" | "dateOfBirth" | "gender" | "role" | "accountStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "email" | "phoneNumber" | "avatarUrl" | "dateOfBirth" | "gender" | "role" | "uiMode" | "accountStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
 export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   BiometricSetting?: boolean | Prisma.Profile$BiometricSettingArgs<ExtArgs>
   call_logs_call_logs_caller_idToprofiles?: boolean | Prisma.Profile$call_logs_call_logs_caller_idToprofilesArgs<ExtArgs>
@@ -6758,6 +7590,8 @@ export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   FallEvent?: boolean | Prisma.Profile$FallEventArgs<ExtArgs>
   Family?: boolean | Prisma.Profile$FamilyArgs<ExtArgs>
   family_members_family_members_invited_by_user_idToprofiles?: boolean | Prisma.Profile$family_members_family_members_invited_by_user_idToprofilesArgs<ExtArgs>
+  family_members_family_members_care_granted_byToprofiles?: boolean | Prisma.Profile$family_members_family_members_care_granted_byToprofilesArgs<ExtArgs>
+  family_members_family_members_care_recipient_set_byToprofiles?: boolean | Prisma.Profile$family_members_family_members_care_recipient_set_byToprofilesArgs<ExtArgs>
   family_members_family_members_user_idToprofiles?: boolean | Prisma.Profile$family_members_family_members_user_idToprofilesArgs<ExtArgs>
   Geofence?: boolean | Prisma.Profile$GeofenceArgs<ExtArgs>
   Location?: boolean | Prisma.Profile$LocationArgs<ExtArgs>
@@ -6795,6 +7629,8 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     FallEvent: Prisma.$FallEventPayload<ExtArgs>[]
     Family: Prisma.$FamilyPayload<ExtArgs>[]
     family_members_family_members_invited_by_user_idToprofiles: Prisma.$FamilyMemberPayload<ExtArgs>[]
+    family_members_family_members_care_granted_byToprofiles: Prisma.$FamilyMemberPayload<ExtArgs>[]
+    family_members_family_members_care_recipient_set_byToprofiles: Prisma.$FamilyMemberPayload<ExtArgs>[]
     family_members_family_members_user_idToprofiles: Prisma.$FamilyMemberPayload<ExtArgs>[]
     Geofence: Prisma.$GeofencePayload<ExtArgs>[]
     Location: Prisma.$LocationPayload<ExtArgs>[]
@@ -6822,6 +7658,7 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     dateOfBirth: Date | null
     gender: string | null
     role: string | null
+    uiMode: string
     accountStatus: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7231,6 +8068,8 @@ export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends runtime.
   FallEvent<T extends Prisma.Profile$FallEventArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$FallEventArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FallEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   Family<T extends Prisma.Profile$FamilyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$FamilyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   family_members_family_members_invited_by_user_idToprofiles<T extends Prisma.Profile$family_members_family_members_invited_by_user_idToprofilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$family_members_family_members_invited_by_user_idToprofilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  family_members_family_members_care_granted_byToprofiles<T extends Prisma.Profile$family_members_family_members_care_granted_byToprofilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$family_members_family_members_care_granted_byToprofilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  family_members_family_members_care_recipient_set_byToprofiles<T extends Prisma.Profile$family_members_family_members_care_recipient_set_byToprofilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$family_members_family_members_care_recipient_set_byToprofilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   family_members_family_members_user_idToprofiles<T extends Prisma.Profile$family_members_family_members_user_idToprofilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$family_members_family_members_user_idToprofilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   Geofence<T extends Prisma.Profile$GeofenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$GeofenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeofencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   Location<T extends Prisma.Profile$LocationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$LocationArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -7285,6 +8124,7 @@ export interface ProfileFieldRefs {
   readonly dateOfBirth: Prisma.FieldRef<"Profile", 'DateTime'>
   readonly gender: Prisma.FieldRef<"Profile", 'String'>
   readonly role: Prisma.FieldRef<"Profile", 'String'>
+  readonly uiMode: Prisma.FieldRef<"Profile", 'String'>
   readonly accountStatus: Prisma.FieldRef<"Profile", 'String'>
   readonly createdAt: Prisma.FieldRef<"Profile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Profile", 'DateTime'>
@@ -7938,6 +8778,54 @@ export type Profile$FamilyArgs<ExtArgs extends runtime.Types.Extensions.Internal
  * Profile.family_members_family_members_invited_by_user_idToprofiles
  */
 export type Profile$family_members_family_members_invited_by_user_idToprofilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyMember
+   */
+  select?: Prisma.FamilyMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyMember
+   */
+  omit?: Prisma.FamilyMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyMemberInclude<ExtArgs> | null
+  where?: Prisma.FamilyMemberWhereInput
+  orderBy?: Prisma.FamilyMemberOrderByWithRelationInput | Prisma.FamilyMemberOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyMemberScalarFieldEnum | Prisma.FamilyMemberScalarFieldEnum[]
+}
+
+/**
+ * Profile.family_members_family_members_care_granted_byToprofiles
+ */
+export type Profile$family_members_family_members_care_granted_byToprofilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyMember
+   */
+  select?: Prisma.FamilyMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyMember
+   */
+  omit?: Prisma.FamilyMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyMemberInclude<ExtArgs> | null
+  where?: Prisma.FamilyMemberWhereInput
+  orderBy?: Prisma.FamilyMemberOrderByWithRelationInput | Prisma.FamilyMemberOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyMemberScalarFieldEnum | Prisma.FamilyMemberScalarFieldEnum[]
+}
+
+/**
+ * Profile.family_members_family_members_care_recipient_set_byToprofiles
+ */
+export type Profile$family_members_family_members_care_recipient_set_byToprofilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the FamilyMember
    */

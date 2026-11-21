@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
+import { isWithinHiredScope } from '../../modules/families/care-scope.util';
 import { PrismaService } from '../database/prisma.service';
 
 const uuidSchema = z.string().uuid();
@@ -81,11 +82,33 @@ export class RealtimeRoomAuthorizationService {
     memberId: string,
   ): Promise<boolean> {
     const member = await this.prisma.familyMember.findFirst({
-      where: { id: memberId, status: 'accepted' },
-      select: { familyId: true },
+      where: {
+        id: memberId,
+        status: 'accepted',
+        family: { status: 'active' },
+      },
+      select: { id: true, userId: true, familyId: true },
     });
     if (!member) return false;
-    return this.hasAcceptedFamilyMembership(userId, member.familyId);
+    const viewer = await this.prisma.familyMember.findFirst({
+      where: {
+        familyId: member.familyId,
+        userId,
+        status: 'accepted',
+        family: { status: 'active' },
+      },
+      select: {
+        id: true,
+        isHired: true,
+        careScopes: { select: { targetMemberId: true } },
+        family: { select: { ownerUserId: true } },
+      },
+    });
+    if (!viewer) return false;
+    return (
+      member.userId === userId ||
+      isWithinHiredScope({ ...viewer, userId }, memberId)
+    );
   }
 
   private async hasConversationMembership(

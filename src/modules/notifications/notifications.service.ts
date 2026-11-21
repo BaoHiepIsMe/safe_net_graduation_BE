@@ -73,6 +73,15 @@ export class NotificationsService {
     return created;
   }
 
+  async notifyFamilyEvent(
+    input: Parameters<NotificationsRepository['createFamilyNotifications']>[0],
+  ) {
+    const created = await this.repository.createFamilyNotifications(input);
+    this.emitCreated(created);
+    await this.deliverCreated(created);
+    return created;
+  }
+
   private emitCreated(
     created: Array<{
       notification: Record<string, any>;
@@ -267,6 +276,15 @@ export class NotificationsService {
         metadata.callType === 'voice' || metadata.callType === 'video'
           ? metadata.callType
           : null,
+      ...(typeof metadata.decision === 'string'
+        ? { decision: metadata.decision }
+        : {}),
+      ...(typeof metadata.action === 'string'
+        ? { action: metadata.action }
+        : {}),
+      ...(typeof metadata.priority === 'string'
+        ? { priority: metadata.priority }
+        : {}),
     };
   }
 

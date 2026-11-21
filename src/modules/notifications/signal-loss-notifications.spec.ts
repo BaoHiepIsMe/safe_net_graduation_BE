@@ -53,7 +53,12 @@ function setup(
               id: OWNER_MEMBER,
               familyId: FAMILY,
               displayName: null,
-              profile: { fullName: 'Bé An' },
+              isCareRecipient: false,
+              locationSharingEnabled: true,
+              profile: {
+                fullName: 'Bé An',
+                dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+              },
             },
           ],
         )
@@ -154,21 +159,86 @@ describe('NotificationsRepository.createFromSignalLoss', () => {
   });
 
   it('only tells the chosen viewers when visibility is selected', async () => {
-    const { tx, repository } = setup({
+    const recipient = (userId: string) => ({
+      userId,
+      familyId: FAMILY,
+      profile: {
+        UserSetting: { pushNotificationsEnabled: true },
+        Device: [],
+      },
+    });
+    const { repository } = setup({
       settings: {
         locationSharingEnabled: true,
         notifyOnSignalLost: true,
         locationVisibility: 'selected',
       },
       viewers: [{ viewerUserId: PEER }],
+      recipients: [recipient(PEER), recipient(OTHER)],
     });
 
-    await repository.createFromSignalLoss(input);
+    const created = await repository.createFromSignalLoss(input);
 
-    expect(tx.familyMember.findMany.mock.calls[1][0].where).toMatchObject({
-      userId: { in: [PEER] },
+    expect(created.map((item) => item.recipientUserId)).toEqual([PEER]);
+  });
+
+  it('always tells the care managers of a care recipient, whatever their own settings', async () => {
+    const { tx, repository } = setup({
+      settings: {
+        locationSharingEnabled: false,
+        notifyOnSignalLost: false,
+        locationVisibility: 'selected',
+      },
+      memberships: [
+        {
+          id: OWNER_MEMBER,
+          familyId: FAMILY,
+          displayName: 'Bà',
+          isCareRecipient: true,
+          locationSharingEnabled: false,
+          profile: {
+            fullName: 'Bà Nội',
+            dateOfBirth: new Date('1950-01-01T00:00:00.000Z'),
+          },
+        },
+      ],
     });
-    expect(OTHER).not.toBe(PEER);
+    // 2nd query: care managers of the member; 3rd: notification candidates.
+    tx.familyMember.findMany
+      .mockReset()
+      .mockResolvedValueOnce([
+        {
+          id: OWNER_MEMBER,
+          familyId: FAMILY,
+          displayName: 'Bà',
+          isCareRecipient: true,
+          locationSharingEnabled: false,
+          profile: {
+            fullName: 'Bà Nội',
+            dateOfBirth: new Date('1950-01-01T00:00:00.000Z'),
+          },
+        },
+      ])
+      .mockResolvedValueOnce([
+        { userId: PEER, isHired: false, careScopes: [], family: null },
+      ])
+      .mockResolvedValueOnce([
+        {
+          userId: PEER,
+          familyId: FAMILY,
+          profile: { UserSetting: null, Device: [] },
+        },
+        {
+          userId: OTHER,
+          familyId: FAMILY,
+          profile: { UserSetting: null, Device: [] },
+        },
+      ]);
+
+    const created = await repository.createFromSignalLoss(input);
+
+    expect(created.map((item) => item.recipientUserId)).toEqual([PEER]);
+    expect(tx.locationShareViewer.findMany).toHaveBeenCalled();
   });
 
   it('skips push deliveries when the recipient turned push off', async () => {

@@ -6,13 +6,13 @@ import {
   NotFoundError,
   ValidationError,
 } from '../../common/errors/app.error';
+import { isMinor } from '../../common/utils/age.util';
 import {
   CameraCursor,
   CameraListQueryDto,
   CreateCameraDto,
   UpdateCameraDto,
 } from './dto/camera.dto';
-import { CAMERA_MANAGER_ROLE, CAMERA_READ_ROLES } from './cameras.constants';
 import { CamerasRepository } from './cameras.repository';
 
 const cursorSchema = z
@@ -31,7 +31,7 @@ export class CamerasService {
 
   async list(userId: string, familyId: string, query: CameraListQueryDto) {
     const access = await this.requireReadAccess(userId, familyId);
-    if (access.role !== CAMERA_MANAGER_ROLE && query.active !== 'true') {
+    if (!this.isCameraAdmin(access, userId) && query.active !== 'true') {
       this.denied();
     }
     const cursor = query.cursor ? this.decodeCursor(query.cursor) : undefined;
@@ -55,7 +55,7 @@ export class CamerasService {
     const camera = await this.repository.find(familyId, cameraId);
     if (
       !camera ||
-      (access.role !== CAMERA_MANAGER_ROLE && camera.status !== 'active')
+      (!this.isCameraAdmin(access, userId) && camera.status !== 'active')
     ) {
       this.notFound();
     }
@@ -85,14 +85,23 @@ export class CamerasService {
     if (result.outcome === 'not_found') this.notFound();
   }
 
+  private isCameraAdmin(
+    access: {
+      canManageCare: boolean;
+      isHired: boolean;
+      family: { ownerUserId: string };
+    },
+    userId: string,
+  ) {
+    return (
+      (access.canManageCare && !access.isHired) ||
+      access.family.ownerUserId === userId
+    );
+  }
+
   private async requireReadAccess(userId: string, familyId: string) {
     const access = await this.repository.getFamilyAccess(userId, familyId);
-    if (
-      !access ||
-      !CAMERA_READ_ROLES.includes(
-        access.role as (typeof CAMERA_READ_ROLES)[number],
-      )
-    ) {
+    if (!access || access.isHired || isMinor(access.profile?.dateOfBirth)) {
       this.denied();
     }
     return access;

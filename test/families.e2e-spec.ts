@@ -3,9 +3,10 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
-import { SupabaseService } from '../src/infrastructure/supabase/supabase.service';
 import { PrismaService } from '../src/infrastructure/database/prisma.service';
+import { SupabaseService } from '../src/infrastructure/supabase/supabase.service';
 import { FamiliesRepository } from '../src/modules/families/families.repository';
+import { NotificationsService } from '../src/modules/notifications/notifications.service';
 
 const USER_A = '11111111-1111-4111-8111-111111111111';
 const USER_B = '22222222-2222-4222-8222-222222222222';
@@ -15,9 +16,24 @@ const MEMBER_A = '55555555-5555-4555-8555-555555555555';
 const MEMBER_B = '66666666-6666-4666-8666-666666666666';
 
 const profiles = {
-  [USER_A]: { id: USER_A, fullName: 'User A', avatarUrl: null },
-  [USER_B]: { id: USER_B, fullName: 'User B', avatarUrl: null },
-  [USER_C]: { id: USER_C, fullName: 'User C', avatarUrl: null },
+  [USER_A]: {
+    id: USER_A,
+    fullName: 'User A',
+    avatarUrl: null,
+    dateOfBirth: new Date('1988-01-01T00:00:00.000Z'),
+  },
+  [USER_B]: {
+    id: USER_B,
+    fullName: 'User B',
+    avatarUrl: null,
+    dateOfBirth: new Date('1992-05-05T00:00:00.000Z'),
+  },
+  [USER_C]: {
+    id: USER_C,
+    fullName: 'User C',
+    avatarUrl: null,
+    dateOfBirth: new Date('1995-07-07T00:00:00.000Z'),
+  },
 };
 
 class InMemoryFamiliesRepository {
@@ -38,13 +54,19 @@ class InMemoryFamiliesRepository {
     const membership = this.member({
       id: MEMBER_A,
       userId,
-      role: 'manager',
       familyLabel: dto.familyLabel,
+      canManageCare: true,
+      isCareRecipient: false,
+      isHired: dto.familyLabel === 'caregiver',
       status: 'accepted',
       acceptedAt: now,
     });
     this.members.push(membership);
-    return Promise.resolve({ family: this.family, membership });
+    return Promise.resolve({
+      outcome: 'created',
+      family: this.family,
+      membership,
+    });
   }
 
   findAccessMembership(userId: string, familyId: string) {
@@ -58,11 +80,7 @@ class InMemoryFamiliesRepository {
     return Promise.resolve(
       membership
         ? {
-            id: membership.id,
-            userId,
-            familyId,
-            role: membership.role,
-            familyLabel: membership.familyLabel,
+            ...membership,
             family: this.family,
           }
         : null,
@@ -77,8 +95,7 @@ class InMemoryFamiliesRepository {
       memberships: membership
         ? [
             {
-              role: membership.role,
-              familyLabel: membership.familyLabel,
+              ...membership,
               family: this.family,
             },
           ]
@@ -125,6 +142,10 @@ class InMemoryFamiliesRepository {
     );
   }
 
+  validateCareScopeMembers() {
+    return Promise.resolve(true);
+  }
+
   createInvitation(
     _familyId: string,
     userId: string,
@@ -134,8 +155,12 @@ class InMemoryFamiliesRepository {
     const invitation = this.member({
       id: MEMBER_B,
       userId,
-      role: dto.role,
       familyLabel: dto.familyLabel,
+      canManageCare: dto.canManageCare,
+      careGrantedBy: dto.careGrantedBy,
+      isCareRecipient: dto.isCareRecipient,
+      careRecipientSetBy: dto.careRecipientSetBy,
+      isHired: dto.isHired,
       status: 'pending',
       acceptedAt: null,
     });
@@ -146,8 +171,12 @@ class InMemoryFamiliesRepository {
   renewInvitation(id: string, _actorUserId: string, dto: any) {
     const invitation = this.members.find((item) => item.id === id);
     Object.assign(invitation, {
-      role: dto.role,
       familyLabel: dto.familyLabel,
+      canManageCare: dto.canManageCare,
+      careGrantedBy: dto.careGrantedBy,
+      isCareRecipient: dto.isCareRecipient,
+      careRecipientSetBy: dto.careRecipientSetBy,
+      isHired: dto.isHired,
       status: 'pending',
     });
     return Promise.resolve(invitation);
@@ -158,7 +187,7 @@ class InMemoryFamiliesRepository {
       .filter((item) => item.userId === userId && item.status === 'pending')
       .map((item) => ({
         ...item,
-        family: this.family,
+        family: { ...this.family, members: [] },
         inviter: profiles[USER_A],
       }));
     return Promise.resolve({ invitations, total: invitations.length });
@@ -190,6 +219,14 @@ class InMemoryFamiliesRepository {
     return Promise.resolve({ outcome: 'removed' });
   }
 
+  listAcceptedFamilyMemberUserIds() {
+    return Promise.resolve(
+      this.members
+        .filter((item) => item.status === 'accepted')
+        .map((item) => item.userId),
+    );
+  }
+
   private member(overrides: any) {
     const now = new Date();
     const userId = overrides.userId as keyof typeof profiles;
@@ -197,16 +234,22 @@ class InMemoryFamiliesRepository {
       id: overrides.id,
       familyId: FAMILY_ID,
       userId,
-      role: overrides.role,
       familyLabel: overrides.familyLabel,
       displayName: null,
       status: overrides.status,
+      canManageCare: Boolean(overrides.canManageCare),
+      careGrantedBy: overrides.careGrantedBy ?? null,
+      isCareRecipient: Boolean(overrides.isCareRecipient),
+      careRecipientSetBy: overrides.careRecipientSetBy ?? null,
+      isHired: Boolean(overrides.isHired),
+      careScopes: [],
       locationSharingEnabled: true,
       invitedAt: now,
       acceptedAt: overrides.acceptedAt,
       removedAt: null,
       createdAt: now,
       updatedAt: now,
+      family: this.family,
       profile: profiles[userId],
     };
   }
@@ -236,6 +279,10 @@ describe('Phase 2 Families (e2e)', () => {
         familyMember: { findFirst: jest.fn() },
         conversationMember: { findFirst: jest.fn() },
       })
+      .overrideProvider(NotificationsService)
+      .useValue({
+        notifyFamilyEvent: jest.fn().mockResolvedValue([]),
+      })
       .overrideProvider(FamiliesRepository)
       .useValue(repository)
       .compile();
@@ -248,10 +295,11 @@ describe('Phase 2 Families (e2e)', () => {
     const created = await request(app.getHttpServer())
       .post('/api/v1/families')
       .set(auth('token-a'))
-      .send({ familyName: 'Gia đình An', familyLabel: 'caregiver' })
+      .send({ familyName: 'Gia đình An', familyLabel: 'father' })
       .expect(201);
     expect(created.body.data.membership).toMatchObject({
-      role: 'manager',
+      isOwner: true,
+      canManageCare: true,
       status: 'accepted',
     });
 
@@ -266,7 +314,6 @@ describe('Phase 2 Families (e2e)', () => {
       .send({
         email: 'userb@example.com',
         familyLabel: 'other',
-        role: 'adult',
       })
       .expect(201);
     expect(invited.body.data.status).toBe('pending');
@@ -309,7 +356,7 @@ describe('Phase 2 Families (e2e)', () => {
       .expect(403);
   });
 
-  it('rejects malformed IDs, invalid roles and unknown fields', async () => {
+  it('rejects malformed IDs, caregiver invitations without careScopeMemberIds, and unknown fields', async () => {
     await request(app.getHttpServer())
       .get('/api/v1/families/not-a-uuid')
       .set(auth('token-a'))
@@ -319,8 +366,7 @@ describe('Phase 2 Families (e2e)', () => {
       .set(auth('token-a'))
       .send({
         email: 'userb@example.com',
-        familyLabel: 'other',
-        role: 'manager',
+        familyLabel: 'caregiver',
       })
       .expect(400);
     await request(app.getHttpServer())

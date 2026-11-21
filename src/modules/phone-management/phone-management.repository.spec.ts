@@ -80,7 +80,10 @@ describe('PhoneManagementRepository', () => {
 
   it('accepts telemetry only for the authenticated accepted child and owned active Device', async () => {
     const { tx, repository } = setup();
-    tx.familyMember.findFirst.mockResolvedValue({ id: MEMBER });
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: MEMBER,
+      profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+    });
     tx.device.findFirst.mockResolvedValue({ id: DEVICE });
     await expect(
       repository.createUsage(
@@ -104,7 +107,6 @@ describe('PhoneManagementRepository', () => {
           id: MEMBER,
           userId: CHILD,
           familyId: FAMILY,
-          role: 'child',
           status: 'accepted',
         }),
       }),
@@ -140,7 +142,10 @@ describe('PhoneManagementRepository', () => {
 
   it('reuses identical telemetry retry and rejects conflicting reuse', async () => {
     const { tx, usage, repository } = setup();
-    tx.familyMember.findFirst.mockResolvedValue({ id: MEMBER });
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: MEMBER,
+      profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+    });
     tx.device.findFirst.mockResolvedValue({ id: DEVICE });
     tx.phoneUsageLog.findUnique.mockResolvedValue({
       ...usage,
@@ -179,8 +184,19 @@ describe('PhoneManagementRepository', () => {
   it('requires a current manager, accepted child and owned active target for command creation', async () => {
     const { tx, repository } = setup();
     tx.familyMember.findFirst
-      .mockResolvedValueOnce({ id: MANAGER })
-      .mockResolvedValueOnce({ id: MEMBER, userId: CHILD });
+      .mockResolvedValueOnce({
+        id: MANAGER,
+        userId: 'manager-user',
+        canManageCare: true,
+        isHired: false,
+        careScopes: [],
+        family: { ownerUserId: 'manager-user' },
+      })
+      .mockResolvedValueOnce({
+        id: MEMBER,
+        userId: CHILD,
+        profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+      });
     tx.device.findFirst.mockResolvedValue({ id: DEVICE, fcmToken: 'secret' });
     await expect(
       repository.createCommand(

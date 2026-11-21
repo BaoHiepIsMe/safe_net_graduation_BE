@@ -5,9 +5,11 @@ import { ErrorCode } from '../../common/constants/error-codes';
 import {
   BusinessRuleError,
   ConflictError,
+  ForbiddenError,
   NotFoundError,
   ValidationError,
 } from '../../common/errors/app.error';
+import { isEffectiveCareRecipient, isMinor } from '../../common/utils/age.util';
 import { RealtimeGateway } from '../../infrastructure/realtime/realtime.gateway';
 import { FamilyAccessService } from '../families/family-access.service';
 import { GeofenceEvaluationService } from '../geofences/geofence-evaluation.service';
@@ -129,10 +131,20 @@ export class LocationsService {
     const target = await this.locationsRepository.findHistoryTarget(
       familyId,
       memberId,
-      viewerId,
     );
-    if (!target || (target.userId !== viewerId && !target.sharing)) {
+    if (!target) {
       this.throwLocationNotFound();
+    }
+    // History of another member is only for someone who canManage them; the
+    // target is then a care recipient, whose sharing switches cannot hide them.
+    if (
+      target.userId !== viewerId &&
+      !(await this.familyAccess.canManage(viewerId, memberId, familyId))
+    ) {
+      throw new ForbiddenError(
+        'Không có quyền xem lịch sử vị trí của thành viên này',
+        ErrorCode.FAMILY_ACCESS_DENIED,
+      );
     }
     const oldest =
       Date.now() - LOCATION_FAMILY_HISTORY_MAX_DAYS * 24 * 60 * 60 * 1000;
@@ -277,9 +289,17 @@ export class LocationsService {
     return {
       memberId: row.member_id,
       userId: row.user_id,
-      role: row.role,
       familyLabel: row.family_label,
       displayName: row.display_name,
+      isOwner: Boolean(row.owner_user_id && row.owner_user_id === row.user_id),
+      canManageCare: Boolean(row.can_manage_care),
+      isCareRecipient: isEffectiveCareRecipient({
+        isCareRecipient: row.is_care_recipient,
+        dateOfBirth: row.date_of_birth,
+      }),
+      isMinor: isMinor(row.date_of_birth),
+      isHired: Boolean(row.is_hired),
+      careScopeMemberIds: row.care_scope_member_ids ?? [],
       profile: {
         fullName: row.full_name,
         avatarUrl: row.avatar_url,

@@ -62,11 +62,15 @@ export class ProfilesController {
           enum: ['male', 'female', 'other'],
           nullable: true,
         },
+        uiMode: {
+          type: 'string',
+          enum: ['kid', 'adult', 'assisted'],
+        },
       },
     },
   })
   @ApiResponse({ status: 200, schema: successSchema(profileDataSchema) })
-  @ApiStandardErrors(400, 401, 404, 429, 500)
+  @ApiStandardErrors(400, 401, 403, 404, 429, 500)
   updateMyProfile(
     @CurrentUser() user: AuthUser,
     @Body(new ZodValidationPipe(updateProfileSchema)) dto: UpdateProfileDto,

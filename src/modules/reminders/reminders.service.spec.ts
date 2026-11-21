@@ -31,7 +31,6 @@ const row = (overrides: Record<string, unknown> = {}) => ({
         id: MEMBER,
         userId: USER,
         displayName: null,
-        role: 'manager',
         status: 'accepted',
         profile: { fullName: 'Manager', avatarUrl: null },
       },

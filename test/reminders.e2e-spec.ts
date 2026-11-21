@@ -32,18 +32,26 @@ class InMemoryRemindersRepository {
       return {
         id,
         userId: USER_A,
-        role: 'manager',
+        canManageCare: true,
+        isCareRecipient: false,
         status: this.memberStatuses[USER_A],
       };
     if (id === MEMBER_B)
       return {
         id,
         userId: USER_B,
-        role: 'adult',
+        canManageCare: false,
+        isCareRecipient: true,
         status: this.memberStatuses[USER_B],
       };
     if (id === MEMBER_PENDING)
-      return { id, userId: USER_C, role: 'adult', status: 'pending' };
+      return {
+        id,
+        userId: USER_C,
+        canManageCare: false,
+        isCareRecipient: true,
+        status: 'pending',
+      };
     return null;
   }
 

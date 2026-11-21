@@ -12,7 +12,6 @@ const PEER_A = '22222222-2222-4222-8222-222222222222';
 const PEER_B = '33333333-3333-4333-8333-333333333333';
 const STRANGER = '44444444-4444-4444-8444-444444444444';
 const FAMILY_ID = '55555555-5555-4555-8555-555555555555';
-const MEMBER_ID = '66666666-6666-4666-8666-666666666666';
 
 function serviceWith(repository: Record<string, jest.Mock>) {
   return new LocationsService(
@@ -71,65 +70,34 @@ describe('location sharing controls', () => {
     });
   });
 
-  describe('history target visibility', () => {
-    function repositoryWith(visibility: string, viewerCount: number) {
-      const prisma = {
-        familyMember: {
-          findFirst: jest.fn().mockResolvedValue({
-            userId: OWNER,
-            locationSharingEnabled: true,
-            profile: {
-              UserSetting: {
-                locationSharingEnabled: true,
-                locationVisibility: visibility,
-              },
-            },
-          }),
-        },
-        locationShareViewer: {
-          count: jest.fn().mockResolvedValue(viewerCount),
-        },
-      };
-      return new LocationsRepository(prisma as unknown as PrismaService);
+  describe('family current location visibility', () => {
+    async function captureSql() {
+      const queryRaw = jest.fn().mockResolvedValue([]);
+      const prisma = { $queryRaw: queryRaw };
+      await new LocationsRepository(
+        prisma as unknown as PrismaService,
+      ).findFamilyCurrentLocations(FAMILY_ID, PEER_A);
+      return (queryRaw.mock.calls[0][0] as { sql: string }).sql;
     }
 
-    it('shows everyone when visibility is all', async () => {
-      const target = await repositoryWith('all', 0).findHistoryTarget(
-        FAMILY_ID,
-        MEMBER_ID,
-        PEER_A,
-      );
-      expect(target?.sharing).toBe(true);
+    it('lets a care recipient (flag or minor) bypass their own sharing switches', async () => {
+      const sql = await captureSql();
+      expect(sql).toContain('fm."is_care_recipient" = true');
+      expect(sql).toContain('p."date_of_birth" >');
     });
 
-    it('hides the owner from viewers not on the selected list', async () => {
-      const target = await repositoryWith('selected', 0).findHistoryTarget(
-        FAMILY_ID,
-        MEMBER_ID,
-        PEER_B,
-      );
-      expect(target?.sharing).toBe(false);
+    it('keeps sharing switches and the selected viewer list for everyone else', async () => {
+      const sql = await captureSql();
+      expect(sql).toContain('fm."location_sharing_enabled" = true');
+      expect(sql).toContain('us."location_sharing_enabled" = true');
+      expect(sql).toContain(`us."location_visibility" = 'all'`);
+      expect(sql).toContain('"location_share_viewers"');
     });
 
-    it('shows the owner to a selected viewer and to the owner', async () => {
-      expect(
-        (
-          await repositoryWith('selected', 1).findHistoryTarget(
-            FAMILY_ID,
-            MEMBER_ID,
-            PEER_A,
-          )
-        )?.sharing,
-      ).toBe(true);
-      expect(
-        (
-          await repositoryWith('selected', 0).findHistoryTarget(
-            FAMILY_ID,
-            MEMBER_ID,
-            OWNER,
-          )
-        )?.sharing,
-      ).toBe(true);
+    it('limits a hired non-owner caregiver to members in their care scope', async () => {
+      const sql = await captureSql();
+      expect(sql).toContain('viewer."is_hired" = true');
+      expect(sql).toContain('"family_member_care_scopes"');
     });
   });
 

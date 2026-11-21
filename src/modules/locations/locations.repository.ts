@@ -1,4 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import {
+  isEffectiveCareRecipient,
+  minorBirthDateCutoff,
+} from '../../common/utils/age.util';
+import { isWithinHiredScope } from '../families/care-scope.util';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import {
@@ -47,7 +52,12 @@ export const currentLocationSelect = {
 export interface FamilyCurrentLocationRow {
   member_id: string;
   user_id: string;
-  role: string;
+  owner_user_id?: string;
+  can_manage_care?: boolean;
+  is_care_recipient?: boolean;
+  is_hired?: boolean;
+  date_of_birth?: Date | null;
+  care_scope_member_ids?: string[];
   family_label: string;
   display_name: string | null;
   full_name: string | null;
@@ -133,49 +143,10 @@ export class LocationsRepository {
             select: { id: true },
           });
 
-          let recipientUserIds: string[] = [];
-          if (projection.length > 0) {
-            const sharedFamilies = await tx.familyMember.findMany({
-              where: {
-                userId,
-                status: 'accepted',
-                locationSharingEnabled: true,
-                family: { status: 'active' },
-                profile: {
-                  UserSetting: { locationSharingEnabled: true },
-                },
-              },
-              select: { familyId: true },
-            });
-            const familyIds = sharedFamilies.map((item) => item.familyId);
-            if (familyIds.length > 0) {
-              const recipients = await tx.familyMember.findMany({
-                where: {
-                  familyId: { in: familyIds },
-                  status: 'accepted',
-                  family: { status: 'active' },
-                },
-                select: { userId: true },
-              });
-              recipientUserIds = [
-                ...new Set(recipients.map((item) => item.userId)),
-              ];
-              const setting = await tx.userSetting.findUnique({
-                where: { userId },
-                select: { locationVisibility: true },
-              });
-              if (setting?.locationVisibility === 'selected') {
-                const viewers = await tx.locationShareViewer.findMany({
-                  where: { ownerUserId: userId },
-                  select: { viewerUserId: true },
-                });
-                const allowed = new Set(viewers.map((v) => v.viewerUserId));
-                recipientUserIds = recipientUserIds.filter((id) =>
-                  allowed.has(id),
-                );
-              }
-            }
-          }
+          const recipientUserIds =
+            projection.length > 0
+              ? await this.resolveLiveLocationRecipients(tx, userId)
+              : [];
 
           return {
             outcome: 'stored' as const,
@@ -227,59 +198,159 @@ export class LocationsRepository {
     });
   }
 
-  async findHistoryTarget(
-    familyId: string,
-    memberId: string,
-    viewerId: string,
-  ) {
-    const member = await this.prisma.familyMember.findFirst({
+  /**
+   * Who receives a live location update from [userId], per family:
+   * - as a care recipient (flag or under 18) the whole family receives it,
+   *   whatever their sharing switches or viewer list say;
+   * - otherwise only when both sharing switches are on, limited to the
+   *   viewer list when visibility is `selected`;
+   * - a hired caregiver who is not the owner only receives members in scope.
+   */
+  private async resolveLiveLocationRecipients(
+    tx: Prisma.TransactionClient,
+    userId: string,
+  ): Promise<string[]> {
+    const [senderMemberships, setting] = await Promise.all([
+      tx.familyMember.findMany({
+        where: {
+          userId,
+          status: 'accepted',
+          family: { status: 'active' },
+        },
+        select: {
+          id: true,
+          familyId: true,
+          isCareRecipient: true,
+          locationSharingEnabled: true,
+          profile: { select: { dateOfBirth: true } },
+          family: { select: { ownerUserId: true } },
+        },
+      }),
+      tx.userSetting.findUnique({
+        where: { userId },
+        select: { locationSharingEnabled: true, locationVisibility: true },
+      }),
+    ]);
+    const visibleFamilies = senderMemberships
+      .map((membership) => ({
+        ...membership,
+        careRecipient: isEffectiveCareRecipient(membership),
+      }))
+      .filter(
+        (membership) =>
+          membership.careRecipient ||
+          (membership.locationSharingEnabled &&
+            setting?.locationSharingEnabled === true),
+      );
+    if (visibleFamilies.length === 0) return [];
+
+    const selectedViewers =
+      setting?.locationVisibility === 'selected'
+        ? new Set(
+            (
+              await tx.locationShareViewer.findMany({
+                where: { ownerUserId: userId },
+                select: { viewerUserId: true },
+              })
+            ).map((viewer) => viewer.viewerUserId),
+          )
+        : null;
+    const recipients = await tx.familyMember.findMany({
+      where: {
+        familyId: { in: visibleFamilies.map((item) => item.familyId) },
+        status: 'accepted',
+        family: { status: 'active' },
+      },
+      select: {
+        id: true,
+        userId: true,
+        familyId: true,
+        isHired: true,
+        careScopes: { select: { targetMemberId: true } },
+        family: { select: { ownerUserId: true } },
+      },
+    });
+    const senderByFamily = new Map(
+      visibleFamilies.map((item) => [item.familyId, item]),
+    );
+    const result = new Set<string>();
+    for (const recipient of recipients) {
+      const sender = senderByFamily.get(recipient.familyId);
+      if (!sender || recipient.userId === userId) continue;
+      if (!isWithinHiredScope(recipient, sender.id)) continue;
+      if (
+        !sender.careRecipient &&
+        selectedViewers &&
+        !selectedViewers.has(recipient.userId)
+      ) {
+        continue;
+      }
+      result.add(recipient.userId);
+    }
+    return [...result];
+  }
+
+  findHistoryTarget(familyId: string, memberId: string) {
+    return this.prisma.familyMember.findFirst({
       where: {
         id: memberId,
         familyId,
         status: 'accepted',
         family: { status: 'active' },
       },
-      select: {
-        userId: true,
-        locationSharingEnabled: true,
-        profile: {
-          select: {
-            UserSetting: {
-              select: {
-                locationSharingEnabled: true,
-                locationVisibility: true,
-              },
-            },
-          },
-        },
-      },
+      select: { userId: true },
     });
-    if (!member) return null;
-    let visible = true;
-    if (
-      member.userId !== viewerId &&
-      member.profile.UserSetting?.locationVisibility === 'selected'
-    ) {
-      visible =
-        (await this.prisma.locationShareViewer.count({
-          where: { ownerUserId: member.userId, viewerUserId: viewerId },
-        })) > 0;
-    }
-    return {
-      userId: member.userId,
-      sharing:
-        member.locationSharingEnabled &&
-        member.profile.UserSetting?.locationSharingEnabled === true &&
-        visible,
-    };
   }
 
   findFamilyCurrentLocations(familyId: string, viewerId: string) {
-    return this.prisma.$queryRaw<FamilyCurrentLocationRow[]>(Prisma.sql`
+    return this.prisma.$queryRaw<FamilyCurrentLocationRow[]>(
+      this.familyCurrentLocationQuery(familyId, viewerId, Prisma.empty),
+    );
+  }
+
+  async findFamilyMemberCurrentLocation(
+    familyId: string,
+    memberId: string,
+    viewerId: string,
+  ) {
+    const rows = await this.prisma.$queryRaw<FamilyCurrentLocationRow[]>(
+      this.familyCurrentLocationQuery(
+        familyId,
+        viewerId,
+        Prisma.sql`AND fm."id" = ${memberId}::uuid`,
+      ),
+    );
+    return rows[0] ?? null;
+  }
+
+  /**
+   * Current locations visible to [viewerId] in one family.
+   * - A care recipient (flag or under 18) is always visible to the family:
+   *   their own sharing switches and viewer list cannot hide them.
+   * - Anyone else follows their sharing switches and `location_visibility`.
+   * - A hired caregiver who is not the owner only sees members in their scope.
+   */
+  private familyCurrentLocationQuery(
+    familyId: string,
+    viewerId: string,
+    extraWhere: Prisma.Sql,
+  ) {
+    const minorCutoff = minorBirthDateCutoff();
+    return Prisma.sql`
       SELECT
         fm."id" AS member_id,
         fm."user_id",
-        fm."role",
+        f."owner_user_id",
+        fm."can_manage_care",
+        fm."is_care_recipient",
+        fm."is_hired",
+        p."date_of_birth",
+        ARRAY(
+          SELECT cs."target_member_id"
+          FROM "public"."family_member_care_scopes" cs
+          WHERE cs."member_id" = fm."id"
+          ORDER BY cs."target_member_id" ASC
+        ) AS care_scope_member_ids,
         fm."family_label",
         fm."display_name",
         p."full_name",
@@ -296,68 +367,42 @@ export class LocationsRepository {
       JOIN "public"."user_settings" us ON us."user_id" = fm."user_id"
       JOIN "public"."current_locations" c ON c."user_id" = fm."user_id"
       WHERE fm."family_id" = ${familyId}::uuid
+        ${extraWhere}
         AND f."status" = 'active'
         AND fm."status" = 'accepted'
-        AND fm."location_sharing_enabled" = true
-        AND us."location_sharing_enabled" = true
         AND (
-          fm."user_id" = ${viewerId}::uuid
-          OR us."location_visibility" = 'all'
-          OR EXISTS (
-            SELECT 1 FROM "public"."location_share_viewers" v
-            WHERE v."owner_user_id" = fm."user_id"
-              AND v."viewer_user_id" = ${viewerId}::uuid
+          fm."is_care_recipient" = true
+          OR p."date_of_birth" > ${minorCutoff}::date
+          OR (
+            fm."location_sharing_enabled" = true
+            AND us."location_sharing_enabled" = true
+            AND (
+              fm."user_id" = ${viewerId}::uuid
+              OR us."location_visibility" = 'all'
+              OR EXISTS (
+                SELECT 1 FROM "public"."location_share_viewers" v
+                WHERE v."owner_user_id" = fm."user_id"
+                  AND v."viewer_user_id" = ${viewerId}::uuid
+              )
+            )
           )
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM "public"."family_members" viewer
+          WHERE viewer."family_id" = fm."family_id"
+            AND viewer."user_id" = ${viewerId}::uuid
+            AND viewer."status" = 'accepted'
+            AND viewer."is_hired" = true
+            AND f."owner_user_id" <> ${viewerId}::uuid
+            AND fm."user_id" <> ${viewerId}::uuid
+            AND NOT EXISTS (
+              SELECT 1 FROM "public"."family_member_care_scopes" cs
+              WHERE cs."member_id" = viewer."id"
+                AND cs."target_member_id" = fm."id"
+            )
         )
       ORDER BY fm."created_at" ASC, fm."id" ASC
-    `);
-  }
-
-  async findFamilyMemberCurrentLocation(
-    familyId: string,
-    memberId: string,
-    viewerId: string,
-  ) {
-    const rows = await this.prisma.$queryRaw<FamilyCurrentLocationRow[]>(
-      Prisma.sql`
-        SELECT
-          fm."id" AS member_id,
-          fm."user_id",
-          fm."role",
-          fm."family_label",
-          fm."display_name",
-          p."full_name",
-          p."avatar_url",
-          c."latitude",
-          c."longitude",
-          c."accuracy",
-          c."battery_level",
-          c."recorded_at",
-          c."updated_at"
-        FROM "public"."family_members" fm
-        JOIN "public"."families" f ON f."id" = fm."family_id"
-        JOIN "public"."profiles" p ON p."id" = fm."user_id"
-        JOIN "public"."user_settings" us ON us."user_id" = fm."user_id"
-        JOIN "public"."current_locations" c ON c."user_id" = fm."user_id"
-        WHERE fm."family_id" = ${familyId}::uuid
-          AND fm."id" = ${memberId}::uuid
-          AND f."status" = 'active'
-          AND fm."status" = 'accepted'
-          AND fm."location_sharing_enabled" = true
-          AND us."location_sharing_enabled" = true
-          AND (
-          fm."user_id" = ${viewerId}::uuid
-          OR us."location_visibility" = 'all'
-          OR EXISTS (
-            SELECT 1 FROM "public"."location_share_viewers" v
-            WHERE v."owner_user_id" = fm."user_id"
-              AND v."viewer_user_id" = ${viewerId}::uuid
-          )
-        )
-        LIMIT 1
-      `,
-    );
-    return rows[0] ?? null;
+    `;
   }
 
   /**

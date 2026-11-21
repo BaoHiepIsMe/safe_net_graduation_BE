@@ -85,41 +85,54 @@ describe('NotificationsRepository geofence privacy and idempotency', () => {
     };
   }
 
-  it('requires active accepted source membership plus global and per-family sharing', async () => {
+  it('only alerts for an accepted care recipient, whatever their sharing switches', async () => {
     const { tx, repository } = setup();
     await repository.createFromGeofenceEvent(EVENT_ID);
-    expect(tx.geofenceEvent.findFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({
-          id: EVENT_ID,
-          Family: { status: 'active' },
-          FamilyMember: expect.objectContaining({
-            status: 'accepted',
-            locationSharingEnabled: true,
-            profile: { UserSetting: { locationSharingEnabled: true } },
-          }),
-        }),
-      }),
-    );
+    const where = tx.geofenceEvent.findFirst.mock.calls[0][0].where;
+    expect(where).toMatchObject({
+      id: EVENT_ID,
+      Family: { status: 'active' },
+      FamilyMember: {
+        status: 'accepted',
+        OR: [
+          { isCareRecipient: true },
+          { profile: { dateOfBirth: { gt: expect.any(Date) } } },
+        ],
+      },
+    });
+    expect(where.FamilyMember).not.toHaveProperty('locationSharingEnabled');
   });
 
-  it('selects only accepted recipients in the active family with sharing enabled', async () => {
+  it('notifies only the care managers allowed to manage the member', async () => {
     const { tx, repository } = setup();
     const created = await repository.createFromGeofenceEvent(EVENT_ID);
-    expect(tx.familyMember.findMany).toHaveBeenCalledWith(
+    expect(tx.familyMember.findMany).toHaveBeenNthCalledWith(
+      1,
       expect.objectContaining({
         where: {
           familyId: FAMILY_ID,
           status: 'accepted',
-          locationSharingEnabled: true,
+          canManageCare: true,
+          userId: { not: OWNER_ID },
           family: { status: 'active' },
+        },
+      }),
+    );
+    expect(tx.familyMember.findMany).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        where: {
+          familyId: FAMILY_ID,
+          status: 'accepted',
+          family: { status: 'active' },
+          userId: { in: [RECIPIENT_ID] },
         },
       }),
     );
     expect(created).toHaveLength(1);
     expect(tx.notificationDelivery.createMany).toHaveBeenCalledTimes(1);
     expect(
-      tx.familyMember.findMany.mock.calls[0][0].select.profile.select.Device
+      tx.familyMember.findMany.mock.calls[1][0].select.profile.select.Device
         .where,
     ).toEqual({
       isActive: true,
@@ -127,7 +140,23 @@ describe('NotificationsRepository geofence privacy and idempotency', () => {
     });
   });
 
-  it('sends no exit notification when the mover turned exit alerts off', async () => {
+  it('skips a hired caregiver whose scope does not include the member', async () => {
+    const fixture = setup();
+    fixture.tx.familyMember.findMany.mockResolvedValueOnce([
+      {
+        userId: RECIPIENT_ID,
+        isHired: true,
+        careScopes: [],
+        family: { ownerUserId: OWNER_ID },
+      },
+    ]);
+    await expect(
+      fixture.repository.createFromGeofenceEvent(EVENT_ID),
+    ).resolves.toEqual([]);
+    expect(fixture.tx.notification.create).not.toHaveBeenCalled();
+  });
+
+  it('ignores exit-alert and visibility settings', async () => {
     const fixture = setup();
     fixture.tx.geofenceEvent.findFirst.mockResolvedValue({
       ...(await fixture.tx.geofenceEvent.findFirst()),
@@ -135,41 +164,11 @@ describe('NotificationsRepository geofence privacy and idempotency', () => {
     });
     fixture.tx.userSetting.findUnique.mockResolvedValue({
       notifyOnZoneExit: false,
-      locationVisibility: 'all',
-    });
-    await expect(
-      fixture.repository.createFromGeofenceEvent(EVENT_ID),
-    ).resolves.toEqual([]);
-    expect(fixture.tx.notification.create).not.toHaveBeenCalled();
-  });
-
-  it('still notifies on enter when exit alerts are off', async () => {
-    const fixture = setup();
-    fixture.tx.userSetting.findUnique.mockResolvedValue({
-      notifyOnZoneExit: false,
-      locationVisibility: 'all',
+      locationVisibility: 'selected',
     });
     const created = await fixture.repository.createFromGeofenceEvent(EVENT_ID);
     expect(created).toHaveLength(1);
-  });
-
-  it('only notifies the selected viewers (and the mover) when visibility is selected', async () => {
-    const fixture = setup();
-    fixture.tx.userSetting.findUnique.mockResolvedValue({
-      notifyOnZoneExit: true,
-      locationVisibility: 'selected',
-    });
-    fixture.tx.locationShareViewer.findMany.mockResolvedValue([
-      { viewerUserId: RECIPIENT_ID },
-    ]);
-    await fixture.repository.createFromGeofenceEvent(EVENT_ID);
-    expect(fixture.tx.familyMember.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({
-          userId: { in: [RECIPIENT_ID, OWNER_ID] },
-        }),
-      }),
-    );
+    expect(fixture.tx.locationShareViewer.findMany).not.toHaveBeenCalled();
   });
 
   it('creates a stable EXIT notification from an enabled exit assignment', async () => {
@@ -412,6 +411,13 @@ describe('NotificationsRepository SOS integration', () => {
           triggeredAt: new Date('2026-08-31T00:00:00Z'),
           actor: { fullName: 'Actor' },
           recipients: [
+            {
+              recipientUserId: OWNER_ID,
+              recipient: {
+                UserSetting: { pushNotificationsEnabled: true },
+                Device: [{ id: crypto.randomUUID() }],
+              },
+            },
             {
               recipientUserId: recipientId,
               recipient: {

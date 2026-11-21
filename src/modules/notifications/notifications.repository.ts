@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { isEffectiveCareRecipient } from '../../common/utils/age.util';
 import { Prisma } from '../../generated/prisma/client';
+import {
+  effectiveCareRecipientWhere,
+  findCareManagerUserIds,
+} from '../families/care-scope.util';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import {
   NotificationCursor,
@@ -42,10 +47,12 @@ export class NotificationsRepository {
             id: eventId,
             event_type: { in: ['enter', 'exit'] },
             Family: { status: 'active' },
+            // Zone alerts exist only for care recipients and go to the people
+            // who canManage them; the recipient's own sharing, visibility and
+            // exit-alert switches cannot silence them.
             FamilyMember: {
               status: 'accepted',
-              locationSharingEnabled: true,
-              profile: { UserSetting: { locationSharingEnabled: true } },
+              ...effectiveCareRecipientWhere(),
             },
             Geofence: { is_active: true },
           },
@@ -84,38 +91,19 @@ export class NotificationsRepository {
           return [];
         }
 
-        // The mover's privacy: exit alerts can be switched off, and with
-        // "selected" visibility only the chosen people are told.
-        const subjectUserId = event.FamilyMember.userId;
-        const subject = await tx.userSetting.findUnique({
-          where: { userId: subjectUserId },
-          select: { notifyOnZoneExit: true, locationVisibility: true },
-        });
-        if (
-          event.event_type === 'exit' &&
-          subject?.notifyOnZoneExit === false
-        ) {
-          return [];
-        }
-        const allowedViewers =
-          subject?.locationVisibility === 'selected'
-            ? (
-                await tx.locationShareViewer.findMany({
-                  where: { ownerUserId: subjectUserId },
-                  select: { viewerUserId: true },
-                })
-              ).map((v) => v.viewerUserId)
-            : null;
+        const managerUserIds = await findCareManagerUserIds(
+          tx,
+          event.family_id,
+          { memberId: event.member_id, userId: event.FamilyMember.userId },
+        );
+        if (managerUserIds.length === 0) return [];
 
         const recipients = await tx.familyMember.findMany({
           where: {
             familyId: event.family_id,
             status: 'accepted',
-            locationSharingEnabled: true,
             family: { status: 'active' },
-            ...(allowedViewers
-              ? { userId: { in: [...allowedViewers, subjectUserId] } }
-              : {}),
+            userId: { in: managerUserIds },
           },
           distinct: ['userId'],
           select: {
@@ -225,42 +213,67 @@ export class NotificationsRepository {
             locationVisibility: true,
           },
         });
-        if (!owner?.locationSharingEnabled || !owner.notifyOnSignalLost) {
-          return [];
-        }
         const ownerMemberships = await tx.familyMember.findMany({
           where: {
             userId: input.userId,
             status: 'accepted',
-            locationSharingEnabled: true,
             family: { status: 'active' },
           },
           select: {
             id: true,
             familyId: true,
             displayName: true,
-            profile: { select: { fullName: true } },
+            isCareRecipient: true,
+            locationSharingEnabled: true,
+            profile: { select: { fullName: true, dateOfBirth: true } },
           },
         });
         if (ownerMemberships.length === 0) return [];
         const allowedViewers =
-          owner.locationVisibility === 'selected'
-            ? (
-                await tx.locationShareViewer.findMany({
-                  where: { ownerUserId: input.userId },
-                  select: { viewerUserId: true },
-                })
-              ).map((v) => v.viewerUserId)
+          owner?.locationVisibility === 'selected'
+            ? new Set(
+                (
+                  await tx.locationShareViewer.findMany({
+                    where: { ownerUserId: input.userId },
+                    select: { viewerUserId: true },
+                  })
+                ).map((v) => v.viewerUserId),
+              )
             : null;
-        const recipients = await tx.familyMember.findMany({
+
+        // Per family: a care recipient's care managers are always told (their
+        // own switches cannot silence it); anyone else follows their sharing,
+        // notifyOnSignalLost and visibility settings.
+        const allowedByFamily = new Map<string, Set<string> | null>();
+        for (const membership of ownerMemberships) {
+          if (isEffectiveCareRecipient(membership)) {
+            allowedByFamily.set(
+              membership.familyId,
+              new Set(
+                await findCareManagerUserIds(tx, membership.familyId, {
+                  memberId: membership.id,
+                  userId: input.userId,
+                }),
+              ),
+            );
+          } else if (
+            owner?.locationSharingEnabled &&
+            owner.notifyOnSignalLost &&
+            membership.locationSharingEnabled
+          ) {
+            allowedByFamily.set(membership.familyId, allowedViewers);
+          }
+        }
+        if (allowedByFamily.size === 0) return [];
+
+        const candidates = await tx.familyMember.findMany({
           where: {
-            familyId: { in: ownerMemberships.map((m) => m.familyId) },
+            familyId: { in: [...allowedByFamily.keys()] },
             status: 'accepted',
             userId: { not: input.userId },
             family: { status: 'active' },
-            ...(allowedViewers ? { userId: { in: allowedViewers } } : {}),
           },
-          distinct: ['userId'],
+          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
           select: {
             userId: true,
             familyId: true,
@@ -274,6 +287,15 @@ export class NotificationsRepository {
               },
             },
           },
+        });
+        const seenUserIds = new Set<string>();
+        const recipients = candidates.filter((candidate) => {
+          const allowed = allowedByFamily.get(candidate.familyId);
+          if (allowed === undefined) return false;
+          if (allowed !== null && !allowed.has(candidate.userId)) return false;
+          if (seenUserIds.has(candidate.userId)) return false;
+          seenUserIds.add(candidate.userId);
+          return true;
         });
 
         const name =
@@ -375,6 +397,7 @@ export class NotificationsRepository {
 
         const created = [];
         for (const recipient of event.recipients) {
+          if (recipient.recipientUserId === event.actorUserId) continue;
           const existing = await tx.notification.findUnique({
             where: {
               recipient_user_id_related_table_related_id: {
@@ -773,6 +796,71 @@ export class NotificationsRepository {
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
+  }
+
+  async createFamilyNotifications(input: {
+    familyId: string;
+    senderUserId: string | null;
+    recipientUserIds: string[];
+    type: NotificationType;
+    title: string;
+    message: string;
+    metadata?: Record<string, unknown>;
+  }) {
+    const uniqueRecipientIds = [...new Set(input.recipientUserIds)].filter(
+      Boolean,
+    );
+    if (uniqueRecipientIds.length === 0) return [];
+
+    return this.prisma.$transaction(async (tx) => {
+      const profiles = await tx.profile.findMany({
+        where: { id: { in: uniqueRecipientIds } },
+        select: {
+          id: true,
+          UserSetting: { select: { pushNotificationsEnabled: true } },
+          Device: {
+            where: { isActive: true, fcmToken: { not: null } },
+            select: { id: true },
+          },
+        },
+      });
+      const created: Array<{
+        notification: Prisma.NotificationGetPayload<{
+          select: typeof safeNotificationSelect;
+        }>;
+        recipientUserId: string;
+      }> = [];
+
+      for (const recipient of profiles) {
+        const notification = await tx.notification.create({
+          data: {
+            family_id: input.familyId,
+            recipient_user_id: recipient.id,
+            sender_user_id: input.senderUserId,
+            notification_type: input.type,
+            title: input.title,
+            message: input.message,
+            related_table: null,
+            related_id: null,
+            metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+          },
+          select: safeNotificationSelect,
+        });
+        const pushEnabled =
+          recipient.UserSetting?.pushNotificationsEnabled !== false;
+        if (pushEnabled && recipient.Device.length > 0) {
+          await tx.notificationDelivery.createMany({
+            data: recipient.Device.map((device) => ({
+              notificationId: notification.id,
+              deviceId: device.id,
+            })),
+            skipDuplicates: true,
+          });
+        }
+        created.push({ notification, recipientUserId: recipient.id });
+      }
+      return created;
+    });
   }
 
   listOwned(

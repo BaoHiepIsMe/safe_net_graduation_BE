@@ -63,6 +63,7 @@ export const ModelName = {
   FallEvent: 'FallEvent',
   Family: 'Family',
   FamilyMember: 'FamilyMember',
+  FamilyMemberCareScope: 'FamilyMemberCareScope',
   GeofenceEvent: 'GeofenceEvent',
   GeofenceMember: 'GeofenceMember',
   Geofence: 'Geofence',
@@ -294,6 +295,11 @@ export const FamilyMemberScalarFieldEnum = {
   familyLabel: 'familyLabel',
   displayName: 'displayName',
   status: 'status',
+  canManageCare: 'canManageCare',
+  careGrantedBy: 'careGrantedBy',
+  isCareRecipient: 'isCareRecipient',
+  careRecipientSetBy: 'careRecipientSetBy',
+  isHired: 'isHired',
   locationSharingEnabled: 'locationSharingEnabled',
   invitedAt: 'invitedAt',
   acceptedAt: 'acceptedAt',
@@ -303,6 +309,14 @@ export const FamilyMemberScalarFieldEnum = {
 } as const
 
 export type FamilyMemberScalarFieldEnum = (typeof FamilyMemberScalarFieldEnum)[keyof typeof FamilyMemberScalarFieldEnum]
+
+
+export const FamilyMemberCareScopeScalarFieldEnum = {
+  memberId: 'memberId',
+  targetMemberId: 'targetMemberId'
+} as const
+
+export type FamilyMemberCareScopeScalarFieldEnum = (typeof FamilyMemberCareScopeScalarFieldEnum)[keyof typeof FamilyMemberCareScopeScalarFieldEnum]
 
 
 export const GeofenceEventScalarFieldEnum = {
@@ -498,6 +512,7 @@ export const ProfileScalarFieldEnum = {
   dateOfBirth: 'dateOfBirth',
   gender: 'gender',
   role: 'role',
+  uiMode: 'uiMode',
   accountStatus: 'accountStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

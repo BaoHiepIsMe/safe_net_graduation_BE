@@ -1,7 +1,9 @@
 import {
+  approveJoinRequestSchema,
   createInvitationSchema,
   familyIdParamSchema,
   joinFamilySchema,
+  joinPreviewQuerySchema,
   transferOwnershipSchema,
   updateFamilyMemberSchema,
 } from './family.dto';
@@ -13,12 +15,35 @@ describe('family request validation', () => {
     ).toBe(false);
   });
 
-  it('rejects invalid invitation roles', () => {
+  it('rejects legacy role field and requires careScopeMemberIds when familyLabel is caregiver', () => {
+    expect(
+      createInvitationSchema.safeParse({
+        email: 'user@example.com',
+        familyLabel: 'other',
+        role: 'manager',
+      }).success,
+    ).toBe(false);
+
     expect(
       createInvitationSchema.safeParse({
         email: 'user@example.com',
         familyLabel: 'caregiver',
-        role: 'manager',
+      }).success,
+    ).toBe(false);
+
+    expect(
+      createInvitationSchema.safeParse({
+        email: 'user@example.com',
+        familyLabel: 'caregiver',
+        careScopeMemberIds: ['11111111-1111-4111-8111-111111111111'],
+      }).success,
+    ).toBe(true);
+
+    expect(
+      createInvitationSchema.safeParse({
+        email: 'user@example.com',
+        familyLabel: 'father',
+        careScopeMemberIds: ['11111111-1111-4111-8111-111111111111'],
       }).success,
     ).toBe(false);
   });
@@ -33,34 +58,50 @@ describe('family request validation', () => {
     ).toBe(false);
   });
 
-  it('rejects status transitions and unknown body fields', () => {
+  it('rejects status transitions and unknown body fields on member update', () => {
     expect(
       updateFamilyMemberSchema.safeParse({
         status: 'accepted',
         ownerUserId: '11111111-1111-4111-8111-111111111111',
       }).success,
     ).toBe(false);
-  });
-
-  it('does not default the invitation role (the service derives it)', () => {
-    const parsed = createInvitationSchema.parse({
-      email: 'user@example.com',
-      familyLabel: 'grandmother',
-    });
-    expect(parsed.role).toBeUndefined();
-  });
-
-  it('rejects role=manager on invitations with a 400-able error', () => {
     expect(
-      createInvitationSchema.safeParse({
-        email: 'user@example.com',
-        familyLabel: 'other',
+      updateFamilyMemberSchema.safeParse({
         role: 'manager',
       }).success,
     ).toBe(false);
   });
 
-  it('validates join and transfer bodies', () => {
+  it('leaves isCareRecipient undefined when omitted on invitation (3-state auto)', () => {
+    const parsed = createInvitationSchema.parse({
+      email: 'user@example.com',
+      familyLabel: 'grandmother',
+    });
+    expect(parsed.isCareRecipient).toBeUndefined();
+    expect(parsed.canManageCare).toBeUndefined();
+  });
+
+  it('supports new relationship labels', () => {
+    for (const familyLabel of [
+      'husband',
+      'wife',
+      'brother',
+      'sister',
+      'grandchild',
+    ] as const) {
+      expect(
+        createInvitationSchema.safeParse({
+          email: 'user@example.com',
+          familyLabel,
+        }).success,
+      ).toBe(true);
+    }
+  });
+
+  it('validates join preview, join, approve join request, and transfer bodies', () => {
+    expect(
+      joinPreviewQuerySchema.safeParse({ code: ' ABCD2345 ' }).success,
+    ).toBe(true);
     expect(
       joinFamilySchema.safeParse({ code: ' abc ', familyLabel: 'son' }).success,
     ).toBe(true);
@@ -70,6 +111,12 @@ describe('family request validation', () => {
     expect(
       joinFamilySchema.safeParse({ code: 'ABC', familyLabel: 'boss' }).success,
     ).toBe(false);
+    expect(
+      approveJoinRequestSchema.safeParse({
+        canManageCare: true,
+        isCareRecipient: false,
+      }).success,
+    ).toBe(true);
     expect(transferOwnershipSchema.safeParse({ memberId: 'x' }).success).toBe(
       false,
     );

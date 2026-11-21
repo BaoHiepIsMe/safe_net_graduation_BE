@@ -5,8 +5,9 @@ import {
   UpdateUserSettingsDto,
   UpdateBiometricSettingsDto,
 } from './dto/profile.dto';
-import { NotFoundError } from '../../common/errors/app.error';
+import { ForbiddenError, NotFoundError } from '../../common/errors/app.error';
 import { ErrorCode } from '../../common/constants/error-codes';
+import { isUnder13 } from '../../common/utils/age.util';
 
 @Injectable()
 export class ProfilesService {
@@ -33,7 +34,41 @@ export class ProfilesService {
       );
     }
 
-    const updated = await this.profilesRepository.updateProfile(userId, dto);
+    const effectiveDob =
+      dto.dateOfBirth !== undefined
+        ? dto.dateOfBirth === null
+          ? null
+          : new Date(`${dto.dateOfBirth}T00:00:00.000Z`)
+        : profile.dateOfBirth;
+
+    if (
+      dto.uiMode !== undefined &&
+      dto.uiMode !== 'kid' &&
+      isUnder13(effectiveDob)
+    ) {
+      throw new ForbiddenError(
+        'Người dưới 13 tuổi chỉ dùng giao diện trẻ em',
+        ErrorCode.UI_MODE_CHANGE_DENIED,
+      );
+    }
+    if (dto.uiMode === 'kid' && !isUnder13(effectiveDob)) {
+      throw new ForbiddenError(
+        'Giao diện trẻ em chỉ dành cho người dưới 13 tuổi',
+        ErrorCode.UI_MODE_CHANGE_DENIED,
+      );
+    }
+
+    const writeDto: UpdateProfileDto = {
+      ...dto,
+      ...(dto.dateOfBirth !== undefined && isUnder13(effectiveDob)
+        ? { uiMode: 'kid' }
+        : {}),
+    };
+
+    const updated = await this.profilesRepository.updateProfile(
+      userId,
+      writeDto,
+    );
     return this.mapProfile(updated);
   }
 
@@ -49,6 +84,15 @@ export class ProfilesService {
   }
 
   async updateUserSettings(userId: string, dto: UpdateUserSettingsDto) {
+    if (
+      dto.locationSharingEnabled === false &&
+      (await this.profilesRepository.hasActiveCareRecipientMembership(userId))
+    ) {
+      throw new ForbiddenError(
+        'Người được chăm sóc không thể tự tắt chia sẻ vị trí',
+        ErrorCode.CARE_RECIPIENT_CANNOT_DISABLE_LOCATION_SHARING,
+      );
+    }
     const updated = await this.profilesRepository.updateSettings(userId, dto);
     return this.mapUserSettings(updated);
   }
@@ -93,7 +137,7 @@ export class ProfilesService {
       avatarUrl: profile.avatarUrl,
       dateOfBirth: profile.dateOfBirth?.toISOString().slice(0, 10) ?? null,
       gender: profile.gender,
-      role: profile.role ?? null,
+      uiMode: profile.uiMode ?? 'adult',
       phoneNumber: profile.phoneNumber,
       accountStatus: profile.accountStatus,
       createdAt: profile.createdAt,

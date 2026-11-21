@@ -38,8 +38,9 @@ describe('GeofencesService', () => {
       listEvents: jest.fn(),
     };
     const access = {
-      requireManager: jest.fn().mockResolvedValue({}),
+      requireCareManager: jest.fn().mockResolvedValue({}),
       requireAcceptedMember: jest.fn().mockResolvedValue({}),
+      canManage: jest.fn().mockResolvedValue(true),
     };
     return {
       repository,
@@ -64,7 +65,7 @@ describe('GeofencesService', () => {
       radiusMeters: 100,
       members: [],
     });
-    expect(access.requireManager).toHaveBeenCalledWith(USER, FAMILY);
+    expect(access.requireCareManager).toHaveBeenCalledWith(USER, FAMILY);
     expect(repository.createWithMembers).toHaveBeenCalledWith(
       FAMILY,
       USER,
@@ -74,7 +75,7 @@ describe('GeofencesService', () => {
 
   it('denies non-manager mutations before repository access', async () => {
     const { service, repository, access } = setup();
-    access.requireManager.mockRejectedValue(new ForbiddenError());
+    access.requireCareManager.mockRejectedValue(new ForbiddenError());
     await expect(
       service.update(USER, FAMILY, ZONE, { name: 'School' }),
     ).rejects.toBeInstanceOf(ForbiddenError);
@@ -133,5 +134,85 @@ describe('GeofencesService', () => {
     const result = await service.getOne(USER, FAMILY, ZONE);
     expect(result).not.toHaveProperty('created_by');
     expect(result).not.toHaveProperty('GeofenceState');
+  });
+
+  it('rejects assigning a member the care manager cannot manage', async () => {
+    const { service, repository, access } = setup();
+    access.canManage.mockResolvedValue(false);
+    await expect(
+      service.create(USER, FAMILY, {
+        name: 'Home',
+        centerLatitude: 10.7,
+        centerLongitude: 106.6,
+        radiusMeters: 100,
+        members: [
+          { memberId: MEMBER, notifyOnEnter: true, notifyOnExit: true },
+        ],
+      }),
+    ).rejects.toBeInstanceOf(BusinessRuleError);
+    expect(repository.createWithMembers).not.toHaveBeenCalled();
+  });
+
+  it('limits a hired non-owner caregiver to geofences in their care scope', async () => {
+    const { service, repository, access } = setup();
+    const nurse = {
+      id: 'nurse-member',
+      userId: USER,
+      canManageCare: true,
+      isHired: true,
+      family: { ownerUserId: '99999999-9999-4999-8999-999999999999' },
+      careScopes: [{ targetMemberId: MEMBER }],
+    };
+    access.requireAcceptedMember.mockResolvedValue(nurse);
+    access.requireCareManager.mockResolvedValue(nurse);
+    const inScopeZone = {
+      ...row,
+      id: ZONE,
+      GeofenceMember: [
+        {
+          member_id: MEMBER,
+          notify_on_enter: true,
+          notify_on_exit: true,
+          FamilyMember: {
+            userId: USER,
+            displayName: 'Child',
+            profile: { fullName: 'Child', avatarUrl: null },
+          },
+        },
+      ],
+    };
+    const outOfScopeZone = {
+      ...row,
+      id: '55555555-5555-4555-8555-555555555555',
+      GeofenceMember: [
+        {
+          ...inScopeZone.GeofenceMember[0],
+          member_id: '66666666-6666-4666-8666-666666666666',
+        },
+      ],
+    };
+
+    // The scope is applied in the query, so pagination totals stay correct.
+    repository.list.mockResolvedValue({ rows: [inScopeZone], total: 1 });
+    const listResult = await service.list(USER, FAMILY, { page: 1, limit: 20 });
+    expect(repository.list).toHaveBeenCalledWith(
+      FAMILY,
+      { page: 1, limit: 20 },
+      [MEMBER],
+    );
+    expect(listResult.pagination).toMatchObject({ total: 1, totalPages: 1 });
+
+    repository.findOne.mockResolvedValue(outOfScopeZone);
+    await expect(
+      service.getOne(USER, FAMILY, outOfScopeZone.id),
+    ).rejects.toBeInstanceOf(NotFoundError);
+    await expect(
+      service.update(USER, FAMILY, outOfScopeZone.id, { name: 'Trường' }),
+    ).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(
+      service.deactivate(USER, FAMILY, outOfScopeZone.id),
+    ).rejects.toBeInstanceOf(ForbiddenError);
+    expect(repository.update).not.toHaveBeenCalled();
+    expect(repository.deactivate).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { isEffectiveCareRecipient } from '../../common/utils/age.util';
 import { Prisma } from '../../generated/prisma/client';
+import {
+  HiredScopeActor,
+  isWithinHiredScope,
+} from '../families/care-scope.util';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import {
   CreateReminderDto,
@@ -44,7 +49,6 @@ export const safeReminderSelect = {
           id: true,
           userId: true,
           displayName: true,
-          role: true,
           status: true,
           profile: { select: { fullName: true, avatarUrl: true } },
         },
@@ -67,7 +71,41 @@ const visibleReminderWhere = (userId: string) => ({
       family: {
         status: 'active',
         members: {
-          some: { userId, status: 'accepted', role: 'manager' },
+          some: {
+            userId,
+            status: 'accepted',
+            canManageCare: true,
+            isHired: false,
+          },
+        },
+      },
+    },
+    {
+      family: {
+        status: 'active',
+        ownerUserId: userId,
+        members: {
+          some: { userId, status: 'accepted', canManageCare: true },
+        },
+      },
+    },
+    {
+      family: { status: 'active' },
+      targets: {
+        some: {
+          member: {
+            status: 'accepted',
+            scopedByCaregivers: {
+              some: {
+                member: {
+                  userId,
+                  status: 'accepted',
+                  canManageCare: true,
+                  isHired: true,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -105,10 +143,17 @@ export class RemindersRepository {
           familyId: dto.familyId,
           userId: actorUserId,
           status: 'accepted',
-          role: 'manager',
+          canManageCare: true,
           family: { status: 'active' },
         },
-        select: { id: true },
+        select: {
+          id: true,
+          userId: true,
+          canManageCare: true,
+          isHired: true,
+          careScopes: { select: { targetMemberId: true } },
+          family: { select: { ownerUserId: true } },
+        },
       });
       if (!manager) return { outcome: 'forbidden' as const };
       const targets = await tx.familyMember.findMany({
@@ -118,9 +163,19 @@ export class RemindersRepository {
           status: 'accepted',
           family: { status: 'active' },
         },
-        select: { id: true },
+        select: {
+          id: true,
+          userId: true,
+          isCareRecipient: true,
+          profile: { select: { dateOfBirth: true } },
+        },
       });
-      if (targets.length !== dto.targetMemberIds.length) {
+      if (
+        targets.length !== dto.targetMemberIds.length ||
+        targets.some(
+          (target) => !this.canManageTarget(actorUserId, manager, target),
+        )
+      ) {
         return { outcome: 'invalid_target' as const };
       }
       const reminder = await tx.reminder.create({
@@ -211,22 +266,40 @@ export class RemindersRepository {
             familyId: existing.familyId,
             userId: actorUserId,
             status: 'accepted',
-            role: 'manager',
+            canManageCare: true,
             family: { status: 'active' },
           },
-          select: { id: true },
+          select: {
+            id: true,
+            userId: true,
+            canManageCare: true,
+            isHired: true,
+            careScopes: { select: { targetMemberId: true } },
+            family: { select: { ownerUserId: true } },
+          },
         });
         if (!manager) return { outcome: 'not_found' as const };
         if (dto.targetMemberIds) {
-          const count = await tx.familyMember.count({
+          const targets = await tx.familyMember.findMany({
             where: {
               id: { in: dto.targetMemberIds },
               familyId: existing.familyId,
               status: 'accepted',
               family: { status: 'active' },
             },
+            select: {
+              id: true,
+              userId: true,
+              isCareRecipient: true,
+              profile: { select: { dateOfBirth: true } },
+            },
           });
-          if (count !== dto.targetMemberIds.length) {
+          if (
+            targets.length !== dto.targetMemberIds.length ||
+            targets.some(
+              (target) => !this.canManageTarget(actorUserId, manager, target),
+            )
+          ) {
             return { outcome: 'invalid_target' as const };
           }
           await tx.reminderTarget.deleteMany({ where: { reminderId } });
@@ -433,6 +506,24 @@ export class RemindersRepository {
       where: { id: logId, notificationProcessedAt: null },
       data: { notificationProcessedAt: new Date() },
     });
+  }
+
+  /** Same rule as FamilyAccessService.canManage, on rows already loaded in the transaction. */
+  private canManageTarget(
+    actorUserId: string,
+    manager: HiredScopeActor,
+    target: {
+      id: string;
+      userId: string;
+      isCareRecipient: boolean;
+      profile: { dateOfBirth: Date | null };
+    },
+  ): boolean {
+    return (
+      target.userId !== actorUserId &&
+      isEffectiveCareRecipient(target) &&
+      isWithinHiredScope(manager, target.id)
+    );
   }
 
   private async withSerializableRetry<T>(work: () => Promise<T>): Promise<T> {

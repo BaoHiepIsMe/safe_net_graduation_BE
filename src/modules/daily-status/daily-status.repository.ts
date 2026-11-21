@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { isEffectiveCareRecipient, isMinor } from '../../common/utils/age.util';
 import { Prisma } from '../../generated/prisma/client';
+import { effectiveCareRecipientWhere } from '../families/care-scope.util';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import {
   DAILY_STATUS_TOP_APPS_LIMIT,
@@ -30,16 +32,17 @@ const safeReportSelect = {
 
 const reportAccessSelect = {
   ...safeReportSelect,
-  family: { select: { status: true } },
+  family: { select: { status: true, ownerUserId: true } },
   member: {
     select: {
       id: true,
       userId: true,
-      role: true,
+      isCareRecipient: true,
       status: true,
       locationSharingEnabled: true,
       profile: {
         select: {
+          dateOfBirth: true,
           UserSetting: { select: { locationSharingEnabled: true } },
         },
       },
@@ -70,12 +73,24 @@ export class DailyStatusRepository {
               id: memberId,
               familyId,
               status: 'accepted',
-              role: { in: ['child', 'elder'] },
               family: { status: 'active' },
             },
-            select: { id: true, userId: true, role: true },
+            select: {
+              id: true,
+              userId: true,
+              isCareRecipient: true,
+              profile: { select: { dateOfBirth: true } },
+            },
           });
-          if (!member) return { outcome: 'ineligible' as const };
+          if (
+            !member ||
+            !isEffectiveCareRecipient({
+              isCareRecipient: member.isCareRecipient,
+              dateOfBirth: member.profile?.dateOfBirth,
+            })
+          ) {
+            return { outcome: 'ineligible' as const };
+          }
 
           const context = {
             familyId,
@@ -95,7 +110,7 @@ export class DailyStatusRepository {
               familyId,
               member.id,
               member.userId,
-              member.role,
+              isMinor(member.profile?.dateOfBirth),
               dayStart,
               dayEnd,
             ),
@@ -166,21 +181,43 @@ export class DailyStatusRepository {
         status: 'accepted',
         family: { status: 'active' },
       },
-      select: { id: true, role: true, locationSharingEnabled: true },
+      select: {
+        id: true,
+        userId: true,
+        canManageCare: true,
+        isHired: true,
+        careScopes: { select: { targetMemberId: true } },
+        family: { select: { ownerUserId: true } },
+        locationSharingEnabled: true,
+      },
     });
   }
 
-  findCurrentSubject(memberId: string, familyId: string) {
-    return this.prisma.familyMember.findFirst({
+  async findCurrentSubject(memberId: string, familyId: string) {
+    const member = await this.prisma.familyMember.findFirst({
       where: {
         id: memberId,
         familyId,
         status: 'accepted',
-        role: { in: ['child', 'elder'] },
         family: { status: 'active' },
       },
-      select: { id: true, userId: true, role: true },
+      select: {
+        id: true,
+        userId: true,
+        isCareRecipient: true,
+        profile: { select: { dateOfBirth: true } },
+      },
     });
+    if (
+      !member ||
+      !isEffectiveCareRecipient({
+        isCareRecipient: member.isCareRecipient,
+        dateOfBirth: member.profile?.dateOfBirth,
+      })
+    ) {
+      return null;
+    }
+    return member;
   }
 
   countSosNotAuthorizedForViewer(
@@ -206,8 +243,8 @@ export class DailyStatusRepository {
     return this.prisma.familyMember.findMany({
       where: {
         status: 'accepted',
-        role: { in: ['child', 'elder'] },
         family: { status: 'active' },
+        ...effectiveCareRecipientWhere(),
         dailyStatusReports: {
           none: { reportDate, timezone },
         },
@@ -223,7 +260,7 @@ export class DailyStatusRepository {
     familyId: string,
     memberId: string,
     subjectUserId: string,
-    role: string,
+    targetIsMinor: boolean,
     dayStart: Date,
     dayEnd: Date,
   ): Promise<DailyStatusSummary> {
@@ -282,7 +319,7 @@ export class DailyStatusRepository {
       tx.reminderTarget.count({
         where: { memberId, reminder: { familyId } },
       }),
-      role === 'child'
+      targetIsMinor
         ? tx.phoneUsageLog.aggregate({
             where: { memberId, startedAt: window },
             _count: { _all: true },
@@ -292,7 +329,7 @@ export class DailyStatusRepository {
             _count: { _all: 0 },
             _sum: { durationSeconds: null },
           }),
-      role === 'child'
+      targetIsMinor
         ? tx.phoneUsageLog.groupBy({
             by: ['appPackage', 'appName'],
             where: { memberId, startedAt: window },
@@ -301,7 +338,7 @@ export class DailyStatusRepository {
             take: DAILY_STATUS_TOP_APPS_LIMIT,
           })
         : Promise.resolve([]),
-      role === 'child'
+      targetIsMinor
         ? tx.phoneRule.count({ where: { familyId, memberId, isActive: true } })
         : Promise.resolve(0),
     ]);
@@ -335,12 +372,11 @@ export class DailyStatusRepository {
         sos: 'available',
         reminders:
           reminderTargets > 0 || reminderTotal > 0 ? 'available' : 'no_data',
-        phoneUsage:
-          role !== 'child'
-            ? 'not_applicable'
-            : phoneRuleCount > 0 || phoneCount > 0
-              ? 'available'
-              : 'no_data',
+        phoneUsage: !targetIsMinor
+          ? 'not_applicable'
+          : phoneRuleCount > 0 || phoneCount > 0
+            ? 'available'
+            : 'no_data',
       },
       location: {
         recordCount: locationCount,

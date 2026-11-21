@@ -78,14 +78,15 @@ class InMemoryDailyStatusRepository {
       generatedAt: new Date(),
       createdAt: new Date(),
       subject: { id: SUBJECT, fullName: 'Subject B', avatarUrl: null },
-      family: { status: 'active' },
+      family: { status: 'active', ownerUserId: MANAGER },
       member: {
         id: MEMBER,
         userId: SUBJECT,
-        role: 'child',
+        isCareRecipient: false,
         status: 'accepted',
         locationSharingEnabled: this.locationAllowed,
         profile: {
+          dateOfBirth: new Date('2018-01-01'),
           UserSetting: { locationSharingEnabled: this.locationAllowed },
         },
       },
@@ -121,14 +122,25 @@ class InMemoryDailyStatusRepository {
   findCurrentMembership(userId: string) {
     return Promise.resolve(
       userId === MANAGER && this.managerCurrent
-        ? { role: 'manager', locationSharingEnabled: true }
+        ? {
+            canManageCare: true,
+            isHired: false,
+            careScopes: [],
+            family: { ownerUserId: MANAGER },
+            locationSharingEnabled: true,
+          }
         : null,
     );
   }
   findCurrentSubject(memberId: string, familyId: string) {
     return Promise.resolve(
       memberId === MEMBER && familyId === FAMILY
-        ? { id: MEMBER, userId: SUBJECT, role: 'child' }
+        ? {
+            id: MEMBER,
+            userId: SUBJECT,
+            isCareRecipient: false,
+            profile: { dateOfBirth: new Date('2018-01-01') },
+          }
         : null,
     );
   }
@@ -268,15 +280,16 @@ describe('Phase 14 Daily Status (e2e)', () => {
     );
   });
 
-  it('preserves source privacy and exposes no public metric-write endpoint', async () => {
+  it('keeps a care recipient visible to managers and exposes no public metric-write endpoint', async () => {
+    // The subject is a care recipient: their own sharing switches cannot hide
+    // location parts from a manager who canManage them.
     repository.locationAllowed = false;
     await request(app.getHttpServer())
       .get(`/api/v1/daily-status/${repository.reports[0].id}`)
       .set(auth('manager'))
       .expect(200)
       .expect((response) => {
-        expect(response.body.data.locationSummary).toBeNull();
-        expect(response.body.data.geofenceSummary).toBeNull();
+        expect(response.body.data.dataAvailability.location).toBe('available');
       });
     repository.locationAllowed = true;
     await request(app.getHttpServer())

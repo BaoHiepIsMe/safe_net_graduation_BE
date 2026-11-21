@@ -271,37 +271,46 @@ model Family {
 }
 
 model FamilyMember {
-  id                     String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  familyId               String              @map("family_id") @db.Uuid
-  userId                 String              @map("user_id") @db.Uuid
-  invitedByUserId        String?             @map("invited_by_user_id") @db.Uuid
-  role                   String              @db.VarChar(30)
-  familyLabel            String              @map("family_label") @db.VarChar(50)
-  displayName            String?             @map("display_name") @db.VarChar(100)
-  status                 String              @default("pending") @db.VarChar(30)
-  locationSharingEnabled Boolean?            @default(true) @map("location_sharing_enabled")
-  invitedAt              DateTime?           @default(now()) @map("invited_at") @db.Timestamptz(6)
-  acceptedAt             DateTime?           @map("accepted_at") @db.Timestamptz(6)
-  removedAt              DateTime?           @map("removed_at") @db.Timestamptz(6)
-  createdAt              DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt              DateTime?           @default(now()) @map("updated_at") @db.Timestamptz(6)
-  CurrentLocation        CurrentLocation[]
-  dailyStatusReports     DailyStatusReport[]
-  FallEvent              FallEvent[]
-  family                 Family              @relation(fields: [familyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  inviter                Profile?            @relation("family_members_invited_by_user_idToprofiles", fields: [invitedByUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  profile                Profile             @relation("family_members_user_idToprofiles", fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  GeofenceEvent          GeofenceEvent[]
-  GeofenceMember         GeofenceMember[]
-  GeofenceState          GeofenceState[]
-  Location               Location[]
-  PhoneRule              PhoneRule[]
-  PhoneCommand           PhoneCommand[]
-  PhoneUsageLog          PhoneUsageLog[]
-  reminderLogs           ReminderLog[]
-  reminderTargets        ReminderTarget[]
-  SosContact             SosContact[]
-  SosEvent               SosEvent[]
+  id                        String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  familyId                  String                  @map("family_id") @db.Uuid
+  userId                    String                  @map("user_id") @db.Uuid
+  invitedByUserId           String?                 @map("invited_by_user_id") @db.Uuid
+  role                      String?                 @db.VarChar(30)
+  familyLabel               String                  @map("family_label") @db.VarChar(50)
+  displayName               String?                 @map("display_name") @db.VarChar(100)
+  status                    String                  @default("pending") @db.VarChar(30)
+  canManageCare             Boolean                 @default(false) @map("can_manage_care")
+  careGrantedBy             String?                 @map("care_granted_by") @db.Uuid
+  isCareRecipient           Boolean                 @default(false) @map("is_care_recipient")
+  careRecipientSetBy        String?                 @map("care_recipient_set_by") @db.Uuid
+  isHired                   Boolean                 @default(false) @map("is_hired")
+  locationSharingEnabled    Boolean?                @default(true) @map("location_sharing_enabled")
+  invitedAt                 DateTime?               @default(now()) @map("invited_at") @db.Timestamptz(6)
+  acceptedAt                DateTime?               @map("accepted_at") @db.Timestamptz(6)
+  removedAt                 DateTime?               @map("removed_at") @db.Timestamptz(6)
+  createdAt                 DateTime?               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                 DateTime?               @default(now()) @map("updated_at") @db.Timestamptz(6)
+  CurrentLocation           CurrentLocation[]
+  dailyStatusReports        DailyStatusReport[]
+  FallEvent                 FallEvent[]
+  family                    Family                  @relation(fields: [familyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  inviter                   Profile?                @relation("family_members_invited_by_user_idToprofiles", fields: [invitedByUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  careGrantedByProfile      Profile?                @relation("family_members_care_granted_byToprofiles", fields: [careGrantedBy], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  careRecipientSetByProfile Profile?                @relation("family_members_care_recipient_set_byToprofiles", fields: [careRecipientSetBy], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  profile                   Profile                 @relation("family_members_user_idToprofiles", fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  careScopes                FamilyMemberCareScope[] @relation("care_scope_actor")
+  targetedByCareScopes      FamilyMemberCareScope[] @relation("care_scope_target")
+  GeofenceEvent             GeofenceEvent[]
+  GeofenceMember            GeofenceMember[]
+  GeofenceState             GeofenceState[]
+  Location                  Location[]
+  PhoneRule                 PhoneRule[]
+  PhoneCommand              PhoneCommand[]
+  PhoneUsageLog             PhoneUsageLog[]
+  reminderLogs              ReminderLog[]
+  reminderTargets           ReminderTarget[]
+  SosContact                SosContact[]
+  SosEvent                  SosEvent[]
 
   @@unique([familyId, userId])
   @@index([familyId], map: "idx_family_members_family")
@@ -310,6 +319,18 @@ model FamilyMember {
   @@index([userId], map: "idx_family_members_user")
   @@index([userId, status], map: "idx_family_members_user_status")
   @@map("family_members")
+  @@schema("public")
+}
+
+model FamilyMemberCareScope {
+  memberId       String       @map("member_id") @db.Uuid
+  targetMemberId String       @map("target_member_id") @db.Uuid
+  member         FamilyMember @relation("care_scope_actor", fields: [memberId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  targetMember   FamilyMember @relation("care_scope_target", fields: [targetMemberId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([memberId, targetMemberId])
+  @@index([targetMemberId], map: "idx_family_member_care_scopes_target")
+  @@map("family_member_care_scopes")
   @@schema("public")
 }
 
@@ -574,24 +595,27 @@ model Profile {
   phoneNumber                                                String?                 @unique @map("phone") @db.VarChar(20)
   avatarUrl                                                  String?                 @map("avatar_url")
   dateOfBirth                                                DateTime?               @map("date_of_birth") @db.Date
-  gender                                                     String?                 @db.VarChar(20)
-  role                                                       String?                 @db.VarChar(20)
-  accountStatus                                              String?                 @default("active") @map("account_status") @db.VarChar(20)
-  createdAt                                                  DateTime?               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt                                                  DateTime?               @default(now()) @map("updated_at") @db.Timestamptz(6)
-  BiometricSetting                                           BiometricSetting?
-  call_logs_call_logs_caller_idToprofiles                    CallLog[]               @relation("call_logs_caller_idToprofiles")
-  call_logs_call_logs_receiver_idToprofiles                  CallLog[]               @relation("call_logs_receiver_idToprofiles")
-  CallActiveParticipant                                      CallActiveParticipant[]
-  Camera                                                     Camera[]
-  ConversationMember                                         ConversationMember[]
-  CurrentLocation                                            CurrentLocation?
-  dailyStatusReports                                         DailyStatusReport[]
-  Device                                                     Device[]
-  FallEvent                                                  FallEvent[]
-  Family                                                     Family[]
-  family_members_family_members_invited_by_user_idToprofiles FamilyMember[]          @relation("family_members_invited_by_user_idToprofiles")
-  family_members_family_members_user_idToprofiles            FamilyMember[]          @relation("family_members_user_idToprofiles")
+  gender                                                        String?                 @db.VarChar(20)
+  role                                                          String?                 @db.VarChar(20)
+  uiMode                                                        String                  @default("adult") @map("ui_mode") @db.VarChar(20)
+  accountStatus                                                 String?                 @default("active") @map("account_status") @db.VarChar(20)
+  createdAt                                                     DateTime?               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                                                     DateTime?               @default(now()) @map("updated_at") @db.Timestamptz(6)
+  BiometricSetting                                              BiometricSetting?
+  call_logs_call_logs_caller_idToprofiles                       CallLog[]               @relation("call_logs_caller_idToprofiles")
+  call_logs_call_logs_receiver_idToprofiles                     CallLog[]               @relation("call_logs_receiver_idToprofiles")
+  CallActiveParticipant                                         CallActiveParticipant[]
+  Camera                                                        Camera[]
+  ConversationMember                                            ConversationMember[]
+  CurrentLocation                                               CurrentLocation?
+  dailyStatusReports                                            DailyStatusReport[]
+  Device                                                        Device[]
+  FallEvent                                                     FallEvent[]
+  Family                                                        Family[]
+  family_members_family_members_invited_by_user_idToprofiles    FamilyMember[]          @relation("family_members_invited_by_user_idToprofiles")
+  family_members_family_members_care_granted_byToprofiles       FamilyMember[]          @relation("family_members_care_granted_byToprofiles")
+  family_members_family_members_care_recipient_set_byToprofiles FamilyMember[]          @relation("family_members_care_recipient_set_byToprofiles")
+  family_members_family_members_user_idToprofiles               FamilyMember[]          @relation("family_members_user_idToprofiles")
   Geofence                                                   Geofence[]
   Location                                                   Location[]
   Message                                                    Message[]
