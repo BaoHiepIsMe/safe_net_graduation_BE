@@ -3357,6 +3357,7 @@ export const ReminderLogScalarFieldEnum = {
   status: 'status',
   notificationProcessedAt: 'notificationProcessedAt',
   processedAt: 'processedAt',
+  completedAt: 'completedAt',
   note: 'note'
 } as const
 
@@ -3379,6 +3380,7 @@ export const ReminderScalarFieldEnum = {
   title: 'title',
   description: 'description',
   reminderType: 'reminderType',
+  priority: 'priority',
   startAt: 'startAt',
   scheduleType: 'scheduleType',
   scheduleRule: 'scheduleRule',

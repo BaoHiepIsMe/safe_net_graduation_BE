@@ -328,6 +328,15 @@ or a Call was accepted.
 - Phone commands are durable requested work; only the exact active target Device
   may acknowledge terminal execution. Transport success is not completion.
 - Reminders use an IANA timezone with `once`, `daily`, or `weekly` recurrence.
+  Each reminder has a `priority` (`low|normal|high|urgent`, default `normal`).
+  An occurrence log goes `due -> completed|missed`: only the recipient may
+  confirm it (`PATCH /reminders/logs/{logId}/complete`), and an occurrence not
+  confirmed within 60 minutes becomes `missed`, which cannot be completed.
+  `GET /reminders/agenda?date=YYYY-MM-DD&timezone=...` lists one local day for
+  the viewer, adding not-yet-reached occurrences as `upcoming` (`logId: null`).
+  Managers see the members they manage; a plain recipient sees only their own.
+  Every change emits `reminder.log.updated` (the log DTO plus `occurredAt`) to
+  the recipient, the creator and the managers.
 - Daily Status uses the subject's IANA timezone and the half-open local-day
   window `[midnight, next midnight)`. Reports are immutable non-AI snapshots.
 

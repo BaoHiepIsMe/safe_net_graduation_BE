@@ -396,6 +396,7 @@ export class DailyStatusRepository {
         occurrenceCount: reminderTotal,
         notificationProcessedCount: reminderProcessedCount,
         missedCount: countBy(reminderLogs, 'missed'),
+        completedCount: countBy(reminderLogs, 'completed'),
       },
       phoneUsage: {
         totalUsageSeconds: phoneUsage._sum.durationSeconds ?? 0,

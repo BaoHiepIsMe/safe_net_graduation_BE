@@ -5,8 +5,10 @@ import {
   OnApplicationShutdown,
 } from '@nestjs/common';
 import { NotificationsService } from '../notifications/notifications.service';
+import { ReminderEventsService } from './reminder-events.service';
 import {
   REMINDER_CATCH_UP_WINDOW_MS,
+  REMINDER_CONFIRM_WINDOW_MS,
   REMINDER_DUE_BATCH_SIZE,
   REMINDER_SCHEDULER_INTERVAL_MS,
 } from './reminders.constants';
@@ -23,6 +25,7 @@ export class ReminderSchedulerService
   constructor(
     private readonly repository: RemindersRepository,
     private readonly notifications: NotificationsService,
+    private readonly events: ReminderEventsService,
   ) {}
 
   onApplicationBootstrap() {
@@ -46,12 +49,14 @@ export class ReminderSchedulerService
       for (const reminder of due) {
         if (!reminder.nextOccurrenceAt) continue;
         try {
-          await this.repository.claimOccurrence(
+          const claimed = await this.repository.claimOccurrence(
             reminder.id,
             reminder.nextOccurrenceAt,
             now,
             cutoff,
           );
+          // Committed first: managers see "awaiting confirmation" live.
+          await this.events.emitLogsUpdated(claimed.dueLogIds, now);
         } catch {
           this.logger.warn('Reminder occurrence persistence failed');
         }
@@ -66,6 +71,15 @@ export class ReminderSchedulerService
         } catch {
           this.logger.warn('Reminder notification persistence failed');
         }
+      }
+      try {
+        const missed = await this.repository.markUnconfirmedMissed(
+          new Date(now.getTime() - REMINDER_CONFIRM_WINDOW_MS),
+          REMINDER_DUE_BATCH_SIZE,
+        );
+        await this.events.emitLogsUpdated(missed, now);
+      } catch {
+        this.logger.warn('Reminder missed sweep failed');
       }
     } catch {
       this.logger.warn('Reminder due sweep failed');

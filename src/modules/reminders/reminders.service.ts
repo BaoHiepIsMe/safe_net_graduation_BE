@@ -7,20 +7,36 @@ import {
   NotFoundError,
   ValidationError,
 } from '../../common/errors/app.error';
+import { isWithinHiredScope } from '../families/care-scope.util';
 import {
+  CompleteReminderLogDto,
   CreateReminderDto,
+  ReminderAgendaQueryDto,
   ReminderListQueryDto,
   ReminderLogQueryDto,
   ReminderScheduleDto,
   UpdateReminderDto,
   UpcomingReminderQueryDto,
 } from './dto/reminder.dto';
+import { ReminderEventsService } from './reminder-events.service';
 import {
+  mapReminder,
+  mapReminderLog,
+  memberDisplayName,
+} from './reminder-mappers';
+import {
+  addLocalDays,
   normalizeReminderSchedule,
   nextOccurrenceForSchedule,
+  parseLocalDate,
   storedScheduleToDto,
+  zonedDateTimeToUtc,
+  LocalDateParts,
 } from './reminder-schedule';
+import { REMINDER_AGENDA_MAX_OCCURRENCES_PER_REMINDER } from './reminders.constants';
 import { RemindersRepository } from './reminders.repository';
+
+export type ReminderAgendaStatus = 'upcoming' | 'due' | 'completed' | 'missed';
 
 const reminderCursorSchema = z
   .tuple([z.iso.datetime({ offset: true }), z.string().uuid()])
@@ -34,7 +50,10 @@ const logCursorSchema = z
 
 @Injectable()
 export class RemindersService {
-  constructor(private readonly repository: RemindersRepository) {}
+  constructor(
+    private readonly repository: RemindersRepository,
+    private readonly events: ReminderEventsService,
+  ) {}
 
   async create(userId: string, dto: CreateReminderDto) {
     const schedule = this.normalize(dto.schedule);
@@ -46,7 +65,7 @@ export class RemindersService {
       );
     }
     if (result.outcome === 'invalid_target') this.invalidTarget();
-    return this.mapReminder(result.reminder);
+    return mapReminder(result.reminder);
   }
 
   async list(userId: string, query: ReminderListQueryDto) {
@@ -58,7 +77,7 @@ export class RemindersService {
     const pageRows = hasMore ? rows.slice(0, query.limit) : rows;
     const last = pageRows.at(-1);
     return {
-      data: pageRows.map((row) => this.mapReminder(row)),
+      data: pageRows.map(mapReminder),
       pagination: {
         limit: query.limit,
         nextCursor:
@@ -78,7 +97,7 @@ export class RemindersService {
       query.limit,
     );
     return {
-      data: rows.map((row) => this.mapReminder(row)),
+      data: rows.map(mapReminder),
       horizonEndsAt: until,
     };
   }
@@ -86,7 +105,7 @@ export class RemindersService {
   async detail(userId: string, reminderId: string) {
     const reminder = await this.repository.findVisible(userId, reminderId);
     if (!reminder) this.notFound();
-    return this.mapReminder(reminder);
+    return mapReminder(reminder);
   }
 
   async update(userId: string, reminderId: string, dto: UpdateReminderDto) {
@@ -115,7 +134,7 @@ export class RemindersService {
     );
     if (result.outcome === 'not_found') this.notFound();
     if (result.outcome === 'invalid_target') this.invalidTarget();
-    return this.mapReminder(result.reminder);
+    return mapReminder(result.reminder);
   }
 
   async deactivate(userId: string, reminderId: string) {
@@ -138,19 +157,7 @@ export class RemindersService {
     const pageRows = hasMore ? rows.slice(0, query.limit) : rows;
     const last = pageRows.at(-1);
     return {
-      data: pageRows.map((row) => ({
-        id: row.id,
-        reminderId: row.reminderId,
-        memberId: row.memberId,
-        recipient: {
-          userId: row.member.userId,
-          displayName:
-            row.member.displayName ?? row.member.profile.fullName ?? null,
-        },
-        scheduledAt: row.scheduledAt,
-        status: row.status,
-        processedAt: row.processedAt,
-      })),
+      data: pageRows.map(mapReminderLog),
       pagination: {
         limit: query.limit,
         nextCursor:
@@ -158,6 +165,169 @@ export class RemindersService {
         hasMore,
       },
     };
+  }
+
+  async complete(userId: string, logId: string, dto: CompleteReminderLogDto) {
+    const now = new Date();
+    const result = await this.repository.completeLog(
+      userId,
+      logId,
+      dto.note,
+      now,
+    );
+    if (result.outcome === 'not_found') {
+      throw new NotFoundError(
+        'Reminder occurrence not found',
+        ErrorCode.REMINDER_LOG_NOT_FOUND,
+      );
+    }
+    if (result.outcome === 'missed') {
+      throw new BusinessRuleError(
+        ErrorCode.REMINDER_OCCURRENCE_CONFLICT,
+        'This reminder occurrence was already missed',
+      );
+    }
+    if (result.changed) await this.events.emitLogsUpdated([logId], now);
+    return mapReminderLog(result.log);
+  }
+
+  /**
+   * Every occurrence of one local day the viewer may see: logged ones with
+   * their status, plus not-yet-reached ones as `upcoming`.
+   */
+  async agenda(userId: string, query: ReminderAgendaQueryDto) {
+    const day = parseLocalDate(query.date);
+    const start = this.localDayStart(day, query.timezone);
+    const end = this.localDayStart(addLocalDays(day, 1), query.timezone);
+    const [reminders, memberships] = await Promise.all([
+      this.repository.listAgendaReminders(userId, start, end),
+      this.repository.viewerMemberships(userId),
+    ]);
+    const byFamily = new Map(memberships.map((m) => [m.familyId, m]));
+    const canSee = (
+      familyId: string,
+      member: { id: string; userId: string },
+    ) => {
+      const me = byFamily.get(familyId);
+      if (!me) return false;
+      if (member.userId === userId) return true;
+      return me.canManageCare && isWithinHiredScope(me, member.id);
+    };
+
+    const items: Array<ReturnType<typeof this.agendaItem>> = [];
+    for (const reminder of reminders) {
+      const logged = new Set<string>();
+      for (const log of reminder.logs) {
+        logged.add(`${log.memberId}|${log.scheduledAt.toISOString()}`);
+        if (!canSee(reminder.familyId, log.member)) continue;
+        items.push(
+          this.agendaItem(reminder, log.member, log.scheduledAt, {
+            logId: log.id,
+            status: log.status as ReminderAgendaStatus,
+            completedAt: log.completedAt,
+          }),
+        );
+      }
+      if (!reminder.isActive || !reminder.nextOccurrenceAt) continue;
+      const schedule = storedScheduleToDto(reminder);
+      const targets = reminder.targets
+        .map((target) => target.member)
+        .filter(
+          (member) =>
+            member.status === 'accepted' && canSee(reminder.familyId, member),
+        );
+      let occurrence: Date | null = reminder.nextOccurrenceAt;
+      for (
+        let count = 0;
+        occurrence &&
+        occurrence < end &&
+        count < REMINDER_AGENDA_MAX_OCCURRENCES_PER_REMINDER;
+        count++
+      ) {
+        if (occurrence >= start) {
+          for (const member of targets) {
+            const key = `${member.id}|${occurrence.toISOString()}`;
+            if (logged.has(key)) continue;
+            items.push(
+              this.agendaItem(reminder, member, occurrence, {
+                logId: null,
+                status: 'upcoming',
+                completedAt: null,
+              }),
+            );
+          }
+        }
+        occurrence = nextOccurrenceForSchedule(schedule, occurrence);
+      }
+    }
+    items.sort(
+      (a, b) =>
+        a.scheduledAt.getTime() - b.scheduledAt.getTime() ||
+        a.title.localeCompare(b.title) ||
+        a.member.memberId.localeCompare(b.member.memberId),
+    );
+    return {
+      data: items,
+      date: query.date,
+      timezone: query.timezone,
+      startsAt: start,
+      endsAt: end,
+    };
+  }
+
+  private agendaItem(
+    reminder: {
+      id: string;
+      title: string;
+      description: string | null;
+      reminderType: string | null;
+      priority: string;
+    },
+    member: {
+      id: string;
+      userId: string;
+      displayName: string | null;
+      profile: { fullName: string | null; avatarUrl: string | null };
+    },
+    scheduledAt: Date,
+    state: {
+      logId: string | null;
+      status: ReminderAgendaStatus;
+      completedAt: Date | null;
+    },
+  ) {
+    return {
+      reminderId: reminder.id,
+      logId: state.logId,
+      title: reminder.title,
+      description: reminder.description,
+      reminderType: reminder.reminderType,
+      priority: reminder.priority,
+      scheduledAt,
+      status: state.status,
+      completedAt: state.completedAt,
+      member: {
+        memberId: member.id,
+        userId: member.userId,
+        displayName: memberDisplayName(member),
+        avatarUrl: member.profile.avatarUrl,
+      },
+    };
+  }
+
+  /** Local midnight, or the first existing minute after a DST gap. */
+  private localDayStart(day: LocalDateParts, timezone: string) {
+    for (const time of ['00:00', '01:00', '02:00']) {
+      try {
+        return zonedDateTimeToUtc(day, time, timezone);
+      } catch {
+        continue;
+      }
+    }
+    throw new ValidationError(
+      [{ path: ['date'], message: 'Invalid local date' }],
+      'Invalid date',
+    );
   }
 
   private normalize(schedule: ReminderScheduleDto) {
@@ -169,33 +339,6 @@ export class RemindersService {
         error instanceof Error ? error.message : 'Invalid reminder schedule',
       );
     }
-  }
-
-  private mapReminder(row: any) {
-    return {
-      id: row.id,
-      familyId: row.familyId,
-      creator: {
-        id: row.creator.id,
-        fullName: row.creator.fullName,
-        avatarUrl: row.creator.avatarUrl,
-      },
-      title: row.title,
-      description: row.description,
-      reminderType: row.reminderType,
-      schedule: storedScheduleToDto(row),
-      isActive: row.isActive,
-      nextOccurrenceAt: row.nextOccurrenceAt,
-      targets: row.targets.map((target: any) => ({
-        memberId: target.member.id,
-        userId: target.member.userId,
-        displayName:
-          target.member.displayName ?? target.member.profile.fullName ?? null,
-        avatarUrl: target.member.profile.avatarUrl,
-      })),
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    };
   }
 
   private encodeCursor(date: Date, id: string) {

@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/infrastructure/database/prisma.service';
 import { SupabaseService } from '../src/infrastructure/supabase/supabase.service';
 import { NotificationsService } from '../src/modules/notifications/notifications.service';
+import { ReminderEventsService } from '../src/modules/reminders/reminder-events.service';
 import { ReminderSchedulerService } from '../src/modules/reminders/reminder-scheduler.service';
 import { RemindersRepository } from '../src/modules/reminders/reminders.repository';
 
@@ -240,6 +241,7 @@ class InMemoryRemindersRepository {
           scheduledAt: occurrenceAt,
           status: missed ? 'missed' : 'due',
           processedAt: now,
+          completedAt: null,
           notificationProcessedAt: null,
           member: {
             userId: target.member.userId,
@@ -268,6 +270,51 @@ class InMemoryRemindersRepository {
     const log = this.logs.find((item) => item.id === logId);
     if (log) log.notificationProcessedAt = new Date();
     return Promise.resolve({ count: log ? 1 : 0 });
+  }
+
+  completeLog(userId: string, logId: string, _note: unknown, now: Date) {
+    const log = this.logs.find(
+      (item) =>
+        item.id === logId &&
+        item.member.userId === userId &&
+        this.familyActive &&
+        this.memberStatuses[userId] === 'accepted',
+    );
+    if (!log) return Promise.resolve({ outcome: 'not_found' });
+    if (log.status === 'missed') return Promise.resolve({ outcome: 'missed' });
+    const changed = log.status === 'due';
+    if (changed) {
+      log.status = 'completed';
+      log.completedAt = now;
+    }
+    return Promise.resolve({ outcome: 'completed', changed, log });
+  }
+
+  markUnconfirmedMissed(cutoff: Date, limit: number) {
+    const stale = this.logs
+      .filter((log) => log.status === 'due' && log.scheduledAt < cutoff)
+      .slice(0, limit);
+    stale.forEach((log) => (log.status = 'missed'));
+    return Promise.resolve(stale.map(({ id }) => id));
+  }
+
+  findLogsForBroadcast(logIds: string[]) {
+    return Promise.resolve(
+      this.logs
+        .filter((log) => logIds.includes(log.id))
+        .map((log) => ({
+          ...log,
+          reminder: {
+            creatorUserId: this.reminders.find((r) => r.id === log.reminderId)
+              ?.creatorUserId,
+            familyId: FAMILY,
+          },
+        })),
+    );
+  }
+
+  managerUserIds() {
+    return Promise.resolve([USER_A]);
   }
 }
 
@@ -456,6 +503,7 @@ describe('Phase 9 Reminders (e2e)', () => {
     const secondWorker = new ReminderSchedulerService(
       reminders as unknown as RemindersRepository,
       notifications as unknown as NotificationsService,
+      app.get(ReminderEventsService),
     );
     await Promise.all([
       app.get(ReminderSchedulerService).runDue(new Date(at.getTime() + 60_000)),
@@ -469,6 +517,54 @@ describe('Phase 9 Reminders (e2e)', () => {
         (item) => item.metadata.reminderId === created.body.data.id,
       ),
     ).toHaveLength(1);
+  });
+
+  it('recipient confirms a due occurrence once; others cannot', async () => {
+    const log = reminders.logs.find(
+      (item) => item.reminderId === reminderId && item.status === 'due',
+    );
+    await request(app.getHttpServer())
+      .patch(`/api/v1/reminders/logs/${log.id}/complete`)
+      .set(auth('token-a'))
+      .send({})
+      .expect(404);
+    const done = await request(app.getHttpServer())
+      .patch(`/api/v1/reminders/logs/${log.id}/complete`)
+      .set(auth('token-b'))
+      .send({})
+      .expect(200);
+    expect(done.body.data.status).toBe('completed');
+    expect(done.body.data.completedAt).toEqual(expect.any(String));
+    await request(app.getHttpServer())
+      .patch(`/api/v1/reminders/logs/${log.id}/complete`)
+      .set(auth('token-b'))
+      .send({})
+      .expect(200);
+  });
+
+  it('an unconfirmed due occurrence becomes missed and cannot be completed', async () => {
+    const log = {
+      id: crypto.randomUUID(),
+      reminderId,
+      memberId: MEMBER_B,
+      scheduledAt: new Date(Date.now() - 2 * 60 * 60_000),
+      status: 'due',
+      processedAt: new Date(),
+      completedAt: null,
+      notificationProcessedAt: new Date(),
+      member: { userId: USER_B, displayName: null, profile: {} },
+    };
+    reminders.logs.push(log);
+    await app.get(ReminderSchedulerService).runDue(new Date());
+    expect(log.status).toBe('missed');
+    await request(app.getHttpServer())
+      .patch(`/api/v1/reminders/logs/${log.id}/complete`)
+      .set(auth('token-b'))
+      .send({})
+      .expect(422)
+      .expect((response) =>
+        expect(response.body.error.code).toBe('REMINDER_OCCURRENCE_CONFLICT'),
+      );
   });
 
   it('D: unrelated user cannot read, update or fetch logs', async () => {

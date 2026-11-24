@@ -23,16 +23,22 @@ import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { ApiStandardErrors } from '../../common/swagger/api-docs';
 import {
+  completeReminderLogSchema,
   createReminderSchema,
+  reminderAgendaQuerySchema,
   reminderListQuerySchema,
+  reminderLogParamSchema,
   reminderLogQuerySchema,
   reminderParamSchema,
   upcomingReminderQuerySchema,
   updateReminderSchema,
 } from './dto/reminder.dto';
 import type {
+  CompleteReminderLogDto,
   CreateReminderDto,
+  ReminderAgendaQueryDto,
   ReminderListQueryDto,
+  ReminderLogParam,
   ReminderLogQueryDto,
   ReminderParam,
   UpcomingReminderQueryDto,
@@ -40,8 +46,11 @@ import type {
 } from './dto/reminder.dto';
 import { RemindersService } from './reminders.service';
 import {
+  completeReminderLogBodySchema,
   createReminderBodySchema,
+  reminderAgendaSuccessSchema,
   reminderListSuccessSchema,
+  reminderLogSuccessSchema,
   reminderLogsSuccessSchema,
   reminderSuccessSchema,
   reminderUpcomingSuccessSchema,
@@ -93,6 +102,41 @@ export class RemindersController {
     query: UpcomingReminderQueryDto,
   ) {
     return this.service.upcoming(user.id, query);
+  }
+
+  @Get('agenda')
+  @ApiOperation({
+    summary:
+      'Occurrences of one local day: upcoming, due (awaiting confirmation), completed or missed',
+  })
+  @ApiQuery({ name: 'date', required: true, example: '2026-11-24' })
+  @ApiQuery({ name: 'timezone', required: true, example: 'Asia/Ho_Chi_Minh' })
+  @ApiResponse({ status: 200, schema: reminderAgendaSuccessSchema })
+  @ApiStandardErrors(400, 401, 429, 500)
+  agenda(
+    @CurrentUser() user: AuthUser,
+    @Query(new ZodValidationPipe(reminderAgendaQuerySchema))
+    query: ReminderAgendaQueryDto,
+  ) {
+    return this.service.agenda(user.id, query);
+  }
+
+  @Patch('logs/:logId/complete')
+  @ApiOperation({
+    summary: 'Recipient confirms a due reminder occurrence as completed',
+  })
+  @ApiParam({ name: 'logId', format: 'uuid' })
+  @ApiBody({ schema: completeReminderLogBodySchema })
+  @ApiResponse({ status: 200, schema: reminderLogSuccessSchema })
+  @ApiStandardErrors(400, 401, 404, 422, 429, 500)
+  complete(
+    @CurrentUser() user: AuthUser,
+    @Param(new ZodValidationPipe(reminderLogParamSchema))
+    params: ReminderLogParam,
+    @Body(new ZodValidationPipe(completeReminderLogSchema))
+    dto: CompleteReminderLogDto,
+  ) {
+    return this.service.complete(user.id, params.logId, dto);
   }
 
   @Get(':reminderId/logs')

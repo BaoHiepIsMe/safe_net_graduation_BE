@@ -31,6 +31,7 @@ export type ReminderMinAggregateOutputType = {
   title: string | null
   description: string | null
   reminderType: string | null
+  priority: string | null
   startAt: Date | null
   scheduleType: string | null
   timezone: string | null
@@ -48,6 +49,7 @@ export type ReminderMaxAggregateOutputType = {
   title: string | null
   description: string | null
   reminderType: string | null
+  priority: string | null
   startAt: Date | null
   scheduleType: string | null
   timezone: string | null
@@ -65,6 +67,7 @@ export type ReminderCountAggregateOutputType = {
   title: number
   description: number
   reminderType: number
+  priority: number
   startAt: number
   scheduleType: number
   scheduleRule: number
@@ -85,6 +88,7 @@ export type ReminderMinAggregateInputType = {
   title?: true
   description?: true
   reminderType?: true
+  priority?: true
   startAt?: true
   scheduleType?: true
   timezone?: true
@@ -102,6 +106,7 @@ export type ReminderMaxAggregateInputType = {
   title?: true
   description?: true
   reminderType?: true
+  priority?: true
   startAt?: true
   scheduleType?: true
   timezone?: true
@@ -119,6 +124,7 @@ export type ReminderCountAggregateInputType = {
   title?: true
   description?: true
   reminderType?: true
+  priority?: true
   startAt?: true
   scheduleType?: true
   scheduleRule?: true
@@ -210,6 +216,7 @@ export type ReminderGroupByOutputType = {
   title: string
   description: string | null
   reminderType: string | null
+  priority: string
   startAt: Date
   scheduleType: string
   scheduleRule: runtime.JsonValue | null
@@ -249,6 +256,7 @@ export type ReminderWhereInput = {
   title?: Prisma.StringFilter<"Reminder"> | string
   description?: Prisma.StringNullableFilter<"Reminder"> | string | null
   reminderType?: Prisma.StringNullableFilter<"Reminder"> | string | null
+  priority?: Prisma.StringFilter<"Reminder"> | string
   startAt?: Prisma.DateTimeFilter<"Reminder"> | Date | string
   scheduleType?: Prisma.StringFilter<"Reminder"> | string
   scheduleRule?: Prisma.JsonNullableFilter<"Reminder">
@@ -271,6 +279,7 @@ export type ReminderOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   reminderType?: Prisma.SortOrderInput | Prisma.SortOrder
+  priority?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
   scheduleRule?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -296,6 +305,7 @@ export type ReminderWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"Reminder"> | string
   description?: Prisma.StringNullableFilter<"Reminder"> | string | null
   reminderType?: Prisma.StringNullableFilter<"Reminder"> | string | null
+  priority?: Prisma.StringFilter<"Reminder"> | string
   startAt?: Prisma.DateTimeFilter<"Reminder"> | Date | string
   scheduleType?: Prisma.StringFilter<"Reminder"> | string
   scheduleRule?: Prisma.JsonNullableFilter<"Reminder">
@@ -318,6 +328,7 @@ export type ReminderOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   reminderType?: Prisma.SortOrderInput | Prisma.SortOrder
+  priority?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
   scheduleRule?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -342,6 +353,7 @@ export type ReminderScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Reminder"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Reminder"> | string | null
   reminderType?: Prisma.StringNullableWithAggregatesFilter<"Reminder"> | string | null
+  priority?: Prisma.StringWithAggregatesFilter<"Reminder"> | string
   startAt?: Prisma.DateTimeWithAggregatesFilter<"Reminder"> | Date | string
   scheduleType?: Prisma.StringWithAggregatesFilter<"Reminder"> | string
   scheduleRule?: Prisma.JsonNullableWithAggregatesFilter<"Reminder">
@@ -358,6 +370,7 @@ export type ReminderCreateInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -380,6 +393,7 @@ export type ReminderUncheckedCreateInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -398,6 +412,7 @@ export type ReminderUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -420,6 +435,7 @@ export type ReminderUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -440,6 +456,7 @@ export type ReminderCreateManyInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -456,6 +473,7 @@ export type ReminderUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -474,6 +492,7 @@ export type ReminderUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -507,6 +526,7 @@ export type ReminderCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   reminderType?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
   scheduleRule?: Prisma.SortOrder
@@ -525,6 +545,7 @@ export type ReminderMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   reminderType?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
@@ -542,6 +563,7 @@ export type ReminderMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   reminderType?: Prisma.SortOrder
+  priority?: Prisma.SortOrder
   startAt?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
@@ -669,6 +691,7 @@ export type ReminderCreateWithoutFamilyInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -689,6 +712,7 @@ export type ReminderUncheckedCreateWithoutFamilyInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -738,6 +762,7 @@ export type ReminderScalarWhereInput = {
   title?: Prisma.StringFilter<"Reminder"> | string
   description?: Prisma.StringNullableFilter<"Reminder"> | string | null
   reminderType?: Prisma.StringNullableFilter<"Reminder"> | string | null
+  priority?: Prisma.StringFilter<"Reminder"> | string
   startAt?: Prisma.DateTimeFilter<"Reminder"> | Date | string
   scheduleType?: Prisma.StringFilter<"Reminder"> | string
   scheduleRule?: Prisma.JsonNullableFilter<"Reminder">
@@ -754,6 +779,7 @@ export type ReminderCreateWithoutCreatorInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -774,6 +800,7 @@ export type ReminderUncheckedCreateWithoutCreatorInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -818,6 +845,7 @@ export type ReminderCreateWithoutLogsInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -839,6 +867,7 @@ export type ReminderUncheckedCreateWithoutLogsInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -872,6 +901,7 @@ export type ReminderUpdateWithoutLogsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -893,6 +923,7 @@ export type ReminderUncheckedUpdateWithoutLogsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -910,6 +941,7 @@ export type ReminderCreateWithoutTargetsInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -931,6 +963,7 @@ export type ReminderUncheckedCreateWithoutTargetsInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -964,6 +997,7 @@ export type ReminderUpdateWithoutTargetsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -985,6 +1019,7 @@ export type ReminderUncheckedUpdateWithoutTargetsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1003,6 +1038,7 @@ export type ReminderCreateManyFamilyInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1019,6 +1055,7 @@ export type ReminderUpdateWithoutFamilyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1039,6 +1076,7 @@ export type ReminderUncheckedUpdateWithoutFamilyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1058,6 +1096,7 @@ export type ReminderUncheckedUpdateManyWithoutFamilyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1075,6 +1114,7 @@ export type ReminderCreateManyCreatorInput = {
   title: string
   description?: string | null
   reminderType?: string | null
+  priority?: string
   startAt: Date | string
   scheduleType?: string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1091,6 +1131,7 @@ export type ReminderUpdateWithoutCreatorInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1111,6 +1152,7 @@ export type ReminderUncheckedUpdateWithoutCreatorInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1130,6 +1172,7 @@ export type ReminderUncheckedUpdateManyWithoutCreatorInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
   startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduleType?: Prisma.StringFieldUpdateOperationsInput | string
   scheduleRule?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1188,6 +1231,7 @@ export type ReminderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   title?: boolean
   description?: boolean
   reminderType?: boolean
+  priority?: boolean
   startAt?: boolean
   scheduleType?: boolean
   scheduleRule?: boolean
@@ -1211,6 +1255,7 @@ export type ReminderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   title?: boolean
   description?: boolean
   reminderType?: boolean
+  priority?: boolean
   startAt?: boolean
   scheduleType?: boolean
   scheduleRule?: boolean
@@ -1231,6 +1276,7 @@ export type ReminderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   title?: boolean
   description?: boolean
   reminderType?: boolean
+  priority?: boolean
   startAt?: boolean
   scheduleType?: boolean
   scheduleRule?: boolean
@@ -1251,6 +1297,7 @@ export type ReminderSelectScalar = {
   title?: boolean
   description?: boolean
   reminderType?: boolean
+  priority?: boolean
   startAt?: boolean
   scheduleType?: boolean
   scheduleRule?: boolean
@@ -1262,7 +1309,7 @@ export type ReminderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ReminderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "familyId" | "creatorUserId" | "title" | "description" | "reminderType" | "startAt" | "scheduleType" | "scheduleRule" | "timezone" | "endAt" | "nextOccurrenceAt" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["reminder"]>
+export type ReminderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "familyId" | "creatorUserId" | "title" | "description" | "reminderType" | "priority" | "startAt" | "scheduleType" | "scheduleRule" | "timezone" | "endAt" | "nextOccurrenceAt" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["reminder"]>
 export type ReminderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   logs?: boolean | Prisma.Reminder$logsArgs<ExtArgs>
   targets?: boolean | Prisma.Reminder$targetsArgs<ExtArgs>
@@ -1294,6 +1341,7 @@ export type $ReminderPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     title: string
     description: string | null
     reminderType: string | null
+    priority: string
     startAt: Date
     scheduleType: string
     scheduleRule: runtime.JsonValue | null
@@ -1736,6 +1784,7 @@ export interface ReminderFieldRefs {
   readonly title: Prisma.FieldRef<"Reminder", 'String'>
   readonly description: Prisma.FieldRef<"Reminder", 'String'>
   readonly reminderType: Prisma.FieldRef<"Reminder", 'String'>
+  readonly priority: Prisma.FieldRef<"Reminder", 'String'>
   readonly startAt: Prisma.FieldRef<"Reminder", 'DateTime'>
   readonly scheduleType: Prisma.FieldRef<"Reminder", 'String'>
   readonly scheduleRule: Prisma.FieldRef<"Reminder", 'Json'>

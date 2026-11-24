@@ -20,6 +20,8 @@ import {
   storedScheduleToDto,
 } from './reminder-schedule';
 import {
+  REMINDER_AGENDA_MAX_REMINDERS,
+  REMINDER_LOG_COMPLETED,
   REMINDER_LOG_DUE,
   REMINDER_LOG_MISSED,
   REMINDER_TRANSACTION_RETRIES,
@@ -32,6 +34,7 @@ export const safeReminderSelect = {
   title: true,
   description: true,
   reminderType: true,
+  priority: true,
   startAt: true,
   scheduleType: true,
   scheduleRule: true,
@@ -118,6 +121,23 @@ const visibleReminderWhere = (userId: string) => ({
   ],
 });
 
+export const safeReminderLogSelect = {
+  id: true,
+  reminderId: true,
+  memberId: true,
+  scheduledAt: true,
+  status: true,
+  processedAt: true,
+  completedAt: true,
+  member: {
+    select: {
+      userId: true,
+      displayName: true,
+      profile: { select: { fullName: true, avatarUrl: true } },
+    },
+  },
+} as const;
+
 const toScheduleData = (schedule: StoredReminderSchedule) => ({
   ...schedule,
   scheduleRule:
@@ -185,6 +205,7 @@ export class RemindersRepository {
           title: dto.title,
           description: dto.description,
           reminderType: dto.reminderType,
+          priority: dto.priority,
           ...toScheduleData(schedule),
           targets: {
             create: targets.map(({ id }) => ({ memberId: id })),
@@ -316,6 +337,7 @@ export class RemindersRepository {
             title: dto.title,
             description: dto.description,
             reminderType: dto.reminderType,
+            priority: dto.priority,
             ...(schedule ? toScheduleData(schedule) : {}),
             ...(schedule && !existing.isActive && dto.isActive !== true
               ? { nextOccurrenceAt: null }
@@ -368,21 +390,7 @@ export class RemindersRepository {
             }
           : {}),
       },
-      select: {
-        id: true,
-        reminderId: true,
-        memberId: true,
-        scheduledAt: true,
-        status: true,
-        processedAt: true,
-        member: {
-          select: {
-            userId: true,
-            displayName: true,
-            profile: { select: { fullName: true } },
-          },
-        },
-      },
+      select: safeReminderLogSelect,
       orderBy: [{ scheduledAt: 'desc' }, { id: 'desc' }],
       take: query.limit + 1,
     });
@@ -505,6 +513,171 @@ export class RemindersRepository {
     return this.prisma.reminderLog.updateMany({
       where: { id: logId, notificationProcessedAt: null },
       data: { notificationProcessedAt: new Date() },
+    });
+  }
+
+  /**
+   * Recipient confirms a due occurrence. Only the recipient may, and only
+   * while the occurrence is still due; repeating it is a no-op.
+   */
+  async completeLog(
+    userId: string,
+    logId: string,
+    note: string | null | undefined,
+    now: Date,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const log = await tx.reminderLog.findFirst({
+        where: {
+          id: logId,
+          member: { userId, status: 'accepted' },
+          reminder: { family: { status: 'active' } },
+        },
+        select: { id: true, status: true },
+      });
+      if (!log) return { outcome: 'not_found' as const };
+      if (log.status === REMINDER_LOG_MISSED) {
+        return { outcome: 'missed' as const };
+      }
+      if (log.status === REMINDER_LOG_DUE) {
+        await tx.reminderLog.updateMany({
+          where: { id: logId, status: REMINDER_LOG_DUE },
+          data: {
+            status: REMINDER_LOG_COMPLETED,
+            completedAt: now,
+            ...(note !== undefined ? { note } : {}),
+          },
+        });
+      }
+      const updated = await tx.reminderLog.findUniqueOrThrow({
+        where: { id: logId },
+        select: safeReminderLogSelect,
+      });
+      if (updated.status === REMINDER_LOG_MISSED) {
+        return { outcome: 'missed' as const };
+      }
+      return {
+        outcome: 'completed' as const,
+        changed: log.status === REMINDER_LOG_DUE,
+        log: updated,
+      };
+    });
+  }
+
+  /** Due occurrences nobody confirmed before [cutoff] become missed. */
+  async markUnconfirmedMissed(cutoff: Date, limit: number) {
+    const stale = await this.prisma.reminderLog.findMany({
+      where: { status: REMINDER_LOG_DUE, scheduledAt: { lt: cutoff } },
+      select: { id: true },
+      orderBy: [{ scheduledAt: 'asc' }, { id: 'asc' }],
+      take: limit,
+    });
+    if (stale.length === 0) return [];
+    const ids = stale.map(({ id }) => id);
+    await this.prisma.reminderLog.updateMany({
+      where: { id: { in: ids }, status: REMINDER_LOG_DUE },
+      data: { status: REMINDER_LOG_MISSED },
+    });
+    const missed = await this.prisma.reminderLog.findMany({
+      where: { id: { in: ids }, status: REMINDER_LOG_MISSED },
+      select: { id: true },
+    });
+    return missed.map(({ id }) => id);
+  }
+
+  findLogsForBroadcast(logIds: string[]) {
+    return this.prisma.reminderLog.findMany({
+      where: { id: { in: logIds } },
+      select: {
+        ...safeReminderLogSelect,
+        reminder: {
+          select: {
+            creatorUserId: true,
+            familyId: true,
+            family: { select: { ownerUserId: true } },
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Users who see a member's reminder occurrences: managers of the family
+   * (hired ones only within their care scope).
+   */
+  async managerUserIds(familyId: string, memberId: string) {
+    const rows = await this.prisma.familyMember.findMany({
+      where: {
+        familyId,
+        status: 'accepted',
+        canManageCare: true,
+      },
+      select: {
+        userId: true,
+        isHired: true,
+        careScopes: { select: { targetMemberId: true } },
+        family: { select: { ownerUserId: true } },
+      },
+    });
+    return rows
+      .filter((row) => isWithinHiredScope(row, memberId))
+      .map((row) => row.userId);
+  }
+
+  /** Reminders and their logs that can appear on one agenda day. */
+  listAgendaReminders(userId: string, start: Date, end: Date) {
+    return this.prisma.reminder.findMany({
+      where: {
+        AND: [
+          visibleReminderWhere(userId),
+          {
+            OR: [
+              { isActive: true, nextOccurrenceAt: { not: null, lt: end } },
+              { logs: { some: { scheduledAt: { gte: start, lt: end } } } },
+            ],
+          },
+        ],
+      },
+      select: {
+        ...safeReminderSelect,
+        logs: {
+          where: { scheduledAt: { gte: start, lt: end } },
+          select: {
+            id: true,
+            memberId: true,
+            scheduledAt: true,
+            status: true,
+            completedAt: true,
+            member: {
+              select: {
+                id: true,
+                userId: true,
+                displayName: true,
+                status: true,
+                profile: { select: { fullName: true, avatarUrl: true } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: [{ id: 'asc' }],
+      take: REMINDER_AGENDA_MAX_REMINDERS,
+    });
+  }
+
+  /** The viewer's accepted memberships, to scope which members they see. */
+  viewerMemberships(userId: string) {
+    return this.prisma.familyMember.findMany({
+      where: { userId, status: 'accepted', family: { status: 'active' } },
+      select: {
+        id: true,
+        userId: true,
+        familyId: true,
+        canManageCare: true,
+        isHired: true,
+        careScopes: { select: { targetMemberId: true } },
+        family: { select: { ownerUserId: true } },
+      },
     });
   }
 

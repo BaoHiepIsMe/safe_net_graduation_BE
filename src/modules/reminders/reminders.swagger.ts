@@ -1,6 +1,11 @@
 import { successSchema } from '../../common/swagger/api-docs';
 
 const timezone = { type: 'string', example: 'Asia/Ho_Chi_Minh' };
+const priority = {
+  type: 'string',
+  enum: ['low', 'normal', 'high', 'urgent'],
+  default: 'normal',
+};
 const scheduleSchema = {
   oneOf: [
     {
@@ -57,6 +62,7 @@ export const createReminderBodySchema: any = {
     title: { type: 'string', minLength: 1, maxLength: 150 },
     description: { type: 'string', maxLength: 2000, nullable: true },
     reminderType: { type: 'string', maxLength: 30, nullable: true },
+    priority,
     schedule: scheduleSchema,
     targetMemberIds: {
       type: 'array',
@@ -76,6 +82,7 @@ export const updateReminderBodySchema: any = {
     title: { type: 'string', minLength: 1, maxLength: 150 },
     description: { type: 'string', maxLength: 2000, nullable: true },
     reminderType: { type: 'string', maxLength: 30, nullable: true },
+    priority,
     schedule: scheduleSchema,
     targetMemberIds: createReminderBodySchema.properties.targetMemberIds,
     isActive: { type: 'boolean' },
@@ -92,6 +99,7 @@ export const reminderDataSchema: any = {
     'title',
     'description',
     'reminderType',
+    'priority',
     'schedule',
     'isActive',
     'nextOccurrenceAt',
@@ -114,6 +122,7 @@ export const reminderDataSchema: any = {
     title: { type: 'string' },
     description: { type: 'string', nullable: true },
     reminderType: { type: 'string', nullable: true },
+    priority,
     schedule: scheduleSchema,
     isActive: { type: 'boolean' },
     nextOccurrenceAt: { type: 'string', format: 'date-time', nullable: true },
@@ -163,9 +172,60 @@ export const reminderUpcomingSuccessSchema: any = successSchema({
     horizonEndsAt: { type: 'string', format: 'date-time' },
   },
 });
+const reminderLogDataSchema = {
+  type: 'object',
+  required: [
+    'id',
+    'reminderId',
+    'memberId',
+    'recipient',
+    'scheduledAt',
+    'status',
+    'processedAt',
+    'completedAt',
+  ],
+  properties: {
+    id: { type: 'string', format: 'uuid' },
+    reminderId: { type: 'string', format: 'uuid' },
+    memberId: { type: 'string', format: 'uuid' },
+    recipient: {
+      type: 'object',
+      required: ['userId', 'displayName'],
+      properties: {
+        userId: { type: 'string', format: 'uuid' },
+        displayName: { type: 'string', nullable: true },
+      },
+    },
+    scheduledAt: { type: 'string', format: 'date-time' },
+    status: { type: 'string', enum: ['due', 'completed', 'missed'] },
+    processedAt: { type: 'string', format: 'date-time', nullable: true },
+    completedAt: { type: 'string', format: 'date-time', nullable: true },
+  },
+};
+
+export const reminderLogSuccessSchema: any = successSchema(
+  reminderLogDataSchema,
+);
+
 export const reminderLogsSuccessSchema: any = {
   type: 'object',
   required: ['success', 'data', 'pagination'],
+  properties: {
+    success: { type: 'boolean' },
+    data: { type: 'array', items: reminderLogDataSchema },
+    pagination: paginationSchema,
+  },
+};
+
+export const completeReminderLogBodySchema: any = {
+  type: 'object',
+  additionalProperties: false,
+  properties: { note: { type: 'string', maxLength: 500, nullable: true } },
+};
+
+export const reminderAgendaSuccessSchema: any = {
+  type: 'object',
+  required: ['success', 'data', 'date', 'timezone', 'startsAt', 'endsAt'],
   properties: {
     success: { type: 'boolean' },
     data: {
@@ -173,25 +233,53 @@ export const reminderLogsSuccessSchema: any = {
       items: {
         type: 'object',
         required: [
-          'id',
           'reminderId',
-          'memberId',
-          'recipient',
+          'logId',
+          'title',
+          'description',
+          'reminderType',
+          'priority',
           'scheduledAt',
           'status',
-          'processedAt',
+          'completedAt',
+          'member',
         ],
         properties: {
-          id: { type: 'string', format: 'uuid' },
           reminderId: { type: 'string', format: 'uuid' },
-          memberId: { type: 'string', format: 'uuid' },
-          recipient: { type: 'object' },
+          logId: {
+            type: 'string',
+            format: 'uuid',
+            nullable: true,
+            description: 'null while the occurrence is still upcoming.',
+          },
+          title: { type: 'string' },
+          description: { type: 'string', nullable: true },
+          reminderType: { type: 'string', nullable: true },
+          priority,
           scheduledAt: { type: 'string', format: 'date-time' },
-          status: { type: 'string', enum: ['due', 'missed'] },
-          processedAt: { type: 'string', format: 'date-time', nullable: true },
+          status: {
+            type: 'string',
+            enum: ['upcoming', 'due', 'completed', 'missed'],
+            description:
+              'upcoming = not reached yet; due = awaiting confirmation; completed = confirmed by the recipient; missed = not confirmed in time.',
+          },
+          completedAt: { type: 'string', format: 'date-time', nullable: true },
+          member: {
+            type: 'object',
+            required: ['memberId', 'userId', 'displayName', 'avatarUrl'],
+            properties: {
+              memberId: { type: 'string', format: 'uuid' },
+              userId: { type: 'string', format: 'uuid' },
+              displayName: { type: 'string', nullable: true },
+              avatarUrl: { type: 'string', nullable: true },
+            },
+          },
         },
       },
     },
-    pagination: paginationSchema,
+    date: { type: 'string', format: 'date' },
+    timezone,
+    startsAt: { type: 'string', format: 'date-time' },
+    endsAt: { type: 'string', format: 'date-time' },
   },
 };
