@@ -178,7 +178,31 @@ describe('DailyStatusService authorization and privacy', () => {
     );
     const elderDetail = await service.detail(MANAGER, REPORT);
     expect(elderDetail.phoneUsageSummary).toBeNull();
+    // Stored as available while they were a minor: now denied.
     expect(elderDetail.dataAvailability.phoneUsage).toBe('restricted');
+
+    repository.findAccessReport.mockResolvedValue(
+      report({
+        summary: {
+          ...summary,
+          availability: {
+            ...summary.availability,
+            phoneUsage: 'not_applicable',
+          },
+        },
+        member: {
+          ...report().member,
+          isCareRecipient: true,
+          profile: {
+            dateOfBirth: new Date('1950-01-01'),
+            UserSetting: { locationSharingEnabled: true },
+          },
+        },
+      }),
+    );
+    const adultDetail = await service.detail(MANAGER, REPORT);
+    expect(adultDetail.phoneUsageSummary).toBeNull();
+    expect(adultDetail.dataAvailability.phoneUsage).toBe('not_applicable');
 
     repository.findCurrentMembership.mockResolvedValue({
       canManageCare: true,

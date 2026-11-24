@@ -202,7 +202,11 @@ export class DailyStatusService {
     const availability = Object.fromEntries(
       Object.entries(summary.availability).map(([key, value]) => [
         key,
-        access[key as keyof typeof access] ? value : 'restricted',
+        // A section that never applied (phone usage of an adult) stays
+        // not_applicable: it is not something the viewer is denied.
+        access[key as keyof typeof access] || value === 'not_applicable'
+          ? value
+          : 'restricted',
       ]),
     );
     return {
