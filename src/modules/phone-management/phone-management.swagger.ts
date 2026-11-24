@@ -49,7 +49,10 @@ export const phoneCommandDataSchema = {
     familyId: { type: 'string', format: 'uuid' },
     memberId: { type: 'string', format: 'uuid' },
     targetDeviceId: { type: 'string', format: 'uuid' },
-    commandType: { type: 'string', enum: ['lock', 'ring', 'warning'] },
+    commandType: {
+      type: 'string',
+      enum: ['lock', 'unlock', 'ring', 'warning'],
+    },
     payload: {
       type: 'object',
       nullable: true,
@@ -68,6 +71,32 @@ export const phoneCommandDataSchema = {
     sentAt: nullableDateTime,
     acknowledgedAt: nullableDateTime,
     updatedAt: dateTime,
+  },
+};
+
+export const phoneDeviceDataSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string', format: 'uuid' },
+    deviceName: { type: 'string', nullable: true },
+    platform: { type: 'string' },
+    operatingSystem: { type: 'string', nullable: true },
+    batteryLevel: { type: 'integer', nullable: true },
+    lastSeenAt: dateTime,
+    locked: {
+      type: 'boolean',
+      description:
+        'True when the last acknowledged lock/unlock on this Device was a lock.',
+    },
+  },
+};
+
+export const phoneDeviceListSchema = {
+  type: 'object',
+  properties: {
+    success: { type: 'boolean' },
+    data: { type: 'array', items: phoneDeviceDataSchema },
   },
 };
 
@@ -129,12 +158,15 @@ export const phoneCommandBodySchema = {
   required: ['clientRequestId', 'commandType'],
   properties: {
     clientRequestId: { type: 'string', format: 'uuid' },
-    commandType: { type: 'string', enum: ['lock', 'ring', 'warning'] },
+    commandType: {
+      type: 'string',
+      enum: ['lock', 'unlock', 'ring', 'warning'],
+    },
     message: {
       type: 'string',
       minLength: 1,
       maxLength: 200,
-      description: 'Required only for warning; rejected for lock/ring.',
+      description: 'Required only for warning; rejected for lock/unlock/ring.',
     },
   },
 };

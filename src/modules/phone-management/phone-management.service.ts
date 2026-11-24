@@ -123,6 +123,16 @@ export class PhoneManagementService {
     return result.rules.map((rule) => this.mapRule(rule));
   }
 
+  async listMemberDevices(userId: string, familyId: string, memberId: string) {
+    const result = await this.repository.listMemberDevices(
+      userId,
+      familyId,
+      memberId,
+    );
+    if (result.outcome === 'forbidden') this.commandDenied();
+    return result.devices;
+  }
+
   async listOwnRules(userId: string) {
     const rules = await this.repository.listOwnRules(userId);
     return rules.map((rule) => this.mapRule(rule));
@@ -206,12 +216,9 @@ export class PhoneManagementService {
     }
 
     if (result.outcome === 'created') {
-      this.emitCommand(result.targetUserId, result.command.id, deviceId);
+      this.emitCommand(result.targetUserId, result.command, deviceId);
       if (result.fcmToken) {
-        const delivery = await this.safePush(
-          result.fcmToken,
-          result.command.id,
-        );
+        const delivery = await this.safePush(result.fcmToken, result.command);
         if (delivery.status === 'success') {
           try {
             await this.repository.markCommandSent(result.command.id);
@@ -301,31 +308,68 @@ export class PhoneManagementService {
         ErrorCode.PHONE_COMMAND_INVALID_STATE,
       );
     }
+    if (result.outcome === 'updated') this.emitResult(result.command);
     return this.mapCommand(result.command);
   }
 
-  private async safePush(token: string, commandId: string) {
+  /** Silent, so the child's phone runs the command instead of a banner. */
+  private async safePush(
+    token: string,
+    command: { id: string; commandType: string },
+  ) {
     try {
-      const result = await this.firebase.sendPushNotification({
+      return await this.firebase.sendDataMessage({
         token,
-        title: 'Phone management update',
-        body: 'A device command is available.',
-        data: { type: 'phone_command', commandId },
+        data: {
+          type: 'phone_command',
+          commandId: command.id,
+          commandType: command.commandType,
+        },
       });
-      return result;
     } catch {
       return { status: 'failure' as const, invalidToken: false };
     }
   }
 
-  private emitCommand(userId: string, commandId: string, deviceId: string) {
+  private emitCommand(
+    userId: string,
+    command: { id: string; commandType: string },
+    deviceId: string,
+  ) {
     try {
       this.realtime.emitToUser(userId, 'phone_command.created', {
-        commandId,
+        commandId: command.id,
+        commandType: command.commandType,
         deviceId,
       });
     } catch {
       // Transport failure never changes durable command state.
+    }
+  }
+
+  /** Tells the manager who sent the command what the phone did with it. */
+  private emitResult(command: {
+    id: string;
+    creatorUserId: string;
+    memberId: string;
+    targetDeviceId: string;
+    commandType: string;
+    status: string;
+    resultCode: string | null;
+    acknowledgedAt: Date | null;
+  }) {
+    try {
+      this.realtime.emitToUser(command.creatorUserId, 'phone_command.updated', {
+        commandId: command.id,
+        memberId: command.memberId,
+        deviceId: command.targetDeviceId,
+        commandType: command.commandType,
+        status: command.status,
+        resultCode: command.resultCode,
+        acknowledgedAt: command.acknowledgedAt,
+      });
+    } catch {
+      // The acknowledged state is committed and readable from history.
     }
   }
 

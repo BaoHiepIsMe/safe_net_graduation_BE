@@ -301,7 +301,8 @@ Server events:
 | `geofence.entered`, `geofence.exited` | Safe geofence-event DTO |
 | `notification.created` | Persisted notification DTO/identifier |
 | `sos.created`, `sos.resolved`, `sos.cancelled` | Authorized incident DTO |
-| `phone_command.created` | Wake-up metadata for the exact target device |
+| `phone_command.created` | Wake-up metadata (`commandId`, `commandType`, `deviceId`) for the exact target device |
+| `phone_command.updated` | The target device's ACK result (`commandId`, `memberId`, `deviceId`, `commandType`, `status`, `resultCode`, `acknowledgedAt`), sent only to the manager who created the command |
 | `message.created` | Persisted text message DTO |
 | `call.created`, `call.accepted`, `call.rejected`, `call.cancelled`, `call.missed`, `call.ended` | Current Call DTO |
 | `call.signal` | Ephemeral bounded WebRTC offer/answer/ICE relay |
@@ -327,6 +328,15 @@ or a Call was accepted.
   `accepted -> ended`. Ring timeout defaults to 45 seconds and is server-owned.
 - Phone commands are durable requested work; only the exact active target Device
   may acknowledge terminal execution. Transport success is not completion.
+  Command types are `lock`, `unlock`, `ring`, and `warning` (with `message`).
+  The FCM wake-up for a command is a silent data-only, high-priority message
+  `{ type: "phone_command", commandId, commandType }` without a notification
+  title/body; the app's background handler polls
+  `GET /devices/:deviceId/phone-commands` and ACKs each command.
+  A manager finds the target Device with
+  `GET /families/:familyId/members/:memberId/phone-devices` (active Devices of a
+  managed minor, newest first, each with `locked` from the last acknowledged
+  lock/unlock).
 - Reminders use an IANA timezone with `once`, `daily`, or `weekly` recurrence.
   Each reminder has a `priority` (`low|normal|high|urgent`, default `normal`).
   An occurrence log goes `due -> completed|missed`: only the recipient may

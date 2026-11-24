@@ -39,6 +39,7 @@ const ruleSelect = {
 
 const commandSelect = {
   id: true,
+  creatorUserId: true,
   familyId: true,
   memberId: true,
   targetDeviceId: true,
@@ -217,6 +218,54 @@ export class PhoneManagementRepository {
       take: 100,
     });
     return { outcome: 'listed' as const, rules };
+  }
+
+  /**
+   * The child's active Devices a manager may command, with whether the last
+   * acknowledged lock/unlock left each one locked.
+   */
+  async listMemberDevices(
+    actorUserId: string,
+    familyId: string,
+    memberId: string,
+  ) {
+    const target = await this.getManagerTarget(actorUserId, familyId, memberId);
+    if (!target) return { outcome: 'forbidden' as const };
+    const devices = await this.prisma.device.findMany({
+      where: { userId: target.userId, isActive: true },
+      select: {
+        id: true,
+        deviceName: true,
+        platform: true,
+        operatingSystem: true,
+        batteryLevel: true,
+        lastSeenAt: true,
+      },
+      orderBy: [{ lastSeenAt: 'desc' }, { id: 'desc' }],
+      take: 20,
+    });
+    const lastLocks = devices.length
+      ? await this.prisma.phoneCommand.findMany({
+          where: {
+            memberId,
+            targetDeviceId: { in: devices.map((d) => d.id) },
+            commandType: { in: ['lock', 'unlock'] },
+            status: 'completed',
+          },
+          select: { targetDeviceId: true, commandType: true },
+          orderBy: [{ acknowledgedAt: 'desc' }, { id: 'desc' }],
+          distinct: ['targetDeviceId'],
+        })
+      : [];
+    const locked = new Set(
+      lastLocks
+        .filter((c) => c.commandType === 'lock')
+        .map((c) => c.targetDeviceId),
+    );
+    return {
+      outcome: 'listed' as const,
+      devices: devices.map((d) => ({ ...d, locked: locked.has(d.id) })),
+    };
   }
 
   listOwnRules(userId: string) {

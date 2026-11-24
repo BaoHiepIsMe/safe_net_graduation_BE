@@ -14,6 +14,12 @@ export interface PushNotificationPayload {
   data?: Record<string, string>;
 }
 
+/** A silent message the app handles itself, even in the background. */
+export interface DataMessagePayload {
+  token: string;
+  data: Record<string, string>;
+}
+
 export interface MulticastNotificationPayload {
   tokens: string[];
   title: string;
@@ -100,6 +106,36 @@ export class FirebaseService implements OnModuleInit {
       return { status: 'success' };
     } catch (error) {
       this.logger.error('FCM single-message delivery failed');
+      return { status: 'failure', ...classifyFcmError(error) };
+    }
+  }
+
+  /**
+   * Data-only and high priority: Android wakes the app to run its
+   * background handler instead of showing a notification.
+   */
+  async sendDataMessage(
+    payload: DataMessagePayload,
+  ): Promise<FcmDeliveryResult> {
+    if (!this.isInitialized || !this.firebaseApp) {
+      return { status: 'disabled' };
+    }
+
+    try {
+      const message: Message = {
+        token: payload.token,
+        data: payload.data,
+        android: { priority: 'high' },
+        apns: {
+          headers: { 'apns-priority': '5', 'apns-push-type': 'background' },
+          payload: { aps: { contentAvailable: true } },
+        },
+      };
+
+      await getMessaging(this.firebaseApp).send(message);
+      return { status: 'success' };
+    } catch (error) {
+      this.logger.error('FCM data-message delivery failed');
       return { status: 'failure', ...classifyFcmError(error) };
     }
   }

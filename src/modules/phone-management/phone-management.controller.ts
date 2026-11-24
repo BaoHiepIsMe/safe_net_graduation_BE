@@ -57,6 +57,7 @@ import {
   cursorListSchema,
   phoneCommandBodySchema,
   phoneCommandDataSchema,
+  phoneDeviceListSchema,
   phoneRuleBodySchema,
   phoneRuleDataSchema,
   phoneRuleUpdateBodySchema,
@@ -175,6 +176,26 @@ export class PhoneManagementController {
     params: FamilyMemberParam,
   ) {
     return this.service.listRules(user.id, params.familyId, params.memberId);
+  }
+
+  @Get('families/:familyId/members/:memberId/phone-devices')
+  @ApiOperation({
+    summary: "List a managed child's active Devices and their lock state",
+  })
+  @ApiParam({ name: 'familyId', format: 'uuid' })
+  @ApiParam({ name: 'memberId', format: 'uuid' })
+  @ApiResponse({ status: 200, schema: phoneDeviceListSchema })
+  @ApiStandardErrors(400, 401, 403, 429, 500)
+  listMemberDevices(
+    @CurrentUser() user: AuthUser,
+    @Param(new ZodValidationPipe(familyMemberParamSchema))
+    params: FamilyMemberParam,
+  ) {
+    return this.service.listMemberDevices(
+      user.id,
+      params.familyId,
+      params.memberId,
+    );
   }
 
   @Get('phone-management/me/rules')
