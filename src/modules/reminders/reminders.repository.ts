@@ -300,6 +300,17 @@ export class RemindersRepository {
           },
         });
         if (!manager) return { outcome: 'not_found' as const };
+        // A hired caregiver changes a reminder only when every current
+        // recipient is in their care scope.
+        const current = await tx.reminderTarget.findMany({
+          where: { reminderId },
+          select: { memberId: true },
+        });
+        if (
+          current.some(({ memberId }) => !isWithinHiredScope(manager, memberId))
+        ) {
+          return { outcome: 'forbidden' as const };
+        }
         if (dto.targetMemberIds) {
           const targets = await tx.familyMember.findMany({
             where: {
@@ -371,16 +382,21 @@ export class RemindersRepository {
     );
   }
 
+  /**
+   * [memberIds] limits the history to those recipients; null shows all.
+   */
   listLogs(
     userId: string,
     reminderId: string,
     query: ReminderLogQueryDto,
     cursor?: ReminderLogCursor,
+    memberIds: string[] | null = null,
   ) {
     return this.prisma.reminderLog.findMany({
       where: {
         reminderId,
         reminder: visibleReminderWhere(userId),
+        ...(memberIds ? { memberId: { in: memberIds } } : {}),
         ...(cursor
           ? {
               OR: [

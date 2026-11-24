@@ -161,9 +161,59 @@ describe('RemindersService', () => {
     );
   });
 
+  it("refuses an edit or delete outside the caller's care scope", async () => {
+    const { repository, service } = setup();
+    repository.update.mockResolvedValue({ outcome: 'forbidden' });
+    repository.deactivate.mockResolvedValue({ outcome: 'forbidden' });
+    await expect(
+      service.update(USER, REMINDER, { title: 'No' }),
+    ).rejects.toMatchObject({ code: ErrorCode.REMINDER_ACCESS_DENIED });
+    await expect(service.deactivate(USER, REMINDER)).rejects.toMatchObject({
+      code: ErrorCode.REMINDER_ACCESS_DENIED,
+    });
+  });
+
+  describe('log history is scoped like the agenda', () => {
+    const membership = (overrides: Record<string, unknown>) => ({
+      id: MEMBER,
+      userId: USER,
+      familyId: FAMILY,
+      canManageCare: false,
+      isHired: false,
+      careScopes: [],
+      family: { ownerUserId: 'owner' },
+      ...overrides,
+    });
+
+    const memberFilter = async (overrides: Record<string, unknown>) => {
+      const { repository, service } = setup();
+      repository.viewerMemberships.mockResolvedValue([membership(overrides)]);
+      await service.logs(USER, REMINDER, { limit: 20 });
+      return repository.listLogs.mock.calls[0][4];
+    };
+
+    it('a plain recipient sees only their own occurrences', async () => {
+      expect(await memberFilter({})).toEqual([MEMBER]);
+    });
+
+    it('a hired caregiver sees their scope and themself', async () => {
+      expect(
+        await memberFilter({
+          canManageCare: true,
+          isHired: true,
+          careScopes: [{ targetMemberId: 'child' }],
+        }),
+      ).toEqual(['child', MEMBER]);
+    });
+
+    it('a family manager sees everyone', async () => {
+      expect(await memberFilter({ canManageCare: true })).toBeNull();
+    });
+  });
+
   it('protects log history with reminder visibility', async () => {
     const { repository, service } = setup();
-    repository.canView.mockResolvedValue(false);
+    repository.findVisible.mockResolvedValue(null);
     await expect(
       service.logs(USER, REMINDER, { limit: 20 }),
     ).rejects.toMatchObject({

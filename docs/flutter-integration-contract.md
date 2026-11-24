@@ -335,6 +335,9 @@ or a Call was accepted.
   `GET /reminders/agenda?date=YYYY-MM-DD&timezone=...` lists one local day for
   the viewer, adding not-yet-reached occurrences as `upcoming` (`logId: null`).
   Managers see the members they manage; a plain recipient sees only their own.
+  The same rule scopes `GET /reminders/{id}/logs`. A hired caregiver may edit
+  or delete a reminder only when every current recipient is in their care
+  scope (`403 REMINDER_ACCESS_DENIED` otherwise).
   Every change emits `reminder.log.updated` (the log DTO plus `occurredAt`) to
   the recipient, the creator and the managers.
 - Daily Status uses the subject's IANA timezone and the half-open local-day

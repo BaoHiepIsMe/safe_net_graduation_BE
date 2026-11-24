@@ -49,6 +49,7 @@ describe('RemindersRepository', () => {
         update: jest.fn().mockResolvedValue({ id: REMINDER }),
       },
       reminderTarget: {
+        findMany: jest.fn().mockResolvedValue([{ memberId: MEMBER }]),
         deleteMany: jest.fn(),
         createMany: jest.fn(),
       },
@@ -196,6 +197,53 @@ describe('RemindersRepository', () => {
     });
     expect(tx.reminderTarget.createMany).toHaveBeenCalled();
     expect(tx.reminderLog.createMany).not.toHaveBeenCalled();
+  });
+
+  it('refuses a hired caregiver editing a reminder for someone outside their scope', async () => {
+    const { tx, repository } = setup();
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: 'hired-member',
+      userId: USER,
+      canManageCare: true,
+      isHired: true,
+      careScopes: [{ targetMemberId: 'someone-else' }],
+      family: { ownerUserId: 'owner-user' },
+    });
+    await expect(
+      repository.update(
+        USER,
+        REMINDER,
+        { title: 'Changed' },
+        undefined,
+        undefined,
+      ),
+    ).resolves.toEqual({ outcome: 'forbidden' });
+    await expect(repository.deactivate(USER, REMINDER)).resolves.toEqual({
+      outcome: 'forbidden',
+    });
+    expect(tx.reminder.update).not.toHaveBeenCalled();
+    expect(tx.reminderTarget.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('lets a hired caregiver edit when every recipient is in scope', async () => {
+    const { tx, repository } = setup();
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: 'hired-member',
+      userId: USER,
+      canManageCare: true,
+      isHired: true,
+      careScopes: [{ targetMemberId: MEMBER }],
+      family: { ownerUserId: 'owner-user' },
+    });
+    await expect(
+      repository.update(
+        USER,
+        REMINDER,
+        { title: 'Changed' },
+        undefined,
+        undefined,
+      ),
+    ).resolves.toMatchObject({ outcome: 'updated' });
   });
 
   it('claims one durable occurrence and advances schedule inside one serializable transaction', async () => {

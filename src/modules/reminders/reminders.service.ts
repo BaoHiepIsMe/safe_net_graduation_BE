@@ -7,7 +7,10 @@ import {
   NotFoundError,
   ValidationError,
 } from '../../common/errors/app.error';
-import { isWithinHiredScope } from '../families/care-scope.util';
+import {
+  hiredScopeMemberIds,
+  isWithinHiredScope,
+} from '../families/care-scope.util';
 import {
   CompleteReminderLogDto,
   CreateReminderDto,
@@ -133,6 +136,7 @@ export class RemindersService {
       reactivatedNextOccurrenceAt,
     );
     if (result.outcome === 'not_found') this.notFound();
+    if (result.outcome === 'forbidden') this.outOfScope();
     if (result.outcome === 'invalid_target') this.invalidTarget();
     return mapReminder(result.reminder);
   }
@@ -140,10 +144,13 @@ export class RemindersService {
   async deactivate(userId: string, reminderId: string) {
     const result = await this.repository.deactivate(userId, reminderId);
     if (result.outcome === 'not_found') this.notFound();
+    if (result.outcome === 'forbidden') this.outOfScope();
   }
 
   async logs(userId: string, reminderId: string, query: ReminderLogQueryDto) {
-    if (!(await this.repository.canView(userId, reminderId))) this.notFound();
+    const reminder = await this.repository.findVisible(userId, reminderId);
+    if (!reminder) this.notFound();
+    const memberIds = await this.visibleMemberIds(userId, reminder.familyId);
     const cursor = query.cursor
       ? this.decodeCursor(query.cursor, logCursorSchema, 'reminder log')
       : undefined;
@@ -152,6 +159,7 @@ export class RemindersService {
       reminderId,
       query,
       cursor,
+      memberIds,
     );
     const hasMore = rows.length > query.limit;
     const pageRows = hasMore ? rows.slice(0, query.limit) : rows;
@@ -364,6 +372,29 @@ export class RemindersService {
         'Invalid cursor',
       );
     }
+  }
+
+  /**
+   * Recipients whose occurrences the viewer may see in [familyId], the same
+   * rule as the agenda: null for an unrestricted manager.
+   */
+  private async visibleMemberIds(
+    userId: string,
+    familyId: string,
+  ): Promise<string[] | null> {
+    const memberships = await this.repository.viewerMemberships(userId);
+    const me = memberships.find((m) => m.familyId === familyId);
+    if (!me) return [];
+    if (!me.canManageCare) return [me.id];
+    const scope = hiredScopeMemberIds(me);
+    return scope ? [...scope, me.id] : null;
+  }
+
+  private outOfScope(): never {
+    throw new ForbiddenError(
+      'This reminder includes members outside your care scope',
+      ErrorCode.REMINDER_ACCESS_DENIED,
+    );
   }
 
   private notFound(): never {

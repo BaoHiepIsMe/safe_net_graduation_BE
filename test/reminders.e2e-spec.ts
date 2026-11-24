@@ -178,12 +178,45 @@ class InMemoryRemindersRepository {
     return Promise.resolve(this.canViewReminder(userId, reminderId));
   }
 
-  listLogs(userId: string, reminderId: string, query: any) {
+  listLogs(
+    userId: string,
+    reminderId: string,
+    query: any,
+    _cursor?: unknown,
+    memberIds: string[] | null = null,
+  ) {
     if (!this.canViewReminder(userId, reminderId)) return Promise.resolve([]);
     return Promise.resolve(
       this.logs
-        .filter((log) => log.reminderId === reminderId)
+        .filter(
+          (log) =>
+            log.reminderId === reminderId &&
+            (memberIds === null || memberIds.includes(log.memberId)),
+        )
         .slice(0, query.limit + 1),
+    );
+  }
+
+  viewerMemberships(userId: string) {
+    return Promise.resolve(
+      [MEMBER_A, MEMBER_B, MEMBER_PENDING]
+        .map((id) => this.member(id))
+        .filter(
+          (member) =>
+            member &&
+            member.userId === userId &&
+            member.status === 'accepted' &&
+            this.familyActive,
+        )
+        .map((member) => ({
+          id: member!.id,
+          userId,
+          familyId: FAMILY,
+          canManageCare: member!.canManageCare,
+          isHired: false,
+          careScopes: [],
+          family: { ownerUserId: USER_A },
+        })),
     );
   }
 
