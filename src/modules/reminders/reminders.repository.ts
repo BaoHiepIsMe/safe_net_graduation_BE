@@ -61,7 +61,9 @@ export const safeReminderSelect = {
   },
 } as const;
 
-const visibleReminderWhere = (userId: string) => ({
+// Typed so a wrong relation or field name fails the typecheck: the unit
+// tests mock Prisma and cannot catch it.
+const visibleReminderWhere = (userId: string): Prisma.ReminderWhereInput => ({
   OR: [
     {
       creatorUserId: userId,
@@ -98,7 +100,7 @@ const visibleReminderWhere = (userId: string) => ({
         some: {
           member: {
             status: 'accepted',
-            scopedByCaregivers: {
+            targetedByCareScopes: {
               some: {
                 member: {
                   userId,
