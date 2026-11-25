@@ -78,6 +78,11 @@ export type Family = Prisma.FamilyModel
  */
 export type FamilyMember = Prisma.FamilyMemberModel
 /**
+ * Model FamilyMemberCareScope
+ * 
+ */
+export type FamilyMemberCareScope = Prisma.FamilyMemberCareScopeModel
+/**
  * Model GeofenceEvent
  * 
  */
@@ -172,3 +177,8 @@ export type SosRecipient = Prisma.SosRecipientModel
  * 
  */
 export type UserSetting = Prisma.UserSettingModel
+/**
+ * Model LocationShareViewer
+ * 
+ */
+export type LocationShareViewer = Prisma.LocationShareViewerModel

@@ -56,30 +56,48 @@ export const familyCurrentLocationDataSchema = {
   required: [
     'memberId',
     'userId',
-    'role',
     'familyLabel',
     'displayName',
+    'isOwner',
+    'canManageCare',
+    'isCareRecipient',
+    'isMinor',
+    'isHired',
+    'careScopeMemberIds',
     'profile',
     'location',
   ],
   properties: {
     memberId: { type: 'string', format: 'uuid' },
     userId: { type: 'string', format: 'uuid' },
-    role: { type: 'string', enum: ['manager', 'adult', 'child', 'elder'] },
     familyLabel: {
       type: 'string',
       enum: [
         'father',
         'mother',
+        'husband',
+        'wife',
         'son',
         'daughter',
+        'brother',
+        'sister',
         'grandfather',
         'grandmother',
+        'grandchild',
         'caregiver',
         'other',
       ],
     },
     displayName: { type: 'string', nullable: true },
+    isOwner: { type: 'boolean' },
+    canManageCare: { type: 'boolean' },
+    isCareRecipient: { type: 'boolean' },
+    isMinor: { type: 'boolean' },
+    isHired: { type: 'boolean' },
+    careScopeMemberIds: {
+      type: 'array',
+      items: { type: 'string', format: 'uuid' },
+    },
     profile: {
       type: 'object',
       required: ['fullName', 'avatarUrl'],
@@ -147,5 +165,27 @@ export const locationHistorySuccessSchema = {
         hasMore: { type: 'boolean' },
       },
     },
+  },
+};
+
+export const setLocationViewersBodySchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['viewerUserIds'],
+  properties: {
+    viewerUserIds: {
+      type: 'array',
+      maxItems: 100,
+      items: { type: 'string', format: 'uuid' },
+    },
+  },
+};
+
+export const locationViewersSuccessSchema = {
+  type: 'object',
+  required: ['success', 'data'],
+  properties: {
+    success: { type: 'boolean', example: true },
+    data: setLocationViewersBodySchema,
   },
 };

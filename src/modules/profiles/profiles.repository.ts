@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { isEffectiveCareRecipient } from '../../common/utils/age.util';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import {
   UpdateBiometricSettingsDto,
@@ -12,7 +13,7 @@ const profileSelect = {
   avatarUrl: true,
   dateOfBirth: true,
   gender: true,
-  role: true,
+  uiMode: true,
   phoneNumber: true,
   accountStatus: true,
   createdAt: true,
@@ -48,9 +49,30 @@ export class ProfilesRepository {
             ? dto.dateOfBirth
             : new Date(`${dto.dateOfBirth}T00:00:00.000Z`),
         gender: dto.gender,
+        uiMode: dto.uiMode,
       },
       select: profileSelect,
     });
+  }
+
+  async hasActiveCareRecipientMembership(userId: string): Promise<boolean> {
+    const memberships = await this.prisma.familyMember.findMany({
+      where: {
+        userId,
+        status: 'accepted',
+        family: { status: 'active' },
+      },
+      select: {
+        isCareRecipient: true,
+        profile: { select: { dateOfBirth: true } },
+      },
+    });
+    return memberships.some((membership) =>
+      isEffectiveCareRecipient({
+        isCareRecipient: membership.isCareRecipient,
+        dateOfBirth: membership.profile?.dateOfBirth,
+      }),
+    );
   }
 
   findSettingsByUserId(userId: string) {
@@ -72,6 +94,10 @@ export class ProfilesRepository {
       smsNotificationsEnabled: dto.smsNotificationsEnabled,
       emailNotificationsEnabled: dto.emailNotificationsEnabled,
       locationSharingEnabled: dto.locationSharingEnabled,
+      sharingMode: dto.sharingMode,
+      locationVisibility: dto.locationVisibility,
+      notifyOnZoneExit: dto.notifyOnZoneExit,
+      notifyOnSignalLost: dto.notifyOnSignalLost,
       theme,
       darkMode: theme === undefined ? undefined : theme === 'dark',
       quietHoursStart: this.toDatabaseTime(dto.quietHoursStart),

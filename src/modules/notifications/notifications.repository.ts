@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { isEffectiveCareRecipient } from '../../common/utils/age.util';
 import { Prisma } from '../../generated/prisma/client';
+import {
+  effectiveCareRecipientWhere,
+  findCareManagerUserIds,
+} from '../families/care-scope.util';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import {
   NotificationCursor,
@@ -8,6 +13,7 @@ import {
 import {
   NOTIFICATION_SOURCE_CALL,
   NOTIFICATION_SOURCE_GEOFENCE_EVENT,
+  NOTIFICATION_SOURCE_LOCATION_SIGNAL,
   NOTIFICATION_SOURCE_REMINDER_LOG,
   NOTIFICATION_SOURCE_MESSAGE,
   NOTIFICATION_SOURCE_SOS_EVENT,
@@ -41,10 +47,12 @@ export class NotificationsRepository {
             id: eventId,
             event_type: { in: ['enter', 'exit'] },
             Family: { status: 'active' },
+            // Zone alerts exist only for care recipients and go to the people
+            // who canManage them; the recipient's own sharing, visibility and
+            // exit-alert switches cannot silence them.
             FamilyMember: {
               status: 'accepted',
-              locationSharingEnabled: true,
-              profile: { UserSetting: { locationSharingEnabled: true } },
+              ...effectiveCareRecipientWhere(),
             },
             Geofence: { is_active: true },
           },
@@ -83,12 +91,19 @@ export class NotificationsRepository {
           return [];
         }
 
+        const managerUserIds = await findCareManagerUserIds(
+          tx,
+          event.family_id,
+          { memberId: event.member_id, userId: event.FamilyMember.userId },
+        );
+        if (managerUserIds.length === 0) return [];
+
         const recipients = await tx.familyMember.findMany({
           where: {
             familyId: event.family_id,
             status: 'accepted',
-            locationSharingEnabled: true,
             family: { status: 'active' },
+            userId: { in: managerUserIds },
           },
           distinct: ['userId'],
           select: {
@@ -112,9 +127,9 @@ export class NotificationsRepository {
         const displayName =
           event.FamilyMember.displayName ??
           event.FamilyMember.profile.fullName ??
-          'Family member';
+          'Thành viên gia đình';
         const transitionText =
-          event.event_type === 'enter' ? 'entered' : 'left';
+          event.event_type === 'enter' ? 'đã vào' : 'đã rời';
         const created = [];
         for (const recipient of recipients) {
           const existing = await tx.notification.findUnique({
@@ -134,7 +149,10 @@ export class NotificationsRepository {
               recipient_user_id: recipient.userId,
               sender_user_id: event.FamilyMember.userId,
               notification_type: type,
-              title: `Safe-zone ${event.event_type}`,
+              title:
+                event.event_type === 'enter'
+                  ? 'Đã vào vùng an toàn'
+                  : 'Đã rời vùng an toàn',
               message: `${displayName} ${transitionText} ${event.Geofence.name}`,
               related_table: NOTIFICATION_SOURCE_GEOFENCE_EVENT,
               related_id: event.id,
@@ -144,6 +162,183 @@ export class NotificationsRepository {
                 memberId: event.member_id,
                 transition: event.event_type,
                 occurredAt: event.detected_at.toISOString(),
+              },
+            },
+            select: safeNotificationSelect,
+          });
+          const pushEnabled =
+            recipient.profile.UserSetting?.pushNotificationsEnabled !== false;
+          if (pushEnabled && recipient.profile.Device.length > 0) {
+            await tx.notificationDelivery.createMany({
+              data: recipient.profile.Device.map((device) => ({
+                notificationId: notification.id,
+                deviceId: device.id,
+              })),
+              skipDuplicates: true,
+            });
+          }
+          created.push({ notification, recipientUserId: recipient.userId });
+        }
+        return created;
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  }
+
+  /**
+   * Tells the family that [input.userId]'s phone went silent. One notification
+   * per recipient per silence: the key is the last location id, which changes
+   * as soon as the phone reports again.
+   */
+  async createFromSignalLoss(input: {
+    userId: string;
+    locationId: string;
+    reason: 'no_connection' | 'no_location';
+    silentMinutes: number;
+    lastLocationAt: Date;
+    lastSeenAt: Date;
+    latitude: number;
+    longitude: number;
+  }) {
+    return this.prisma.$transaction(
+      async (tx) => {
+        await tx.$queryRaw(
+          Prisma.sql`SELECT 1 FROM pg_advisory_xact_lock(hashtextextended(${`notification:signal:${input.locationId}`}, 0))`,
+        );
+        const owner = await tx.userSetting.findUnique({
+          where: { userId: input.userId },
+          select: {
+            locationSharingEnabled: true,
+            notifyOnSignalLost: true,
+            locationVisibility: true,
+          },
+        });
+        const ownerMemberships = await tx.familyMember.findMany({
+          where: {
+            userId: input.userId,
+            status: 'accepted',
+            family: { status: 'active' },
+          },
+          select: {
+            id: true,
+            familyId: true,
+            displayName: true,
+            isCareRecipient: true,
+            locationSharingEnabled: true,
+            profile: { select: { fullName: true, dateOfBirth: true } },
+          },
+        });
+        if (ownerMemberships.length === 0) return [];
+        const allowedViewers =
+          owner?.locationVisibility === 'selected'
+            ? new Set(
+                (
+                  await tx.locationShareViewer.findMany({
+                    where: { ownerUserId: input.userId },
+                    select: { viewerUserId: true },
+                  })
+                ).map((v) => v.viewerUserId),
+              )
+            : null;
+
+        // Per family: a care recipient's care managers are always told (their
+        // own switches cannot silence it); anyone else follows their sharing,
+        // notifyOnSignalLost and visibility settings.
+        const allowedByFamily = new Map<string, Set<string> | null>();
+        for (const membership of ownerMemberships) {
+          if (isEffectiveCareRecipient(membership)) {
+            allowedByFamily.set(
+              membership.familyId,
+              new Set(
+                await findCareManagerUserIds(tx, membership.familyId, {
+                  memberId: membership.id,
+                  userId: input.userId,
+                }),
+              ),
+            );
+          } else if (
+            owner?.locationSharingEnabled &&
+            owner.notifyOnSignalLost &&
+            membership.locationSharingEnabled
+          ) {
+            allowedByFamily.set(membership.familyId, allowedViewers);
+          }
+        }
+        if (allowedByFamily.size === 0) return [];
+
+        const candidates = await tx.familyMember.findMany({
+          where: {
+            familyId: { in: [...allowedByFamily.keys()] },
+            status: 'accepted',
+            userId: { not: input.userId },
+            family: { status: 'active' },
+          },
+          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+          select: {
+            userId: true,
+            familyId: true,
+            profile: {
+              select: {
+                UserSetting: { select: { pushNotificationsEnabled: true } },
+                Device: {
+                  where: { isActive: true, fcmToken: { not: null } },
+                  select: { id: true },
+                },
+              },
+            },
+          },
+        });
+        const seenUserIds = new Set<string>();
+        const recipients = candidates.filter((candidate) => {
+          const allowed = allowedByFamily.get(candidate.familyId);
+          if (allowed === undefined) return false;
+          if (allowed !== null && !allowed.has(candidate.userId)) return false;
+          if (seenUserIds.has(candidate.userId)) return false;
+          seenUserIds.add(candidate.userId);
+          return true;
+        });
+
+        const name =
+          ownerMemberships[0].displayName ??
+          ownerMemberships[0].profile.fullName ??
+          'Thành viên gia đình';
+        const message =
+          input.reason === 'no_connection'
+            ? `${name} đã khoảng ${input.silentMinutes} phút không gửi vị trí. Có thể điện thoại đã tắt, hết mạng hoặc ứng dụng bị đóng.`
+            : `${name} đang mở ứng dụng nhưng không lấy được vị trí. Có thể đã tắt GPS hoặc thu hồi quyền vị trí.`;
+        const created = [];
+        for (const recipient of recipients) {
+          const existing = await tx.notification.findUnique({
+            where: {
+              recipient_user_id_related_table_related_id: {
+                recipient_user_id: recipient.userId,
+                related_table: NOTIFICATION_SOURCE_LOCATION_SIGNAL,
+                related_id: input.locationId,
+              },
+            },
+            select: { id: true },
+          });
+          if (existing) continue;
+          const memberId = ownerMemberships.find(
+            (m) => m.familyId === recipient.familyId,
+          )?.id;
+          const notification = await tx.notification.create({
+            data: {
+              family_id: recipient.familyId,
+              recipient_user_id: recipient.userId,
+              sender_user_id: input.userId,
+              notification_type: 'location_signal_lost',
+              title: 'Mất tín hiệu vị trí',
+              message,
+              related_table: NOTIFICATION_SOURCE_LOCATION_SIGNAL,
+              related_id: input.locationId,
+              metadata: {
+                memberId,
+                reason: input.reason,
+                lastLocationAt: input.lastLocationAt.toISOString(),
+                lastSeenAt: input.lastSeenAt.toISOString(),
+                latitude: input.latitude,
+                longitude: input.longitude,
               },
             },
             select: safeNotificationSelect,
@@ -202,6 +397,7 @@ export class NotificationsRepository {
 
         const created = [];
         for (const recipient of event.recipients) {
+          if (recipient.recipientUserId === event.actorUserId) continue;
           const existing = await tx.notification.findUnique({
             where: {
               recipient_user_id_related_table_related_id: {
@@ -213,14 +409,14 @@ export class NotificationsRepository {
             select: { id: true },
           });
           if (existing) continue;
-          const displayName = event.actor.fullName ?? 'A family member';
+          const displayName = event.actor.fullName ?? 'Một thành viên gia đình';
           const notification = await tx.notification.create({
             data: {
               recipient_user_id: recipient.recipientUserId,
               sender_user_id: event.actorUserId,
               notification_type: 'sos_alert',
-              title: 'Emergency SOS',
-              message: `${displayName} needs help.`,
+              title: 'SOS khẩn cấp',
+              message: `${displayName} cần trợ giúp.`,
               related_table: NOTIFICATION_SOURCE_SOS_EVENT,
               related_id: event.id,
               metadata: {
@@ -325,7 +521,7 @@ export class NotificationsRepository {
             recipient_user_id: recipientUserId,
             sender_user_id: log.reminder.creatorUserId,
             notification_type: 'reminder',
-            title: 'Reminder due',
+            title: 'Đến giờ nhắc nhở',
             message: log.reminder.title,
             related_table: NOTIFICATION_SOURCE_REMINDER_LOG,
             related_id: log.id,
@@ -443,15 +639,16 @@ export class NotificationsRepository {
             select: { id: true },
           });
           if (existing) continue;
-          const displayName = message.sender.fullName ?? 'A family member';
+          const displayName =
+            message.sender.fullName ?? 'Một thành viên gia đình';
           const notification = await tx.notification.create({
             data: {
               family_id: message.conversation.familyId,
               recipient_user_id: recipient.userId,
               sender_user_id: message.senderUserId,
               notification_type: 'message',
-              title: 'New message',
-              message: `New message from ${displayName}`,
+              title: 'Tin nhắn mới',
+              message: `Tin nhắn mới từ ${displayName}`,
               related_table: NOTIFICATION_SOURCE_MESSAGE,
               related_id: message.id,
               metadata: {
@@ -560,15 +757,18 @@ export class NotificationsRepository {
           select: { id: true },
         });
         if (existing) return [];
-        const displayName = call.caller.fullName ?? 'A family member';
+        const displayName = call.caller.fullName ?? 'Một thành viên gia đình';
         const notification = await tx.notification.create({
           data: {
             family_id: call.familyId,
             recipient_user_id: call.calleeUserId,
             sender_user_id: call.callerUserId,
             notification_type: 'call_incoming',
-            title: `Incoming ${call.callType} call`,
-            message: `${displayName} is calling`,
+            title:
+              call.callType === 'video'
+                ? 'Cuộc gọi video đến'
+                : 'Cuộc gọi thoại đến',
+            message: `${displayName} đang gọi`,
             related_table: NOTIFICATION_SOURCE_CALL,
             related_id: call.id,
             metadata: {
@@ -596,6 +796,71 @@ export class NotificationsRepository {
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
+  }
+
+  async createFamilyNotifications(input: {
+    familyId: string;
+    senderUserId: string | null;
+    recipientUserIds: string[];
+    type: NotificationType;
+    title: string;
+    message: string;
+    metadata?: Record<string, unknown>;
+  }) {
+    const uniqueRecipientIds = [...new Set(input.recipientUserIds)].filter(
+      Boolean,
+    );
+    if (uniqueRecipientIds.length === 0) return [];
+
+    return this.prisma.$transaction(async (tx) => {
+      const profiles = await tx.profile.findMany({
+        where: { id: { in: uniqueRecipientIds } },
+        select: {
+          id: true,
+          UserSetting: { select: { pushNotificationsEnabled: true } },
+          Device: {
+            where: { isActive: true, fcmToken: { not: null } },
+            select: { id: true },
+          },
+        },
+      });
+      const created: Array<{
+        notification: Prisma.NotificationGetPayload<{
+          select: typeof safeNotificationSelect;
+        }>;
+        recipientUserId: string;
+      }> = [];
+
+      for (const recipient of profiles) {
+        const notification = await tx.notification.create({
+          data: {
+            family_id: input.familyId,
+            recipient_user_id: recipient.id,
+            sender_user_id: input.senderUserId,
+            notification_type: input.type,
+            title: input.title,
+            message: input.message,
+            related_table: null,
+            related_id: null,
+            metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+          },
+          select: safeNotificationSelect,
+        });
+        const pushEnabled =
+          recipient.UserSetting?.pushNotificationsEnabled !== false;
+        if (pushEnabled && recipient.Device.length > 0) {
+          await tx.notificationDelivery.createMany({
+            data: recipient.Device.map((device) => ({
+              notificationId: notification.id,
+              deviceId: device.id,
+            })),
+            skipDuplicates: true,
+          });
+        }
+        created.push({ notification, recipientUserId: recipient.id });
+      }
+      return created;
+    });
   }
 
   listOwned(

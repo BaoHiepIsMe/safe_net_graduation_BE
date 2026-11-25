@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfilesService } from './profiles.service';
 import { ProfilesRepository } from './profiles.repository';
-import { NotFoundError } from '../../common/errors/app.error';
+import { ForbiddenError, NotFoundError } from '../../common/errors/app.error';
 
 describe('ProfilesService', () => {
   let service: ProfilesService;
@@ -15,6 +15,7 @@ describe('ProfilesService', () => {
       updateSettings: jest.fn(),
       findBiometricSettingsByUserId: jest.fn(),
       updateBiometricSettings: jest.fn(),
+      hasActiveCareRecipientMembership: jest.fn().mockResolvedValue(false),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -35,7 +36,7 @@ describe('ProfilesService', () => {
       id: 'usr-1',
       fullName: 'Bob Caregiver',
       avatarUrl: 'https://example.com/avatar.png',
-      role: 'guardian',
+      uiMode: 'adult',
       accountStatus: 'active',
       createdAt: '2026-08-19T00:00:00.000Z',
       updatedAt: '2026-08-19T00:00:00.000Z',
@@ -45,7 +46,7 @@ describe('ProfilesService', () => {
     expect(result.id).toBe('usr-1');
     expect(result.fullName).toBe('Bob Caregiver');
     expect(result.avatarUrl).toBe('https://example.com/avatar.png');
-    expect(result.role).toBe('guardian');
+    expect(result.uiMode).toBe('adult');
   });
 
   it('should throw NotFoundError when profile is missing', async () => {
@@ -116,5 +117,25 @@ describe('ProfilesService', () => {
       darkMode: true,
       quietHoursStart: null,
     });
+  });
+
+  it('prevents a child under 13 from changing uiMode away from kid', async () => {
+    mockRepository.findProfileById.mockResolvedValue({
+      id: 'usr-1',
+      dateOfBirth: new Date('2018-01-01T00:00:00.000Z'),
+      uiMode: 'kid',
+    });
+    await expect(
+      service.updateProfile('usr-1', { uiMode: 'adult' }),
+    ).rejects.toThrow(ForbiddenError);
+    expect(mockRepository.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it('prevents an active care recipient from disabling global location sharing', async () => {
+    mockRepository.hasActiveCareRecipientMembership.mockResolvedValue(true);
+    await expect(
+      service.updateUserSettings('usr-1', { locationSharingEnabled: false }),
+    ).rejects.toThrow(ForbiddenError);
+    expect(mockRepository.updateSettings).not.toHaveBeenCalled();
   });
 });

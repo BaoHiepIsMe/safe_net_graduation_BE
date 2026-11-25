@@ -25,29 +25,38 @@ import type { AuthUser } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { ApiStandardErrors } from '../../common/swagger/api-docs';
 import {
+  approveJoinRequestSchema,
   createFamilySchema,
   createInvitationSchema,
   familyIdParamSchema,
   familyInvitationParamSchema,
+  familyMemberParamSchema,
   familyPaginationSchema,
   invitationIdParamSchema,
   joinFamilySchema,
+  joinPreviewQuerySchema,
+  memberIdParamSchema,
   transferOwnershipSchema,
   updateFamilySchema,
 } from './dto/family.dto';
 import type {
+  ApproveJoinRequestDto,
   CreateFamilyDto,
   CreateInvitationDto,
   FamilyIdParam,
   FamilyInvitationParam,
+  FamilyMemberParam,
   FamilyPaginationDto,
   InvitationIdParam,
   JoinFamilyDto,
+  JoinPreviewQueryDto,
+  MemberIdParam,
   TransferOwnershipDto,
   UpdateFamilyDto,
 } from './dto/family.dto';
 import { FamiliesService } from './families.service';
 import {
+  approveJoinRequestBodySchema,
   createFamilyBodySchema,
   createFamilySuccessSchema,
   createInvitationBodySchema,
@@ -56,6 +65,9 @@ import {
   familySuccessSchema,
   inviteCodeSuccessSchema,
   joinFamilyBodySchema,
+  joinPreviewSuccessSchema,
+  joinRequestDataSchema,
+  ownJoinRequestDataSchema,
   paginatedSuccessSchema,
   pendingInvitationDataSchema,
   sentInvitationDataSchema,
@@ -74,7 +86,7 @@ export class FamiliesController {
   @ApiOperation({ summary: 'Tạo gia đình và membership quản lý ban đầu' })
   @ApiBody({ schema: createFamilyBodySchema })
   @ApiResponse({ status: 201, schema: createFamilySuccessSchema })
-  @ApiStandardErrors(400, 401, 409, 422, 429, 500)
+  @ApiStandardErrors(400, 401, 403, 409, 422, 429, 500)
   createFamily(
     @CurrentUser() user: AuthUser,
     @Body(new ZodValidationPipe(createFamilySchema)) dto: CreateFamilyDto,
@@ -156,20 +168,150 @@ export class FamiliesController {
     return this.familiesService.rejectInvitation(user.id, params.invitationId);
   }
 
+  @Get('join-preview')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @ApiOperation({
+    summary: 'Xem trước thông tin nhóm từ mã mời còn hạn trước khi xin vào',
+  })
+  @ApiQuery({ name: 'code', required: true, type: String })
+  @ApiResponse({ status: 200, schema: joinPreviewSuccessSchema })
+  @ApiStandardErrors(400, 401, 404, 429, 500)
+  getJoinPreview(
+    @Query(new ZodValidationPipe(joinPreviewQuerySchema))
+    query: JoinPreviewQueryDto,
+  ) {
+    return this.familiesService.getJoinPreview(query.code);
+  }
+
   @Post('join')
   // Tighter than the global limit: slows down guessing of invite codes.
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({
-    summary: 'Vào gia đình ngay bằng mã mời còn hạn (không cần duyệt)',
+    summary: 'Gửi yêu cầu xin vào gia đình bằng mã mời còn hạn (chờ duyệt)',
   })
   @ApiBody({ schema: joinFamilyBodySchema })
   @ApiResponse({ status: 201, schema: createFamilySuccessSchema })
-  @ApiStandardErrors(400, 401, 404, 409, 429, 500)
+  @ApiStandardErrors(400, 401, 404, 409, 422, 429, 500)
   joinFamily(
     @CurrentUser() user: AuthUser,
     @Body(new ZodValidationPipe(joinFamilySchema)) dto: JoinFamilyDto,
   ) {
     return this.familiesService.joinByCode(user.id, dto);
+  }
+
+  @Get('join-requests/mine')
+  @ApiOperation({
+    summary: 'Xem danh sách yêu cầu xin vào nhóm của chính mình',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, minimum: 1 })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    minimum: 1,
+    maximum: 100,
+  })
+  @ApiResponse({
+    status: 200,
+    schema: paginatedSuccessSchema(ownJoinRequestDataSchema),
+  })
+  @ApiStandardErrors(400, 401, 429, 500)
+  listOwnJoinRequests(
+    @CurrentUser() user: AuthUser,
+    @Query(new ZodValidationPipe(familyPaginationSchema))
+    pagination: FamilyPaginationDto,
+  ) {
+    return this.familiesService.listOwnJoinRequests(user.id, pagination);
+  }
+
+  @Delete('join-requests/:memberId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Người xin hủy yêu cầu tham gia đang chờ duyệt' })
+  @ApiParam({ name: 'memberId', format: 'uuid' })
+  @ApiResponse({ status: 204, description: 'Đã hủy yêu cầu; không có body' })
+  @ApiStandardErrors(400, 401, 403, 404, 422, 429, 500)
+  async cancelJoinRequest(
+    @CurrentUser() user: AuthUser,
+    @Param(new ZodValidationPipe(memberIdParamSchema)) params: MemberIdParam,
+  ): Promise<void> {
+    await this.familiesService.cancelJoinRequest(user.id, params.memberId);
+  }
+
+  @Get(':familyId/join-requests')
+  @ApiOperation({
+    summary: 'Chủ nhóm hoặc Quản lý chính thức xem danh sách yêu cầu xin vào',
+  })
+  @ApiParam({ name: 'familyId', format: 'uuid' })
+  @ApiQuery({ name: 'page', required: false, type: Number, minimum: 1 })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    minimum: 1,
+    maximum: 100,
+  })
+  @ApiResponse({
+    status: 200,
+    schema: paginatedSuccessSchema(joinRequestDataSchema),
+  })
+  @ApiStandardErrors(400, 401, 403, 429, 500)
+  listJoinRequests(
+    @CurrentUser() user: AuthUser,
+    @Param(new ZodValidationPipe(familyIdParamSchema)) params: FamilyIdParam,
+    @Query(new ZodValidationPipe(familyPaginationSchema))
+    pagination: FamilyPaginationDto,
+  ) {
+    return this.familiesService.listJoinRequests(
+      user.id,
+      params.familyId,
+      pagination,
+    );
+  }
+
+  @Post(':familyId/join-requests/:memberId/approve')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Chủ nhóm hoặc Quản lý chính thức chấp nhận yêu cầu xin vào',
+  })
+  @ApiParam({ name: 'familyId', format: 'uuid' })
+  @ApiParam({ name: 'memberId', format: 'uuid' })
+  @ApiBody({ schema: approveJoinRequestBodySchema })
+  @ApiResponse({ status: 200, schema: familyMemberSuccessSchema })
+  @ApiStandardErrors(400, 401, 403, 404, 422, 429, 500)
+  approveJoinRequest(
+    @CurrentUser() user: AuthUser,
+    @Param(new ZodValidationPipe(familyMemberParamSchema))
+    params: FamilyMemberParam,
+    @Body(new ZodValidationPipe(approveJoinRequestSchema))
+    dto: ApproveJoinRequestDto,
+  ) {
+    return this.familiesService.approveJoinRequest(
+      user.id,
+      params.familyId,
+      params.memberId,
+      dto,
+    );
+  }
+
+  @Post(':familyId/join-requests/:memberId/reject')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Chủ nhóm hoặc Quản lý chính thức từ chối yêu cầu xin vào',
+  })
+  @ApiParam({ name: 'familyId', format: 'uuid' })
+  @ApiParam({ name: 'memberId', format: 'uuid' })
+  @ApiResponse({ status: 200, schema: familyMemberSuccessSchema })
+  @ApiStandardErrors(400, 401, 403, 404, 422, 429, 500)
+  rejectJoinRequest(
+    @CurrentUser() user: AuthUser,
+    @Param(new ZodValidationPipe(familyMemberParamSchema))
+    params: FamilyMemberParam,
+  ) {
+    return this.familiesService.rejectJoinRequest(
+      user.id,
+      params.familyId,
+      params.memberId,
+    );
   }
 
   @Get(':familyId/invitations')
@@ -286,7 +428,7 @@ export class FamiliesController {
   @Post(':familyId/transfer-ownership')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Chủ sở hữu chuyển quyền cho người lớn hoặc quản lý khác',
+    summary: 'Chủ sở hữu chuyển quyền cho người lớn khác trong nhóm',
   })
   @ApiParam({ name: 'familyId', format: 'uuid' })
   @ApiBody({ schema: transferOwnershipBodySchema })

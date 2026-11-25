@@ -74,6 +74,8 @@ export const dailyStatusSummarySchema = z
         occurrenceCount: nonnegativeInteger,
         notificationProcessedCount: nonnegativeInteger,
         missedCount: nonnegativeInteger,
+        // Absent in summaries stored before reminders could be completed.
+        completedCount: nonnegativeInteger.optional(),
       })
       .strict(),
     phoneUsage: z

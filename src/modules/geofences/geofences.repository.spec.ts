@@ -25,17 +25,17 @@ describe('GeofencesRepository integrity architecture', () => {
     expect(source).not.toContain('$executeRawUnsafe');
   });
 
-  it('evaluates only active accepted assignments with both source sharing flags', () => {
+  it('evaluates only active accepted care-recipient assignments, ignoring their sharing switches', () => {
     expect(source).toContain("status: 'accepted'");
-    expect(source).toContain('locationSharingEnabled: true');
-    expect(source).toContain('UserSetting: { locationSharingEnabled: true }');
+    expect(source).toContain('...effectiveCareRecipientWhere()');
+    expect(source).not.toContain('locationSharingEnabled: true');
     expect(source).toContain("family: { status: 'active' }");
     expect(source).toContain('is_active: true');
   });
 
-  it('selects realtime recipients by active accepted private family relationship', () => {
+  it('sends realtime transitions privately to the care managers of the member', () => {
     expect(source).toContain('recipientUserIds');
-    expect(source).toContain('locationSharingEnabled: true');
+    expect(source).toContain('findCareManagerUserIds(tx, assignment.family_id');
     expect(source).not.toContain('emitToFamily');
   });
 

@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '../../generated/prisma/client';
+import {
+  effectiveCareRecipientWhere,
+  findCareManagerUserIds,
+} from '../families/care-scope.util';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { isPointInsideCircularGeofence } from './geofence-distance';
 import { decideGeofenceTransition } from './geofence-transition';
@@ -21,8 +25,12 @@ const assignmentSelect = {
     select: {
       userId: true,
       displayName: true,
-      role: true,
-      profile: { select: { fullName: true, avatarUrl: true } },
+      canManageCare: true,
+      isCareRecipient: true,
+      isHired: true,
+      profile: {
+        select: { fullName: true, avatarUrl: true, dateOfBirth: true },
+      },
     },
   },
 } as const;
@@ -35,6 +43,7 @@ const geofenceSelect = {
   center_latitude: true,
   center_longitude: true,
   radius_meters: true,
+  icon: true,
   is_active: true,
   created_at: true,
   updated_at: true,
@@ -76,6 +85,7 @@ export class GeofencesRepository {
           center_latitude: dto.centerLatitude,
           center_longitude: dto.centerLongitude,
           radius_meters: dto.radiusMeters,
+          icon: dto.icon,
           GeofenceMember: {
             create: dto.members.map((item) => ({
               family_id: familyId,
@@ -91,10 +101,21 @@ export class GeofencesRepository {
     });
   }
 
-  async list(familyId: string, query: GeofenceListQueryDto) {
+  /**
+   * [scopeMemberIds] limits the page to geofences assigned to at least one of
+   * those members (hired caregivers); `null` means no limit.
+   */
+  async list(
+    familyId: string,
+    query: GeofenceListQueryDto,
+    scopeMemberIds: string[] | null = null,
+  ) {
     const where = {
       family_id: familyId,
       ...(query.active === undefined ? {} : { is_active: query.active }),
+      ...(scopeMemberIds
+        ? { GeofenceMember: { some: { member_id: { in: scopeMemberIds } } } }
+        : {}),
     } satisfies Prisma.GeofenceWhereInput;
     const [rows, total] = await Promise.all([
       this.prisma.geofence.findMany({
@@ -131,6 +152,7 @@ export class GeofencesRepository {
           center_latitude: dto.centerLatitude,
           center_longitude: dto.centerLongitude,
           radius_meters: dto.radiusMeters,
+          icon: dto.icon,
           is_active: dto.isActive,
           updated_at: new Date(),
         },
@@ -191,6 +213,7 @@ export class GeofencesRepository {
     familyId: string,
     query: GeofenceEventQueryDto,
     cursor?: GeofenceEventCursor,
+    scopeMemberIds: string[] | null = null,
   ) {
     const cursorWhere = cursor
       ? {
@@ -204,11 +227,13 @@ export class GeofencesRepository {
       where: {
         family_id: familyId,
         Family: { status: 'active' },
+        // Geofences only watch care recipients; their sharing switches do not
+        // hide events from the people allowed to manage them.
         FamilyMember: {
           status: 'accepted',
-          locationSharingEnabled: true,
-          profile: { UserSetting: { locationSharingEnabled: true } },
+          ...effectiveCareRecipientWhere(),
         },
+        ...(scopeMemberIds ? { member_id: { in: scopeMemberIds } } : {}),
         ...(query.geofenceId ? { geofence_id: query.geofenceId } : {}),
         ...(query.memberId ? { member_id: query.memberId } : {}),
         ...(query.eventType ? { event_type: query.eventType } : {}),
@@ -244,11 +269,8 @@ export class GeofencesRepository {
               FamilyMember: {
                 userId: location.userId,
                 status: 'accepted',
-                locationSharingEnabled: true,
                 family: { status: 'active' },
-                profile: {
-                  UserSetting: { locationSharingEnabled: true },
-                },
+                ...effectiveCareRecipientWhere(),
               },
               Geofence: { is_active: true, Family: { status: 'active' } },
             },
@@ -361,15 +383,10 @@ export class GeofencesRepository {
             const deliveryEnabled = isInside
               ? assignment.notify_on_enter
               : assignment.notify_on_exit;
-            const recipients = deliveryEnabled
-              ? await tx.familyMember.findMany({
-                  where: {
-                    familyId: assignment.family_id,
-                    status: 'accepted',
-                    locationSharingEnabled: true,
-                    family: { status: 'active' },
-                  },
-                  select: { userId: true },
+            const recipientUserIds = deliveryEnabled
+              ? await findCareManagerUserIds(tx, assignment.family_id, {
+                  memberId: assignment.member_id,
+                  userId: location.userId,
                 })
               : [];
             transitions.push({
@@ -382,9 +399,7 @@ export class GeofencesRepository {
               latitude: location.latitude,
               longitude: location.longitude,
               occurredAt: event.detected_at,
-              recipientUserIds: [
-                ...new Set(recipients.map((item) => item.userId)),
-              ],
+              recipientUserIds,
             });
           }
           return transitions;

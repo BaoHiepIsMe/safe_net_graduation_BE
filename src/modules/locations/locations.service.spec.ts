@@ -40,7 +40,10 @@ function setup() {
     findFamilyCurrentLocations: jest.fn(),
     findFamilyMemberCurrentLocation: jest.fn(),
   };
-  const access = { requireAcceptedMember: jest.fn().mockResolvedValue({}) };
+  const access = {
+    requireAcceptedMember: jest.fn().mockResolvedValue({}),
+    canManage: jest.fn().mockResolvedValue(true),
+  };
   const realtime = { emitToUser: jest.fn() };
   const geofenceEvaluation = {
     evaluateCommittedLocation: jest.fn().mockResolvedValue([]),
@@ -222,6 +225,7 @@ describe('LocationsService', () => {
     expect(repository.findFamilyMemberCurrentLocation).toHaveBeenCalledWith(
       FAMILY_ID,
       MEMBER_ID,
+      USER_A,
     );
   });
 
@@ -248,7 +252,6 @@ describe('LocationsService', () => {
       const { service, repository, access } = setup();
       repository.findHistoryTarget.mockResolvedValue({
         userId: USER_B,
-        sharing: true,
       });
       repository.listHistory.mockResolvedValue([location]);
       const result = await service.getFamilyMemberHistory(
@@ -265,6 +268,11 @@ describe('LocationsService', () => {
         FAMILY_ID,
         MEMBER_ID,
       );
+      expect(access.canManage).toHaveBeenCalledWith(
+        USER_A,
+        MEMBER_ID,
+        FAMILY_ID,
+      );
       expect(repository.listHistory.mock.calls[0][0]).toBe(USER_B);
       expect(result.data).toHaveLength(1);
       expect(result.pagination).toMatchObject({ hasMore: false, limit: 50 });
@@ -279,19 +287,17 @@ describe('LocationsService', () => {
       expect(repository.findHistoryTarget).not.toHaveBeenCalled();
     });
 
-    it('returns 404 for unknown members and for members with sharing off', async () => {
-      const { service, repository } = setup();
+    it('returns 404 for unknown members and 403 for viewers who cannot manage the target', async () => {
+      const { service, repository, access } = setup();
       repository.findHistoryTarget.mockResolvedValueOnce(null);
       await expect(
         service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, query),
       ).rejects.toBeInstanceOf(NotFoundError);
-      repository.findHistoryTarget.mockResolvedValueOnce({
-        userId: USER_B,
-        sharing: false,
-      });
+      repository.findHistoryTarget.mockResolvedValueOnce({ userId: USER_B });
+      access.canManage.mockResolvedValueOnce(false);
       await expect(
         service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, query),
-      ).rejects.toBeInstanceOf(NotFoundError);
+      ).rejects.toBeInstanceOf(ForbiddenError);
       expect(repository.listHistory).not.toHaveBeenCalled();
     });
 
@@ -299,7 +305,6 @@ describe('LocationsService', () => {
       const { service, repository } = setup();
       repository.findHistoryTarget.mockResolvedValue({
         userId: USER_A,
-        sharing: false,
       });
       repository.listHistory.mockResolvedValue([]);
       await expect(
@@ -312,7 +317,6 @@ describe('LocationsService', () => {
       const { service, repository } = setup();
       repository.findHistoryTarget.mockResolvedValue({
         userId: USER_B,
-        sharing: true,
       });
       repository.listHistory.mockResolvedValue([]);
       const before = Date.now();
@@ -335,6 +339,18 @@ describe('LocationsService', () => {
       expect(repository.listHistory.mock.calls[1][3]).toMatchObject({
         from: recent,
       });
+    });
+
+    it('denies history reads when viewer cannot manage the target member', async () => {
+      const { service, repository, access } = setup();
+      repository.findHistoryTarget.mockResolvedValue({
+        userId: USER_B,
+      });
+      access.canManage.mockResolvedValue(false);
+      await expect(
+        service.getFamilyMemberHistory(USER_A, FAMILY_ID, MEMBER_ID, query),
+      ).rejects.toBeInstanceOf(ForbiddenError);
+      expect(repository.listHistory).not.toHaveBeenCalled();
     });
   });
 });

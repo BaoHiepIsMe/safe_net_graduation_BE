@@ -52,7 +52,19 @@ describe('Phone Management DTO validation', () => {
     expect(updatePhoneRuleSchema.safeParse({}).success).toBe(false);
   });
 
-  it('only supports structured lock/ring/warning commands', () => {
+  it('only supports structured lock/unlock/ring/warning commands', () => {
+    expect(
+      createPhoneCommandSchema.safeParse({
+        clientRequestId: id,
+        commandType: 'unlock',
+      }).success,
+    ).toBe(true);
+    expect(
+      createPhoneCommandSchema.safeParse({
+        clientRequestId: id,
+        commandType: 'wipe',
+      }).success,
+    ).toBe(false);
     expect(
       createPhoneCommandSchema.safeParse({
         clientRequestId: id,

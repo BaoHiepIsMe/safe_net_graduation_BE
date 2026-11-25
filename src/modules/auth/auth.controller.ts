@@ -70,7 +70,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Đăng ký bằng email, số điện thoại và thông tin profile',
     description:
-      'Tạo tài khoản đã xác minh sẵn và lưu thông tin profile (gồm role). Có thể đăng nhập ngay sau khi đăng ký.',
+      'Tạo tài khoản đã xác minh sẵn và lưu thông tin profile (gồm uiMode). Có thể đăng nhập ngay sau khi đăng ký.',
   })
   @ApiBody({
     schema: {
@@ -82,7 +82,6 @@ export class AuthController {
         'fullName',
         'gender',
         'dateOfBirth',
-        'role',
       ],
       properties: {
         ...emailPasswordSchema.properties,
@@ -100,7 +99,12 @@ export class AuthController {
           example: '2000-01-15',
           description: 'Ngày hợp lệ theo YYYY-MM-DD, không ở tương lai',
         },
-        role: { type: 'string', enum: ['personal', 'parent', 'guardian'] },
+        uiMode: {
+          type: 'string',
+          enum: ['adult', 'assisted'],
+          description:
+            'Tùy chọn; dưới 13 tuổi hệ thống tự ép kid, từ 60 tuổi mặc định assisted',
+        },
       },
     },
   })

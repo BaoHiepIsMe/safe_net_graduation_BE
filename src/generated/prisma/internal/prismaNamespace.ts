@@ -409,6 +409,7 @@ export const ModelName = {
   FallEvent: 'FallEvent',
   Family: 'Family',
   FamilyMember: 'FamilyMember',
+  FamilyMemberCareScope: 'FamilyMemberCareScope',
   GeofenceEvent: 'GeofenceEvent',
   GeofenceMember: 'GeofenceMember',
   Geofence: 'Geofence',
@@ -427,7 +428,8 @@ export const ModelName = {
   SosContact: 'SosContact',
   SosEvent: 'SosEvent',
   SosRecipient: 'SosRecipient',
-  UserSetting: 'UserSetting'
+  UserSetting: 'UserSetting',
+  LocationShareViewer: 'LocationShareViewer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -443,7 +445,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "biometricSetting" | "callLog" | "callActiveParticipant" | "camera" | "conversationMember" | "conversation" | "currentLocation" | "dailyStatusReport" | "device" | "fallEvent" | "family" | "familyMember" | "geofenceEvent" | "geofenceMember" | "geofence" | "geofenceState" | "location" | "message" | "notification" | "notificationDelivery" | "phoneCommand" | "phoneRule" | "phoneUsageLog" | "profile" | "reminderLog" | "reminderTarget" | "reminder" | "sosContact" | "sosEvent" | "sosRecipient" | "userSetting"
+    modelProps: "biometricSetting" | "callLog" | "callActiveParticipant" | "camera" | "conversationMember" | "conversation" | "currentLocation" | "dailyStatusReport" | "device" | "fallEvent" | "family" | "familyMember" | "familyMemberCareScope" | "geofenceEvent" | "geofenceMember" | "geofence" | "geofenceState" | "location" | "message" | "notification" | "notificationDelivery" | "phoneCommand" | "phoneRule" | "phoneUsageLog" | "profile" | "reminderLog" | "reminderTarget" | "reminder" | "sosContact" | "sosEvent" | "sosRecipient" | "userSetting" | "locationShareViewer"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1332,6 +1334,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FamilyMemberCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FamilyMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    FamilyMemberCareScope: {
+      payload: Prisma.$FamilyMemberCareScopePayload<ExtArgs>
+      fields: Prisma.FamilyMemberCareScopeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FamilyMemberCareScopeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FamilyMemberCareScopeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        findFirst: {
+          args: Prisma.FamilyMemberCareScopeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FamilyMemberCareScopeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        findMany: {
+          args: Prisma.FamilyMemberCareScopeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>[]
+        }
+        create: {
+          args: Prisma.FamilyMemberCareScopeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        createMany: {
+          args: Prisma.FamilyMemberCareScopeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FamilyMemberCareScopeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>[]
+        }
+        delete: {
+          args: Prisma.FamilyMemberCareScopeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        update: {
+          args: Prisma.FamilyMemberCareScopeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        deleteMany: {
+          args: Prisma.FamilyMemberCareScopeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FamilyMemberCareScopeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FamilyMemberCareScopeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>[]
+        }
+        upsert: {
+          args: Prisma.FamilyMemberCareScopeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyMemberCareScopePayload>
+        }
+        aggregate: {
+          args: Prisma.FamilyMemberCareScopeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFamilyMemberCareScope>
+        }
+        groupBy: {
+          args: Prisma.FamilyMemberCareScopeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyMemberCareScopeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FamilyMemberCareScopeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyMemberCareScopeCountAggregateOutputType> | number
         }
       }
     }
@@ -2741,6 +2817,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LocationShareViewer: {
+      payload: Prisma.$LocationShareViewerPayload<ExtArgs>
+      fields: Prisma.LocationShareViewerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LocationShareViewerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LocationShareViewerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>
+        }
+        findFirst: {
+          args: Prisma.LocationShareViewerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LocationShareViewerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>
+        }
+        findMany: {
+          args: Prisma.LocationShareViewerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>[]
+        }
+        create: {
+          args: Prisma.LocationShareViewerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>
+        }
+        createMany: {
+          args: Prisma.LocationShareViewerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LocationShareViewerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>[]
+        }
+        delete: {
+          args: Prisma.LocationShareViewerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>
+        }
+        update: {
+          args: Prisma.LocationShareViewerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>
+        }
+        deleteMany: {
+          args: Prisma.LocationShareViewerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LocationShareViewerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LocationShareViewerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>[]
+        }
+        upsert: {
+          args: Prisma.LocationShareViewerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LocationShareViewerPayload>
+        }
+        aggregate: {
+          args: Prisma.LocationShareViewerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLocationShareViewer>
+        }
+        groupBy: {
+          args: Prisma.LocationShareViewerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LocationShareViewerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LocationShareViewerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LocationShareViewerCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2973,6 +3123,11 @@ export const FamilyMemberScalarFieldEnum = {
   familyLabel: 'familyLabel',
   displayName: 'displayName',
   status: 'status',
+  canManageCare: 'canManageCare',
+  careGrantedBy: 'careGrantedBy',
+  isCareRecipient: 'isCareRecipient',
+  careRecipientSetBy: 'careRecipientSetBy',
+  isHired: 'isHired',
   locationSharingEnabled: 'locationSharingEnabled',
   invitedAt: 'invitedAt',
   acceptedAt: 'acceptedAt',
@@ -2982,6 +3137,14 @@ export const FamilyMemberScalarFieldEnum = {
 } as const
 
 export type FamilyMemberScalarFieldEnum = (typeof FamilyMemberScalarFieldEnum)[keyof typeof FamilyMemberScalarFieldEnum]
+
+
+export const FamilyMemberCareScopeScalarFieldEnum = {
+  memberId: 'memberId',
+  targetMemberId: 'targetMemberId'
+} as const
+
+export type FamilyMemberCareScopeScalarFieldEnum = (typeof FamilyMemberCareScopeScalarFieldEnum)[keyof typeof FamilyMemberCareScopeScalarFieldEnum]
 
 
 export const GeofenceEventScalarFieldEnum = {
@@ -3021,6 +3184,7 @@ export const GeofenceScalarFieldEnum = {
   center_latitude: 'center_latitude',
   center_longitude: 'center_longitude',
   radius_meters: 'radius_meters',
+  icon: 'icon',
   is_active: 'is_active',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -3176,6 +3340,7 @@ export const ProfileScalarFieldEnum = {
   dateOfBirth: 'dateOfBirth',
   gender: 'gender',
   role: 'role',
+  uiMode: 'uiMode',
   accountStatus: 'accountStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -3192,6 +3357,7 @@ export const ReminderLogScalarFieldEnum = {
   status: 'status',
   notificationProcessedAt: 'notificationProcessedAt',
   processedAt: 'processedAt',
+  completedAt: 'completedAt',
   note: 'note'
 } as const
 
@@ -3214,6 +3380,7 @@ export const ReminderScalarFieldEnum = {
   title: 'title',
   description: 'description',
   reminderType: 'reminderType',
+  priority: 'priority',
   startAt: 'startAt',
   scheduleType: 'scheduleType',
   scheduleRule: 'scheduleRule',
@@ -3289,6 +3456,10 @@ export const UserSettingScalarFieldEnum = {
   smsNotificationsEnabled: 'smsNotificationsEnabled',
   emailNotificationsEnabled: 'emailNotificationsEnabled',
   locationSharingEnabled: 'locationSharingEnabled',
+  sharingMode: 'sharingMode',
+  locationVisibility: 'locationVisibility',
+  notifyOnZoneExit: 'notifyOnZoneExit',
+  notifyOnSignalLost: 'notifyOnSignalLost',
   darkMode: 'darkMode',
   quietHoursStart: 'quietHoursStart',
   quietHoursEnd: 'quietHoursEnd',
@@ -3296,6 +3467,16 @@ export const UserSettingScalarFieldEnum = {
 } as const
 
 export type UserSettingScalarFieldEnum = (typeof UserSettingScalarFieldEnum)[keyof typeof UserSettingScalarFieldEnum]
+
+
+export const LocationShareViewerScalarFieldEnum = {
+  id: 'id',
+  ownerUserId: 'ownerUserId',
+  viewerUserId: 'viewerUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type LocationShareViewerScalarFieldEnum = (typeof LocationShareViewerScalarFieldEnum)[keyof typeof LocationShareViewerScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3605,6 +3786,7 @@ export type GlobalOmitConfig = {
   fallEvent?: Prisma.FallEventOmit
   family?: Prisma.FamilyOmit
   familyMember?: Prisma.FamilyMemberOmit
+  familyMemberCareScope?: Prisma.FamilyMemberCareScopeOmit
   geofenceEvent?: Prisma.GeofenceEventOmit
   geofenceMember?: Prisma.GeofenceMemberOmit
   geofence?: Prisma.GeofenceOmit
@@ -3624,6 +3806,7 @@ export type GlobalOmitConfig = {
   sosEvent?: Prisma.SosEventOmit
   sosRecipient?: Prisma.SosRecipientOmit
   userSetting?: Prisma.UserSettingOmit
+  locationShareViewer?: Prisma.LocationShareViewerOmit
 }
 
 /* Types for Logging */

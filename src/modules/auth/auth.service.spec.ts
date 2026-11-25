@@ -17,7 +17,6 @@ describe('AuthService', () => {
     fullName: 'Test User',
     gender: 'female' as const,
     dateOfBirth: '2000-02-29',
-    role: 'parent' as const,
   };
   let service: AuthService;
   let authClient: any;
@@ -112,7 +111,7 @@ describe('AuthService', () => {
         phone_number: registration.phoneNumber,
         gender: registration.gender,
         date_of_birth: registration.dateOfBirth,
-        role: registration.role,
+        ui_mode: 'adult',
       },
     });
     expect(result).toEqual({
@@ -123,11 +122,38 @@ describe('AuthService', () => {
         fullName: registration.fullName,
         gender: registration.gender,
         dateOfBirth: registration.dateOfBirth,
-        role: registration.role,
+        uiMode: 'adult',
       },
       session: null,
     });
     expect(authClient.auth.resend).not.toHaveBeenCalled();
+  });
+
+  it('forces kid uiMode for <13 and defaults assisted for >=60 on register', async () => {
+    adminClient.auth.admin.createUser.mockResolvedValue({
+      data: {
+        user: {
+          id: 'usr-1',
+          email: 'test@safenet.vn',
+          identities: [{ id: 'identity-1' }],
+        },
+        session: null,
+      },
+      error: null,
+    });
+
+    const childResult = await service.register({
+      ...registration,
+      dateOfBirth: '2018-01-01',
+      uiMode: 'adult',
+    });
+    expect(childResult.user.uiMode).toBe('kid');
+
+    const elderResult = await service.register({
+      ...registration,
+      dateOfBirth: '1950-01-01',
+    });
+    expect(elderResult.user.uiMode).toBe('assisted');
   });
 
   it('maps duplicate registration to a stable conflict', async () => {
@@ -157,7 +183,6 @@ describe('AuthService', () => {
       phoneNumber: '+84912345678',
       gender: 'female',
       dateOfBirth: '2000-02-29',
-      role: 'parent',
       password: 'password123',
       fullName: 'Test User',
     });

@@ -55,7 +55,10 @@ describe('CamerasRepository', () => {
           userId: USER,
           familyId: FAMILY,
           status: 'accepted',
-          role: 'manager',
+          OR: [
+            { canManageCare: true, isHired: false },
+            { family: { ownerUserId: USER } },
+          ],
         }),
       }),
     );

@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import {
   GEOFENCE_DEFAULT_LIMIT,
+  GEOFENCE_ICONS,
   GEOFENCE_MAX_LIMIT,
   GEOFENCE_MAX_RADIUS_METERS,
 } from '../geofences.constants';
 
 const uuid = z.string().uuid();
 const finite = z.number().finite();
+const iconSchema = z.enum(GEOFENCE_ICONS);
 const assignmentSchema = z
   .object({
     memberId: uuid,
@@ -40,6 +42,7 @@ export const createGeofenceSchema = z
     centerLatitude: finite.min(-90).max(90),
     centerLongitude: finite.min(-180).max(180),
     radiusMeters: finite.int().min(1).max(GEOFENCE_MAX_RADIUS_METERS),
+    icon: iconSchema.nullable().optional(),
     members: z.array(assignmentSchema).max(100).default([]),
   })
   .strict()
@@ -56,6 +59,7 @@ export const updateGeofenceSchema = z
       .min(1)
       .max(GEOFENCE_MAX_RADIUS_METERS)
       .optional(),
+    icon: iconSchema.nullable().optional(),
     isActive: z.boolean().optional(),
   })
   .strict()

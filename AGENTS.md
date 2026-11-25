@@ -455,31 +455,29 @@ Prefer reusable Guards/decorators for broad checks and service-level authorizati
 
 ## 14. Family Role Model
 
-Current family roles are domain roles, not necessarily global application roles:
+SafeNet uses a capability-and-scope family model rather than a single `role` enum on `profiles` or `family_members`:
 
-```text
-manager
-adult
-child
-elder
-```
+- **Family Owner (`isOwner`)**: derived from `families.owner_user_id = family_members.user_id`. Must be an adult (`>= 18` in `Asia/Ho_Chi_Minh`) and always has `can_manage_care = true`.
+- **Care Manager (`canManageCare`)**: stored in `family_members.can_manage_care`. Only adults (`>= 18`) may hold `can_manage_care = true`.
+- **Care Recipient (`isCareRecipient`)**: effective care recipient status is `isMinor(dateOfBirth) || family_members.is_care_recipient`. Minors (`< 18`) are always care recipients automatically; adults (`>= 18`) use `family_members.is_care_recipient`.
+- **Hired Caregiver (`isHired` + `careScopeMemberIds`)**: derived from `family_label = 'caregiver'` (`family_members.is_hired = true`), scoped to specific care recipients via `family_member_care_scopes` (unless the hired caregiver is also the Family Owner).
+- **UI Mode (`profiles.ui_mode`)**: `'kid' | 'adult' | 'assisted'`. Presentation preference only; never used for backend authorization.
 
-A user may participate in different families subject to the database constraints/business rules.
+A user may participate in different families with different labels, care flags, and scopes.
 
-Do not assume a single global `role` field on the profile can replace `family_members.role`.
+Manager/caregiver actions must explicitly verify the relevant family membership, `canManage(actor, target)` rules, and hired caregiver scopes via `FamilyAccessService`.
 
-Manager/caregiver actions must explicitly verify the relevant family membership and permissions.
-
-Membership status should support the current approved states such as:
+Membership status supports the approved states:
 
 ```text
 pending
+requested
 accepted
 rejected
 removed
 ```
 
-Do not treat pending/rejected/removed memberships as active access.
+Do not treat `pending`, `requested`, `rejected`, or `removed` memberships as active access. Only `accepted` members in an `active` family have family access.
 
 ---
 

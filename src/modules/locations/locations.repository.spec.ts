@@ -30,6 +30,8 @@ function setupTransaction(overrides: Record<string, unknown> = {}) {
     },
     location: { create: jest.fn().mockResolvedValue(history) },
     familyMember: { findMany: jest.fn().mockResolvedValue([]) },
+    userSetting: { findUnique: jest.fn().mockResolvedValue(null) },
+    locationShareViewer: { findMany: jest.fn().mockResolvedValue([]) },
     $queryRaw: jest.fn().mockResolvedValue([{ user_id: USER_A }]),
     ...overrides,
   };
@@ -103,24 +105,42 @@ describe('LocationsRepository', () => {
 
   it('fans out to every accepted member of actively shared families of the sender', async () => {
     const { tx, repository } = setupTransaction();
+    tx.userSetting.findUnique.mockResolvedValue({
+      locationSharingEnabled: true,
+      locationVisibility: 'all',
+    });
     tx.familyMember.findMany
       .mockResolvedValueOnce([
-        { familyId: '55555555-5555-4555-8555-555555555555' },
+        {
+          id: 'sender-member',
+          familyId: '55555555-5555-4555-8555-555555555555',
+          isCareRecipient: false,
+          locationSharingEnabled: true,
+          profile: { dateOfBirth: new Date('1990-01-01T00:00:00.000Z') },
+          family: { ownerUserId: USER_A },
+        },
       ])
-      .mockResolvedValueOnce([{ userId: USER_B }]);
+      .mockResolvedValueOnce([
+        {
+          id: 'peer-member',
+          userId: USER_B,
+          familyId: '55555555-5555-4555-8555-555555555555',
+          isHired: false,
+          careScopes: [],
+          family: { ownerUserId: USER_A },
+        },
+      ]);
     await expect(
       repository.ingest(USER_A, DEVICE_ID, dto),
     ).resolves.toMatchObject({ recipientUserIds: [USER_B] });
     expect(tx.familyMember.findMany).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
-        where: expect.objectContaining({
+        where: {
           userId: USER_A,
           status: 'accepted',
-          locationSharingEnabled: true,
           family: { status: 'active' },
-          profile: { UserSetting: { locationSharingEnabled: true } },
-        }),
+        },
       }),
     );
     // D7: recipients follow the REST viewing rule, so their own sharing flag is not required.
@@ -130,6 +150,46 @@ describe('LocationsRepository', () => {
       family: { status: 'active' },
     });
     expect(recipientWhere).not.toHaveProperty('locationSharingEnabled');
+  });
+
+  it('still fans out a care recipient whose own sharing switches are off', async () => {
+    const { tx, repository } = setupTransaction();
+    tx.userSetting.findUnique.mockResolvedValue({
+      locationSharingEnabled: false,
+      locationVisibility: 'selected',
+    });
+    tx.familyMember.findMany
+      .mockResolvedValueOnce([
+        {
+          id: 'grandma-member',
+          familyId: '55555555-5555-4555-8555-555555555555',
+          isCareRecipient: true,
+          locationSharingEnabled: false,
+          profile: { dateOfBirth: new Date('1950-01-01T00:00:00.000Z') },
+          family: { ownerUserId: USER_B },
+        },
+      ])
+      .mockResolvedValueOnce([
+        {
+          id: 'son-member',
+          userId: USER_B,
+          familyId: '55555555-5555-4555-8555-555555555555',
+          isHired: false,
+          careScopes: [],
+          family: { ownerUserId: USER_B },
+        },
+        {
+          id: 'nurse-member',
+          userId: 'nurse-user',
+          familyId: '55555555-5555-4555-8555-555555555555',
+          isHired: true,
+          careScopes: [],
+          family: { ownerUserId: USER_B },
+        },
+      ]);
+    await expect(
+      repository.ingest(USER_A, DEVICE_ID, dto),
+    ).resolves.toMatchObject({ recipientUserIds: [USER_B] });
   });
 
   it('returns no family recipients when owner global/family sharing finds no relationship', async () => {
@@ -195,17 +255,12 @@ describe('LocationsRepository', () => {
   });
 
   it('finds the history target only for accepted members of active families', async () => {
-    const findFirst = jest.fn();
+    const findFirst = jest.fn().mockResolvedValueOnce({ userId: USER_B });
     const prisma = { familyMember: { findFirst } } as unknown as PrismaService;
     const repository = new LocationsRepository(prisma);
-    findFirst.mockResolvedValueOnce({
-      userId: USER_B,
-      locationSharingEnabled: true,
-      profile: { UserSetting: { locationSharingEnabled: true } },
-    });
     await expect(
       repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
-    ).resolves.toEqual({ userId: USER_B, sharing: true });
+    ).resolves.toEqual({ userId: USER_B });
     expect(findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
@@ -216,22 +271,6 @@ describe('LocationsRepository', () => {
         },
       }),
     );
-    findFirst.mockResolvedValueOnce({
-      userId: USER_B,
-      locationSharingEnabled: true,
-      profile: { UserSetting: { locationSharingEnabled: false } },
-    });
-    await expect(
-      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
-    ).resolves.toEqual({ userId: USER_B, sharing: false });
-    findFirst.mockResolvedValueOnce({
-      userId: USER_B,
-      locationSharingEnabled: false,
-      profile: { UserSetting: { locationSharingEnabled: true } },
-    });
-    await expect(
-      repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),
-    ).resolves.toEqual({ userId: USER_B, sharing: false });
     findFirst.mockResolvedValueOnce(null);
     await expect(
       repository.findHistoryTarget(FAMILY_ID, MEMBER_ID),

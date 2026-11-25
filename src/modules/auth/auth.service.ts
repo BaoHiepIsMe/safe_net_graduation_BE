@@ -13,6 +13,7 @@ import {
   ForbiddenError,
 } from '../../common/errors/app.error';
 import { ErrorCode } from '../../common/constants/error-codes';
+import { resolveUiMode } from '../../common/utils/age.util';
 import { HttpStatus } from '@nestjs/common';
 import { ProfilesRepository } from '../profiles/profiles.repository';
 
@@ -26,6 +27,10 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
+    const uiMode = resolveUiMode(
+      new Date(`${dto.dateOfBirth}T00:00:00.000Z`),
+      dto.uiMode,
+    );
     // Public signUp accepts either email or phone. Admin creation stores both
     // on one Auth identity and runs the profile trigger in that transaction.
     const { data, error } = await this.supabaseService
@@ -41,7 +46,7 @@ export class AuthService {
           phone_number: dto.phoneNumber,
           gender: dto.gender,
           date_of_birth: dto.dateOfBirth,
-          role: dto.role,
+          ui_mode: uiMode,
         },
       });
 
@@ -75,7 +80,7 @@ export class AuthService {
         fullName: dto.fullName,
         gender: dto.gender,
         dateOfBirth: dto.dateOfBirth,
-        role: dto.role,
+        uiMode,
       },
       session: null,
     };

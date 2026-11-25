@@ -155,6 +155,7 @@ export const updatePhoneRuleSchema = z
 const commandBase = { clientRequestId: uuid };
 export const createPhoneCommandSchema = z.discriminatedUnion('commandType', [
   z.object({ ...commandBase, commandType: z.literal('lock') }).strict(),
+  z.object({ ...commandBase, commandType: z.literal('unlock') }).strict(),
   z.object({ ...commandBase, commandType: z.literal('ring') }).strict(),
   z
     .object({

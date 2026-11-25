@@ -1,12 +1,12 @@
-export enum FamilyRole {
-  MANAGER = 'manager',
+export enum UiModeOption {
+  KID = 'kid',
   ADULT = 'adult',
-  CHILD = 'child',
-  ELDER = 'elder',
+  ASSISTED = 'assisted',
 }
 
 export enum MembershipStatus {
   PENDING = 'pending',
+  REQUESTED = 'requested',
   ACCEPTED = 'accepted',
   REJECTED = 'rejected',
   REMOVED = 'removed',
@@ -21,6 +21,11 @@ export enum FamilyLabel {
   GRANDMOTHER = 'grandmother',
   CAREGIVER = 'caregiver',
   OTHER = 'other',
+  HUSBAND = 'husband',
+  WIFE = 'wife',
+  BROTHER = 'brother',
+  SISTER = 'sister',
+  GRANDCHILD = 'grandchild',
 }
 
 export enum FamilyStatus {

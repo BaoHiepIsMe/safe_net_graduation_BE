@@ -1,7 +1,11 @@
 import { Prisma } from '../../generated/prisma/client';
-import { FamiliesRepository } from './families.repository';
-import { INVITE_CODE_ALPHABET } from './families.constants';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
+import { INVITE_CODE_ALPHABET } from './families.constants';
+import { FamiliesRepository } from './families.repository';
+
+const ADULT_DOB = new Date('1990-01-15T00:00:00.000Z');
+const SENIOR_DOB = new Date('1958-05-10T00:00:00.000Z');
+const MINOR_DOB = new Date('2014-06-01T00:00:00.000Z');
 
 describe('FamiliesRepository family creation transaction', () => {
   const dto = {
@@ -9,13 +13,19 @@ describe('FamiliesRepository family creation transaction', () => {
     familyLabel: 'caregiver' as const,
   };
 
-  it('creates the family and accepted manager in one transaction', async () => {
+  it('creates the family and accepted care manager in one transaction for adult >= 18', async () => {
     const memberCreate = jest.fn().mockResolvedValue({
       id: 'member-1',
-      role: 'manager',
+      canManageCare: true,
+      isHired: true,
       status: 'accepted',
     });
     const tx = {
+      profile: {
+        findUnique: jest
+          .fn()
+          .mockResolvedValue({ id: 'user-1', dateOfBirth: ADULT_DOB }),
+      },
       family: {
         create: jest.fn().mockResolvedValue({ id: 'family-1' }),
       },
@@ -30,24 +40,66 @@ describe('FamiliesRepository family creation transaction', () => {
       'user-1',
       dto,
     );
-    expect(result.membership).toMatchObject({
-      role: 'manager',
-      status: 'accepted',
+    expect(result).toMatchObject({
+      outcome: 'created',
+      membership: {
+        canManageCare: true,
+        isHired: true,
+        status: 'accepted',
+      },
     });
     expect(memberCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
           familyId: 'family-1',
           userId: 'user-1',
-          role: 'manager',
+          canManageCare: true,
+          careGrantedBy: 'user-1',
+          isCareRecipient: false,
+          isHired: true,
           status: 'accepted',
         }),
       }),
     );
   });
 
+  it('rejects family creation when profile has no dateOfBirth or is a minor (< 18)', async () => {
+    const txMissingDob = {
+      profile: {
+        findUnique: jest
+          .fn()
+          .mockResolvedValue({ id: 'user-1', dateOfBirth: null }),
+      },
+    };
+    const repoMissingDob = new FamiliesRepository({
+      $transaction: jest.fn((cb) => cb(txMissingDob)),
+    } as unknown as PrismaService);
+    await expect(
+      repoMissingDob.createFamilyWithOwner('user-1', dto),
+    ).resolves.toEqual({ outcome: 'dob_required' });
+
+    const txMinor = {
+      profile: {
+        findUnique: jest
+          .fn()
+          .mockResolvedValue({ id: 'user-1', dateOfBirth: MINOR_DOB }),
+      },
+    };
+    const repoMinor = new FamiliesRepository({
+      $transaction: jest.fn((cb) => cb(txMinor)),
+    } as unknown as PrismaService);
+    await expect(
+      repoMinor.createFamilyWithOwner('user-1', dto),
+    ).resolves.toEqual({ outcome: 'minor_forbidden' });
+  });
+
   it('rejects the transaction when manager membership creation fails', async () => {
     const tx = {
+      profile: {
+        findUnique: jest
+          .fn()
+          .mockResolvedValue({ id: 'user-1', dateOfBirth: ADULT_DOB }),
+      },
       family: { create: jest.fn().mockResolvedValue({ id: 'family-1' }) },
       familyMember: {
         create: jest.fn().mockRejectedValue(new Error('member write failed')),
@@ -77,14 +129,26 @@ function repoWithTx(tx: unknown, extra: Record<string, unknown> = {}) {
   return new FamiliesRepository(prisma);
 }
 
-describe('FamiliesRepository invitation expiry', () => {
-  const pending = (invitedAt: Date | null) => ({
+describe('FamiliesRepository invitation expiry and age flag resolution', () => {
+  const pending = (
+    invitedAt: Date | null,
+    overrides: Record<string, unknown> = {},
+  ) => ({
     id: 'inv-1',
     userId: 'user-1',
     status: 'pending',
     invitedAt,
+    invitedByUserId: 'inviter-1',
     familyId: 'family-1',
+    familyLabel: 'other',
+    canManageCare: false,
+    careGrantedBy: null,
+    isCareRecipient: false,
+    careRecipientSetBy: null,
+    isHired: false,
+    profile: { dateOfBirth: ADULT_DOB },
     family: { status: 'active' },
+    ...overrides,
   });
 
   it('refuses to accept an invitation older than 7 days', async () => {
@@ -94,6 +158,7 @@ describe('FamiliesRepository invitation expiry', () => {
         findUnique: jest.fn().mockResolvedValue(pending(daysAgo(8))),
         update,
       },
+      familyMemberCareScope: { deleteMany: jest.fn() },
     };
     await expect(
       repoWithTx(tx).transitionInvitation('inv-1', 'user-1', 'accepted'),
@@ -101,16 +166,97 @@ describe('FamiliesRepository invitation expiry', () => {
     expect(update).not.toHaveBeenCalled();
   });
 
-  it('accepts an invitation that is still valid', async () => {
+  it('refuses to accept an invitation when invitee has no dateOfBirth', async () => {
+    const update = jest.fn();
     const tx = {
       familyMember: {
-        findUnique: jest.fn().mockResolvedValue(pending(daysAgo(6))),
-        update: jest.fn().mockResolvedValue({ id: 'inv-1' }),
+        findUnique: jest
+          .fn()
+          .mockResolvedValue(
+            pending(daysAgo(1), { profile: { dateOfBirth: null } }),
+          ),
+        update,
       },
+      familyMemberCareScope: { deleteMany: jest.fn() },
     };
     await expect(
       repoWithTx(tx).transitionInvitation('inv-1', 'user-1', 'accepted'),
+    ).resolves.toEqual({ outcome: 'dob_required' });
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it('auto-enables isCareRecipient for senior (>= 60) when careRecipientSetBy is null, and respects explicit false', async () => {
+    const updateAuto = jest.fn().mockResolvedValue({ id: 'inv-1' });
+    const txAuto = {
+      familyMember: {
+        findUnique: jest.fn().mockResolvedValue(
+          pending(daysAgo(1), {
+            isCareRecipient: false,
+            careRecipientSetBy: null,
+            profile: { dateOfBirth: SENIOR_DOB },
+          }),
+        ),
+        update: updateAuto,
+      },
+      familyMemberCareScope: { deleteMany: jest.fn() },
+    };
+    await expect(
+      repoWithTx(txAuto).transitionInvitation('inv-1', 'user-1', 'accepted'),
     ).resolves.toMatchObject({ outcome: 'updated' });
+    expect(updateAuto.mock.calls[0][0].data).toMatchObject({
+      isCareRecipient: true,
+      careRecipientSetBy: 'inviter-1',
+    });
+
+    const updateExplicitFalse = jest.fn().mockResolvedValue({ id: 'inv-1' });
+    const txExplicitFalse = {
+      familyMember: {
+        findUnique: jest.fn().mockResolvedValue(
+          pending(daysAgo(1), {
+            isCareRecipient: false,
+            careRecipientSetBy: 'inviter-1',
+            profile: { dateOfBirth: SENIOR_DOB },
+          }),
+        ),
+        update: updateExplicitFalse,
+      },
+      familyMemberCareScope: { deleteMany: jest.fn() },
+    };
+    await repoWithTx(txExplicitFalse).transitionInvitation(
+      'inv-1',
+      'user-1',
+      'accepted',
+    );
+    expect(updateExplicitFalse.mock.calls[0][0].data).toMatchObject({
+      isCareRecipient: false,
+      careRecipientSetBy: null,
+    });
+  });
+
+  it('strips canManageCare when a minor (< 18) accepts an invitation', async () => {
+    const update = jest.fn().mockResolvedValue({ id: 'inv-1' });
+    const tx = {
+      familyMember: {
+        findUnique: jest.fn().mockResolvedValue(
+          pending(daysAgo(1), {
+            canManageCare: true,
+            careGrantedBy: 'inviter-1',
+            isCareRecipient: true,
+            careRecipientSetBy: 'inviter-1',
+            profile: { dateOfBirth: MINOR_DOB },
+          }),
+        ),
+        update,
+      },
+      familyMemberCareScope: { deleteMany: jest.fn() },
+    };
+    await repoWithTx(tx).transitionInvitation('inv-1', 'user-1', 'accepted');
+    expect(update.mock.calls[0][0].data).toMatchObject({
+      canManageCare: false,
+      careGrantedBy: null,
+      isCareRecipient: false,
+      careRecipientSetBy: null,
+    });
   });
 
   it('still lets the invitee reject an expired invitation', async () => {
@@ -119,6 +265,7 @@ describe('FamiliesRepository invitation expiry', () => {
         findUnique: jest.fn().mockResolvedValue(pending(daysAgo(30))),
         update: jest.fn().mockResolvedValue({ id: 'inv-1' }),
       },
+      familyMemberCareScope: { deleteMany: jest.fn() },
     };
     await expect(
       repoWithTx(tx).transitionInvitation('inv-1', 'user-1', 'rejected'),
@@ -142,7 +289,10 @@ describe('FamiliesRepository invitation expiry', () => {
   it('cancel only affects pending invitations of the family', async () => {
     const update = jest.fn().mockResolvedValue({});
     const find = jest.fn();
-    const repo = repoWithTx({ familyMember: { findFirst: find, update } });
+    const repo = repoWithTx({
+      familyMember: { findFirst: find, update },
+      familyMemberCareScope: { deleteMany: jest.fn() },
+    });
 
     find.mockResolvedValueOnce(null);
     await expect(repo.cancelInvitation('f', 'i')).resolves.toEqual({
@@ -298,21 +448,44 @@ describe('FamiliesRepository invite codes', () => {
   });
 });
 
-describe('FamiliesRepository joinByInviteCode', () => {
-  const family = { id: 'family-1', ownerUserId: 'owner', status: 'active' };
+describe('FamiliesRepository joinByInviteCode (join request flow)', () => {
+  const family = {
+    id: 'family-1',
+    familyName: 'Gia đình A',
+    ownerUserId: 'owner',
+    status: 'active',
+  };
   const dto = { code: 'ABCD2345', familyLabel: 'daughter' as const };
 
-  function joinTx(existing: { id: string; status: string } | null) {
-    const create = jest.fn().mockResolvedValue({ id: 'new' });
-    const update = jest.fn().mockResolvedValue({ id: 'old' });
+  function joinTx(
+    existing: { id: string; status: string; invitedAt?: Date } | null,
+    dob: Date | null = ADULT_DOB,
+  ) {
+    const create = jest.fn().mockResolvedValue({
+      id: 'new',
+      status: 'requested',
+      invitedAt: new Date(),
+    });
+    const update = jest.fn().mockResolvedValue({
+      id: 'old',
+      status: 'requested',
+      invitedAt: new Date(),
+    });
     const findFirst = jest.fn().mockResolvedValue(family);
     const tx = {
+      profile: {
+        findUnique: jest
+          .fn()
+          .mockResolvedValue({ id: 'user-1', dateOfBirth: dob }),
+      },
       family: { findFirst },
       familyMember: {
         findUnique: jest.fn().mockResolvedValue(existing),
+        findMany: jest.fn().mockResolvedValue([{ userId: 'owner' }]),
         create,
         update,
       },
+      familyMemberCareScope: { deleteMany: jest.fn() },
     };
     return { repo: repoWithTx(tx), create, update, findFirst };
   }
@@ -326,6 +499,14 @@ describe('FamiliesRepository joinByInviteCode', () => {
     expect(where.inviteCodeExpiresAt.gt).toBeInstanceOf(Date);
   });
 
+  it('requires dateOfBirth before requesting to join', async () => {
+    const { repo, create } = joinTx(null, null);
+    await expect(
+      repo.joinByInviteCode('user-1', 'ABCD2345', dto),
+    ).resolves.toEqual({ outcome: 'dob_required' });
+    expect(create).not.toHaveBeenCalled();
+  });
+
   it('reports an unknown, expired or replaced code', async () => {
     const { repo, findFirst, create } = joinTx(null);
     findFirst.mockResolvedValue(null);
@@ -335,19 +516,41 @@ describe('FamiliesRepository joinByInviteCode', () => {
     expect(create).not.toHaveBeenCalled();
   });
 
-  it('creates an accepted member with the derived role', async () => {
+  it('creates a requested membership awaiting approval and returns admin recipients', async () => {
     const { repo, create } = joinTx(null);
     await expect(
       repo.joinByInviteCode('user-1', 'ABCD2345', dto),
-    ).resolves.toMatchObject({ outcome: 'joined' });
+    ).resolves.toMatchObject({
+      outcome: 'requested',
+      adminUserIds: ['owner'],
+    });
     expect(create.mock.calls[0][0].data).toMatchObject({
       familyId: 'family-1',
       userId: 'user-1',
-      role: 'child',
-      status: 'accepted',
+      familyLabel: 'daughter',
+      status: 'requested',
+      canManageCare: false,
+      isCareRecipient: false,
       invitedByUserId: null,
       removedAt: null,
     });
+  });
+
+  it('is idempotent when an unexpired requested row already exists', async () => {
+    const existing = {
+      id: 'req-1',
+      status: 'requested',
+      invitedAt: daysAgo(1),
+    };
+    const { repo, create, update } = joinTx(existing);
+    await expect(
+      repo.joinByInviteCode('user-1', 'ABCD2345', dto),
+    ).resolves.toMatchObject({
+      outcome: 'already_requested',
+      membership: existing,
+    });
+    expect(create).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
   });
 
   it('refuses an existing accepted member', async () => {
@@ -360,16 +563,16 @@ describe('FamiliesRepository joinByInviteCode', () => {
   });
 
   it.each(['pending', 'rejected', 'removed'])(
-    'turns an existing %s row into an accepted member',
+    'turns an existing %s row into a requested membership',
     async (status) => {
       const { repo, create, update } = joinTx({ id: 'm', status });
       await expect(
         repo.joinByInviteCode('user-1', 'ABCD2345', dto),
-      ).resolves.toMatchObject({ outcome: 'joined' });
+      ).resolves.toMatchObject({ outcome: 'requested' });
       expect(create).not.toHaveBeenCalled();
       expect(update.mock.calls[0][0]).toMatchObject({
         where: { id: 'm' },
-        data: { status: 'accepted', role: 'child', removedAt: null },
+        data: { status: 'requested', familyLabel: 'daughter', removedAt: null },
       });
     },
   );
@@ -381,12 +584,13 @@ describe('FamiliesRepository transferOwnership', () => {
     target?: {
       id: string;
       userId: string;
-      role: string;
       status: string;
+      profile?: { dateOfBirth: Date | null };
     } | null;
   }) {
     const memberUpdate = jest.fn().mockResolvedValue({});
     const familyUpdate = jest.fn().mockResolvedValue({ id: 'f' });
+    const scopeDelete = jest.fn().mockResolvedValue({});
     const tx = {
       family: {
         findUnique: jest.fn().mockResolvedValue({
@@ -399,35 +603,55 @@ describe('FamiliesRepository transferOwnership', () => {
         findFirst: jest.fn().mockResolvedValue(opts.target ?? null),
         update: memberUpdate,
       },
+      familyMemberCareScope: {
+        deleteMany: scopeDelete,
+      },
     };
-    return { repo: repoWithTx(tx), memberUpdate, familyUpdate };
+    return {
+      repo: repoWithTx(tx),
+      memberUpdate,
+      familyUpdate,
+      scopeDelete,
+    };
   }
-  const target = (role: string, status = 'accepted', userId = 'target') => ({
+  const target = (
+    dateOfBirth: Date | null,
+    status = 'accepted',
+    userId = 'target',
+  ) => ({
     id: 'tm',
     userId,
-    role,
     status,
+    profile: { dateOfBirth },
   });
 
-  it.each(['adult', 'manager'])(
-    'hands over to an accepted %s',
-    async (role) => {
-      const { repo, memberUpdate, familyUpdate } = transferTx({
-        target: target(role),
+  it.each([
+    ['adult', ADULT_DOB],
+    ['senior', SENIOR_DOB],
+  ])(
+    'hands over to an accepted %s, sets canManageCare = true, and clears care scopes',
+    async (_label, dob) => {
+      const { repo, memberUpdate, familyUpdate, scopeDelete } = transferTx({
+        target: target(dob),
       });
       await expect(
         repo.transferOwnership('f', 'owner', 'tm'),
       ).resolves.toMatchObject({ outcome: 'transferred' });
-      expect(memberUpdate.mock.calls[0][0].data.role).toBe('manager');
+      expect(scopeDelete).toHaveBeenCalledWith({
+        where: { memberId: 'tm' },
+      });
+      expect(memberUpdate.mock.calls[0][0].data).toMatchObject({
+        canManageCare: true,
+        careGrantedBy: 'owner',
+      });
       expect(familyUpdate.mock.calls[0][0].data.ownerUserId).toBe('target');
     },
   );
 
   it.each([
-    ['child', target('child')],
-    ['elder', target('elder')],
-    ['self', target('manager', 'accepted', 'owner')],
-    ['not accepted', target('adult', 'pending')],
+    ['minor (< 18)', target(MINOR_DOB)],
+    ['self', target(ADULT_DOB, 'accepted', 'owner')],
+    ['not accepted', target(ADULT_DOB, 'pending')],
     ['unknown member', null],
   ])('rejects %s target without changes', async (_n, t) => {
     const { repo, memberUpdate, familyUpdate } = transferTx({ target: t });
@@ -441,7 +665,7 @@ describe('FamiliesRepository transferOwnership', () => {
   it('refuses when the caller is no longer the owner', async () => {
     const { repo, familyUpdate } = transferTx({
       owner: 'someone-else',
-      target: target('adult'),
+      target: target(ADULT_DOB),
     });
     await expect(repo.transferOwnership('f', 'owner', 'tm')).resolves.toEqual({
       outcome: 'not_owner',

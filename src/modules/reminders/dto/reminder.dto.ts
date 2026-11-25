@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   REMINDER_DEFAULT_LIMIT,
   REMINDER_MAX_LIMIT,
+  REMINDER_PRIORITIES,
   REMINDER_UPCOMING_MAX_DAYS,
 } from '../reminders.constants';
 
@@ -37,6 +38,7 @@ const localDate = z
   );
 const timeOfDay = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 const offsetDateTime = z.iso.datetime({ offset: true });
+const priority = z.enum(REMINDER_PRIORITIES);
 
 const onceScheduleSchema = z
   .object({
@@ -88,6 +90,7 @@ export const createReminderSchema = z
     title: trimmed(150),
     description: z.string().trim().max(2000).nullable().optional(),
     reminderType: trimmed(30).nullable().optional(),
+    priority: priority.optional(),
     schedule: reminderScheduleSchema,
     targetMemberIds: z.array(uuid).min(1).max(100),
   })
@@ -107,6 +110,7 @@ export const updateReminderSchema = z
     title: trimmed(150).optional(),
     description: z.string().trim().max(2000).nullable().optional(),
     reminderType: trimmed(30).nullable().optional(),
+    priority: priority.optional(),
     schedule: reminderScheduleSchema.optional(),
     targetMemberIds: z.array(uuid).min(1).max(100).optional(),
     isActive: z.boolean().optional(),
@@ -132,6 +136,16 @@ export const updateReminderSchema = z
   });
 
 export const reminderParamSchema = z.object({ reminderId: uuid }).strict();
+
+export const reminderLogParamSchema = z.object({ logId: uuid }).strict();
+
+export const completeReminderLogSchema = z
+  .object({ note: z.string().trim().max(500).nullable().optional() })
+  .strict();
+
+export const reminderAgendaQuerySchema = z
+  .object({ date: localDate, timezone })
+  .strict();
 
 export const reminderListQuerySchema = z
   .object({
@@ -187,6 +201,9 @@ export type ReminderScheduleDto = z.infer<typeof reminderScheduleSchema>;
 export type CreateReminderDto = z.infer<typeof createReminderSchema>;
 export type UpdateReminderDto = z.infer<typeof updateReminderSchema>;
 export type ReminderParam = z.infer<typeof reminderParamSchema>;
+export type ReminderLogParam = z.infer<typeof reminderLogParamSchema>;
+export type CompleteReminderLogDto = z.infer<typeof completeReminderLogSchema>;
+export type ReminderAgendaQueryDto = z.infer<typeof reminderAgendaQuerySchema>;
 export type ReminderListQueryDto = z.infer<typeof reminderListQuerySchema>;
 export type ReminderLogQueryDto = z.infer<typeof reminderLogQuerySchema>;
 export type UpcomingReminderQueryDto = z.infer<

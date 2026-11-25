@@ -14,6 +14,7 @@ const now = new Date('2030-01-01T00:00:00Z');
 
 const commandRow = (overrides: Record<string, unknown> = {}) => ({
   id: COMMAND,
+  creatorUserId: MANAGER,
   familyId: FAMILY,
   memberId: MEMBER,
   targetDeviceId: DEVICE,
@@ -82,6 +83,10 @@ describe('PhoneManagementService', () => {
       listManagedCommands: jest
         .fn()
         .mockResolvedValue({ outcome: 'listed', commands: [] }),
+      listMemberDevices: jest.fn().mockResolvedValue({
+        outcome: 'listed',
+        devices: [{ id: DEVICE, locked: true }],
+      }),
       acknowledgeCommand: jest.fn().mockResolvedValue({
         outcome: 'updated',
         command: commandRow({ status: 'completed', acknowledgedAt: now }),
@@ -89,7 +94,7 @@ describe('PhoneManagementService', () => {
     };
     const realtime = { emitToUser: jest.fn() };
     const firebase = {
-      sendPushNotification: jest.fn().mockResolvedValue({ status: 'success' }),
+      sendDataMessage: jest.fn().mockResolvedValue({ status: 'success' }),
     };
     return {
       repository,
@@ -180,14 +185,23 @@ describe('PhoneManagementService', () => {
       'phone_command.created',
       {
         commandId: COMMAND,
+        commandType: 'lock',
         deviceId: DEVICE,
       },
     );
-    expect(firebase.sendPushNotification).toHaveBeenCalledWith(
+    expect(firebase.sendDataMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         token: 'private-token',
-        data: { type: 'phone_command', commandId: COMMAND },
+        data: {
+          type: 'phone_command',
+          commandId: COMMAND,
+          commandType: 'lock',
+        },
       }),
+    );
+    // Silent: a banner on the child's phone is not the command running.
+    expect(firebase.sendDataMessage.mock.calls[0][0]).not.toHaveProperty(
+      'title',
     );
     expect(repository.markCommandSent).toHaveBeenCalledWith(COMMAND);
     expect(result.status).toBe('sent');
@@ -200,7 +214,7 @@ describe('PhoneManagementService', () => {
     realtime.emitToUser.mockImplementation(() => {
       throw new Error('socket unavailable');
     });
-    firebase.sendPushNotification.mockResolvedValue({ status: 'failure' });
+    firebase.sendDataMessage.mockResolvedValue({ status: 'failure' });
     const result = await service.createCommand(
       MANAGER,
       FAMILY,
@@ -225,12 +239,12 @@ describe('PhoneManagementService', () => {
       commandType: 'lock',
     });
     expect(realtime.emitToUser).not.toHaveBeenCalled();
-    expect(firebase.sendPushNotification).not.toHaveBeenCalled();
+    expect(firebase.sendDataMessage).not.toHaveBeenCalled();
   });
 
   it('clears only a permanently invalid token without deleting the command', async () => {
     const { firebase, repository, service } = setup();
-    firebase.sendPushNotification.mockResolvedValue({
+    firebase.sendDataMessage.mockResolvedValue({
       status: 'failure',
       invalidToken: true,
     });
@@ -257,6 +271,48 @@ describe('PhoneManagementService', () => {
     ).resolves.toMatchObject({ status: 'completed', acknowledgedAt: now });
   });
 
+  it('tells the manager who sent the command what the Device did', async () => {
+    const { realtime, service } = setup();
+    await service.acknowledgeCommand(MEMBER, DEVICE, COMMAND, {
+      status: 'completed',
+    });
+    expect(realtime.emitToUser).toHaveBeenCalledWith(
+      MANAGER,
+      'phone_command.updated',
+      expect.objectContaining({
+        commandId: COMMAND,
+        memberId: MEMBER,
+        deviceId: DEVICE,
+        commandType: 'lock',
+        status: 'completed',
+      }),
+    );
+  });
+
+  it('does not re-announce an idempotent repeated ACK', async () => {
+    const { repository, realtime, service } = setup();
+    repository.acknowledgeCommand.mockResolvedValue({
+      outcome: 'unchanged',
+      command: commandRow({ status: 'completed', acknowledgedAt: now }),
+    });
+    await service.acknowledgeCommand(MEMBER, DEVICE, COMMAND, {
+      status: 'completed',
+    });
+    expect(realtime.emitToUser).not.toHaveBeenCalled();
+  });
+
+  it('keeps the committed ACK when the realtime emit fails', async () => {
+    const { realtime, service } = setup();
+    realtime.emitToUser.mockImplementation(() => {
+      throw new Error('socket down');
+    });
+    await expect(
+      service.acknowledgeCommand(MEMBER, DEVICE, COMMAND, {
+        status: 'completed',
+      }),
+    ).resolves.toMatchObject({ status: 'completed' });
+  });
+
   it('rejects a conflicting terminal ACK', async () => {
     const { repository, service } = setup();
     repository.acknowledgeCommand.mockResolvedValue({
@@ -268,5 +324,16 @@ describe('PhoneManagementService', () => {
         resultCode: 'FAILED',
       }),
     ).rejects.toMatchObject({ code: ErrorCode.PHONE_COMMAND_INVALID_STATE });
+  });
+
+  it('lists managed child Devices and denies everyone else', async () => {
+    const { repository, service } = setup();
+    await expect(
+      service.listMemberDevices(MANAGER, FAMILY, MEMBER),
+    ).resolves.toEqual([{ id: DEVICE, locked: true }]);
+    repository.listMemberDevices.mockResolvedValue({ outcome: 'forbidden' });
+    await expect(
+      service.listMemberDevices(MEMBER, FAMILY, MEMBER),
+    ).rejects.toMatchObject({ code: ErrorCode.PHONE_COMMAND_ACCESS_DENIED });
   });
 });

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   NOTIFICATION_DEFAULT_LIMIT,
   NOTIFICATION_MAX_LIMIT,
+  NOTIFICATION_TYPES,
 } from '../notifications.constants';
 
 export const notificationParamSchema = z
@@ -22,16 +23,7 @@ export const notificationListQuerySchema = z
       .max(256)
       .optional(),
     read: z.enum(['all', 'read', 'unread']).default('all'),
-    type: z
-      .enum([
-        'geofence_enter',
-        'geofence_exit',
-        'sos_alert',
-        'reminder',
-        'message',
-        'call_incoming',
-      ])
-      .optional(),
+    type: z.enum(NOTIFICATION_TYPES).optional(),
   })
   .strict();
 

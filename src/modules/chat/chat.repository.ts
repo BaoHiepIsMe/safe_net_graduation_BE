@@ -95,9 +95,12 @@ export class ChatRepository {
         where: {
           familyId,
           userId: actorUserId,
-          role: 'manager',
           status: 'accepted',
           family: { status: 'active' },
+          OR: [
+            { canManageCare: true, isHired: false },
+            { family: { ownerUserId: actorUserId } },
+          ],
         },
         select: { id: true, userId: true },
       });
@@ -530,8 +533,11 @@ export class ChatRepository {
           members: {
             some: {
               userId: actorUserId,
-              role: 'manager',
               status: 'accepted',
+              OR: [
+                { canManageCare: true, isHired: false },
+                { family: { ownerUserId: actorUserId } },
+              ],
             },
           },
         },

@@ -38,6 +38,9 @@ export default () => ({
       10,
     ),
   },
+  signalLoss: {
+    enabled: (process.env.SIGNAL_LOSS_ALERTS_ENABLED || 'true') !== 'false',
+  },
   dailyStatus: {
     defaultTimezone: process.env.DAILY_STATUS_DEFAULT_TIMEZONE || 'UTC',
     generationGraceMinutes: parseInt(

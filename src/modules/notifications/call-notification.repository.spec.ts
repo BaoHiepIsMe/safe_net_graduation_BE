@@ -99,7 +99,7 @@ describe('NotificationsRepository incoming Call integration', () => {
     const { repository, tx } = setup();
     await repository.createFromCall(CALL);
     const data = tx.notification.create.mock.calls[0][0].data;
-    expect(data.message).toBe('Caller is calling');
+    expect(data.message).toBe('Caller đang gọi');
     expect(JSON.stringify(data)).not.toMatch(
       /sdp|candidate|token|installation/i,
     );

@@ -3,9 +3,14 @@ import { z } from 'zod';
 import { ErrorCode } from '../../common/constants/error-codes';
 import {
   BusinessRuleError,
+  ForbiddenError,
   NotFoundError,
   ValidationError,
 } from '../../common/errors/app.error';
+import {
+  HiredScopeActor,
+  hiredScopeMemberIds,
+} from '../families/care-scope.util';
 import { FamilyAccessService } from '../families/family-access.service';
 import {
   CreateGeofenceDto,
@@ -16,6 +21,10 @@ import {
   UpdateGeofenceDto,
 } from './dto/geofence.dto';
 import { GeofencesRepository } from './geofences.repository';
+
+type GeofenceRow = NonNullable<
+  Awaited<ReturnType<GeofencesRepository['findOne']>>
+>;
 
 const cursorSchema = z
   .tuple([z.iso.datetime({ offset: true }), z.string().uuid()])
@@ -29,7 +38,12 @@ export class GeofencesService {
   ) {}
 
   async create(userId: string, familyId: string, dto: CreateGeofenceDto) {
-    await this.familyAccess.requireManager(userId, familyId);
+    await this.familyAccess.requireCareManager(userId, familyId);
+    await this.assertCanManageMembers(
+      userId,
+      familyId,
+      dto.members.map((item) => item.memberId),
+    );
     const result = await this.repository.createWithMembers(
       familyId,
       userId,
@@ -41,8 +55,16 @@ export class GeofencesService {
   }
 
   async list(userId: string, familyId: string, query: GeofenceListQueryDto) {
-    await this.familyAccess.requireAcceptedMember(userId, familyId);
-    const { rows, total } = await this.repository.list(familyId, query);
+    const actor = await this.familyAccess.requireAcceptedMember(
+      userId,
+      familyId,
+    );
+    const scope = hiredScopeMemberIds(actor);
+    const { rows, total } = await this.repository.list(
+      familyId,
+      query,
+      scope ? [...scope] : null,
+    );
     return {
       data: rows.map((row) => this.mapGeofence(row)),
       pagination: {
@@ -55,9 +77,19 @@ export class GeofencesService {
   }
 
   async getOne(userId: string, familyId: string, geofenceId: string) {
-    await this.familyAccess.requireAcceptedMember(userId, familyId);
+    const actor = await this.familyAccess.requireAcceptedMember(
+      userId,
+      familyId,
+    );
     const row = await this.repository.findOne(familyId, geofenceId);
     if (!row) this.notFound();
+    const scope = hiredScopeMemberIds(actor);
+    if (
+      scope &&
+      !row.GeofenceMember.some((assignment) => scope.has(assignment.member_id))
+    ) {
+      this.notFound();
+    }
     return this.mapGeofence(row);
   }
 
@@ -67,14 +99,16 @@ export class GeofencesService {
     geofenceId: string,
     dto: UpdateGeofenceDto,
   ) {
-    await this.familyAccess.requireManager(userId, familyId);
+    const actor = await this.familyAccess.requireCareManager(userId, familyId);
+    await this.assertGeofenceInScope(actor, familyId, geofenceId);
     const row = await this.repository.update(familyId, geofenceId, dto);
     if (!row) this.notFound();
     return this.mapGeofence(row);
   }
 
   async deactivate(userId: string, familyId: string, geofenceId: string) {
-    await this.familyAccess.requireManager(userId, familyId);
+    const actor = await this.familyAccess.requireCareManager(userId, familyId);
+    await this.assertGeofenceInScope(actor, familyId, geofenceId);
     const result = await this.repository.deactivate(familyId, geofenceId);
     if (result.count === 0) this.notFound();
   }
@@ -85,7 +119,13 @@ export class GeofencesService {
     geofenceId: string,
     dto: ReplaceGeofenceMembersDto,
   ) {
-    await this.familyAccess.requireManager(userId, familyId);
+    const actor = await this.familyAccess.requireCareManager(userId, familyId);
+    await this.assertGeofenceInScope(actor, familyId, geofenceId);
+    await this.assertCanManageMembers(
+      userId,
+      familyId,
+      dto.members.map((item) => item.memberId),
+    );
     const result = await this.repository.replaceMembers(
       familyId,
       geofenceId,
@@ -102,9 +142,18 @@ export class GeofencesService {
     familyId: string,
     query: GeofenceEventQueryDto,
   ) {
-    await this.familyAccess.requireAcceptedMember(userId, familyId);
+    const actor = await this.familyAccess.requireAcceptedMember(
+      userId,
+      familyId,
+    );
     const cursor = query.cursor ? this.decodeCursor(query.cursor) : undefined;
-    const rows = await this.repository.listEvents(familyId, query, cursor);
+    const scope = hiredScopeMemberIds(actor);
+    const rows = await this.repository.listEvents(
+      familyId,
+      query,
+      cursor,
+      scope ? [...scope] : null,
+    );
     const hasMore = rows.length > query.limit;
     const pageRows = hasMore ? rows.slice(0, query.limit) : rows;
     const last = pageRows.at(-1);
@@ -137,7 +186,47 @@ export class GeofencesService {
     };
   }
 
-  private mapGeofence(row: any) {
+  /** A hired caregiver may only edit geofences whose members are all in scope. */
+  private async assertGeofenceInScope(
+    actor: HiredScopeActor,
+    familyId: string,
+    geofenceId: string,
+  ) {
+    const scope = hiredScopeMemberIds(actor);
+    if (!scope) return;
+    const row = await this.repository.findOne(familyId, geofenceId);
+    if (!row) this.notFound();
+    if (
+      !row.GeofenceMember.every((assignment) => scope.has(assignment.member_id))
+    ) {
+      throw new ForbiddenError(
+        'Vùng an toàn có thành viên ngoài phạm vi chăm sóc của bạn',
+        ErrorCode.FAMILY_ACCESS_DENIED,
+      );
+    }
+  }
+
+  private async assertCanManageMembers(
+    userId: string,
+    familyId: string,
+    memberIds: string[],
+  ) {
+    if (memberIds.length === 0) return;
+    const invalidIds: string[] = [];
+    for (const memberId of memberIds) {
+      const allowed = await this.familyAccess.canManage(
+        userId,
+        memberId,
+        familyId,
+      );
+      if (!allowed) invalidIds.push(memberId);
+    }
+    if (invalidIds.length > 0) {
+      this.invalidMembers(invalidIds);
+    }
+  }
+
+  private mapGeofence(row: GeofenceRow) {
     return {
       id: row.id,
       familyId: row.family_id,
@@ -146,11 +235,11 @@ export class GeofencesService {
       centerLatitude: Number(row.center_latitude),
       centerLongitude: Number(row.center_longitude),
       radiusMeters: row.radius_meters,
+      icon: row.icon ?? null,
       isActive: row.is_active,
-      members: row.GeofenceMember.map((assignment: any) => ({
+      members: row.GeofenceMember.map((assignment) => ({
         memberId: assignment.member_id,
         userId: assignment.FamilyMember.userId,
-        role: assignment.FamilyMember.role,
         displayName:
           assignment.FamilyMember.displayName ??
           assignment.FamilyMember.profile.fullName,

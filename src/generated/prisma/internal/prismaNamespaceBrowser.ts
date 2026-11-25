@@ -63,6 +63,7 @@ export const ModelName = {
   FallEvent: 'FallEvent',
   Family: 'Family',
   FamilyMember: 'FamilyMember',
+  FamilyMemberCareScope: 'FamilyMemberCareScope',
   GeofenceEvent: 'GeofenceEvent',
   GeofenceMember: 'GeofenceMember',
   Geofence: 'Geofence',
@@ -81,7 +82,8 @@ export const ModelName = {
   SosContact: 'SosContact',
   SosEvent: 'SosEvent',
   SosRecipient: 'SosRecipient',
-  UserSetting: 'UserSetting'
+  UserSetting: 'UserSetting',
+  LocationShareViewer: 'LocationShareViewer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -293,6 +295,11 @@ export const FamilyMemberScalarFieldEnum = {
   familyLabel: 'familyLabel',
   displayName: 'displayName',
   status: 'status',
+  canManageCare: 'canManageCare',
+  careGrantedBy: 'careGrantedBy',
+  isCareRecipient: 'isCareRecipient',
+  careRecipientSetBy: 'careRecipientSetBy',
+  isHired: 'isHired',
   locationSharingEnabled: 'locationSharingEnabled',
   invitedAt: 'invitedAt',
   acceptedAt: 'acceptedAt',
@@ -302,6 +309,14 @@ export const FamilyMemberScalarFieldEnum = {
 } as const
 
 export type FamilyMemberScalarFieldEnum = (typeof FamilyMemberScalarFieldEnum)[keyof typeof FamilyMemberScalarFieldEnum]
+
+
+export const FamilyMemberCareScopeScalarFieldEnum = {
+  memberId: 'memberId',
+  targetMemberId: 'targetMemberId'
+} as const
+
+export type FamilyMemberCareScopeScalarFieldEnum = (typeof FamilyMemberCareScopeScalarFieldEnum)[keyof typeof FamilyMemberCareScopeScalarFieldEnum]
 
 
 export const GeofenceEventScalarFieldEnum = {
@@ -341,6 +356,7 @@ export const GeofenceScalarFieldEnum = {
   center_latitude: 'center_latitude',
   center_longitude: 'center_longitude',
   radius_meters: 'radius_meters',
+  icon: 'icon',
   is_active: 'is_active',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -496,6 +512,7 @@ export const ProfileScalarFieldEnum = {
   dateOfBirth: 'dateOfBirth',
   gender: 'gender',
   role: 'role',
+  uiMode: 'uiMode',
   accountStatus: 'accountStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -512,6 +529,7 @@ export const ReminderLogScalarFieldEnum = {
   status: 'status',
   notificationProcessedAt: 'notificationProcessedAt',
   processedAt: 'processedAt',
+  completedAt: 'completedAt',
   note: 'note'
 } as const
 
@@ -534,6 +552,7 @@ export const ReminderScalarFieldEnum = {
   title: 'title',
   description: 'description',
   reminderType: 'reminderType',
+  priority: 'priority',
   startAt: 'startAt',
   scheduleType: 'scheduleType',
   scheduleRule: 'scheduleRule',
@@ -609,6 +628,10 @@ export const UserSettingScalarFieldEnum = {
   smsNotificationsEnabled: 'smsNotificationsEnabled',
   emailNotificationsEnabled: 'emailNotificationsEnabled',
   locationSharingEnabled: 'locationSharingEnabled',
+  sharingMode: 'sharingMode',
+  locationVisibility: 'locationVisibility',
+  notifyOnZoneExit: 'notifyOnZoneExit',
+  notifyOnSignalLost: 'notifyOnSignalLost',
   darkMode: 'darkMode',
   quietHoursStart: 'quietHoursStart',
   quietHoursEnd: 'quietHoursEnd',
@@ -616,6 +639,16 @@ export const UserSettingScalarFieldEnum = {
 } as const
 
 export type UserSettingScalarFieldEnum = (typeof UserSettingScalarFieldEnum)[keyof typeof UserSettingScalarFieldEnum]
+
+
+export const LocationShareViewerScalarFieldEnum = {
+  id: 'id',
+  ownerUserId: 'ownerUserId',
+  viewerUserId: 'viewerUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type LocationShareViewerScalarFieldEnum = (typeof LocationShareViewerScalarFieldEnum)[keyof typeof LocationShareViewerScalarFieldEnum]
 
 
 export const SortOrder = {

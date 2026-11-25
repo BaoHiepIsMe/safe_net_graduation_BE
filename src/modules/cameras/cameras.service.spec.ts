@@ -22,9 +22,14 @@ const row = (overrides: Record<string, unknown> = {}) => ({
 describe('CamerasService', () => {
   const setup = () => {
     const repository = {
-      getFamilyAccess: jest
-        .fn()
-        .mockResolvedValue({ id: USER, role: 'manager' }),
+      getFamilyAccess: jest.fn().mockResolvedValue({
+        id: USER,
+        userId: USER,
+        canManageCare: true,
+        isHired: false,
+        profile: { dateOfBirth: new Date('1985-01-01') },
+        family: { ownerUserId: USER },
+      }),
       create: jest
         .fn()
         .mockResolvedValue({ outcome: 'created', camera: row() }),
@@ -60,9 +65,16 @@ describe('CamerasService', () => {
     expect(result).not.toHaveProperty('fallDetectionEnabled');
   });
 
-  it('allows accepted adults to read active safe metadata', async () => {
+  it('allows accepted non-hired adults (including elders) to read active safe metadata', async () => {
     const { repository, service } = setup();
-    repository.getFamilyAccess.mockResolvedValue({ id: USER, role: 'adult' });
+    repository.getFamilyAccess.mockResolvedValue({
+      id: USER,
+      userId: USER,
+      canManageCare: false,
+      isHired: false,
+      profile: { dateOfBirth: new Date('1950-01-01') },
+      family: { ownerUserId: '99999999-9999-4999-8999-999999999999' },
+    });
     await expect(
       service.list(USER, FAMILY, { limit: 20, active: 'true' }),
     ).resolves.toMatchObject({
@@ -73,31 +85,56 @@ describe('CamerasService', () => {
     });
   });
 
-  it.each(['child', 'elder'])(
-    'denies accepted %s metadata access conservatively',
-    async (role) => {
+  it.each([
+    [
+      'minor (<18)',
+      {
+        id: USER,
+        userId: USER,
+        canManageCare: false,
+        isHired: false,
+        profile: { dateOfBirth: new Date('2015-01-01') },
+      },
+    ],
+    [
+      'hired caregiver',
+      {
+        id: USER,
+        userId: USER,
+        canManageCare: true,
+        isHired: true,
+        profile: { dateOfBirth: new Date('1990-01-01') },
+      },
+    ],
+  ])(
+    'denies %s metadata access conservatively',
+    async (_label, accessRecord) => {
       const { repository, service } = setup();
-      repository.getFamilyAccess.mockResolvedValue({ id: USER, role });
+      repository.getFamilyAccess.mockResolvedValue(accessRecord);
       await expect(
         service.list(USER, FAMILY, { limit: 20, active: 'true' }),
       ).rejects.toMatchObject({ code: ErrorCode.CAMERA_ACCESS_DENIED });
     },
   );
 
-  it.each([null, { id: USER, role: 'pending' }])(
-    'denies unrelated or non-authorized membership',
-    async (access) => {
-      const { repository, service } = setup();
-      repository.getFamilyAccess.mockResolvedValue(access);
-      await expect(
-        service.list(USER, FAMILY, { limit: 20, active: 'true' }),
-      ).rejects.toMatchObject({ code: ErrorCode.CAMERA_ACCESS_DENIED });
-    },
-  );
-
-  it('prevents adults from listing inactive configuration or mutating', async () => {
+  it('denies unrelated membership', async () => {
     const { repository, service } = setup();
-    repository.getFamilyAccess.mockResolvedValue({ id: USER, role: 'adult' });
+    repository.getFamilyAccess.mockResolvedValue(null);
+    await expect(
+      service.list(USER, FAMILY, { limit: 20, active: 'true' }),
+    ).rejects.toMatchObject({ code: ErrorCode.CAMERA_ACCESS_DENIED });
+  });
+
+  it('prevents non-admin adults from listing inactive configuration or mutating', async () => {
+    const { repository, service } = setup();
+    repository.getFamilyAccess.mockResolvedValue({
+      id: USER,
+      userId: USER,
+      canManageCare: false,
+      isHired: false,
+      profile: { dateOfBirth: new Date('1990-01-01') },
+      family: { ownerUserId: '99999999-9999-4999-8999-999999999999' },
+    });
     await expect(
       service.list(USER, FAMILY, { limit: 20, active: 'all' }),
     ).rejects.toMatchObject({ code: ErrorCode.CAMERA_ACCESS_DENIED });

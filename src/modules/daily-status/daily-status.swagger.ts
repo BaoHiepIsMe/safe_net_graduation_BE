@@ -96,6 +96,7 @@ export const dailyStatusDetailSchema = {
             occurrenceCount: { type: 'integer', minimum: 0 },
             notificationProcessedCount: { type: 'integer', minimum: 0 },
             missedCount: { type: 'integer', minimum: 0 },
+            completedCount: { type: 'integer', minimum: 0 },
           },
         },
         phoneUsageSummary: {

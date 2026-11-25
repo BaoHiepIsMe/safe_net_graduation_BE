@@ -62,7 +62,11 @@ describe('PhoneManagementRepository', () => {
     const prisma = {
       $transaction: jest.fn((work: (client: typeof tx) => unknown) => work(tx)),
       familyMember: { findFirst: jest.fn() },
-      device: { findFirst: jest.fn(), updateMany: jest.fn() },
+      device: {
+        findFirst: jest.fn(),
+        findMany: jest.fn(),
+        updateMany: jest.fn(),
+      },
       phoneUsageLog: { findMany: jest.fn() },
       phoneRule: { findMany: jest.fn() },
       phoneCommand: { findMany: jest.fn(), updateMany: jest.fn() },
@@ -80,7 +84,10 @@ describe('PhoneManagementRepository', () => {
 
   it('accepts telemetry only for the authenticated accepted child and owned active Device', async () => {
     const { tx, repository } = setup();
-    tx.familyMember.findFirst.mockResolvedValue({ id: MEMBER });
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: MEMBER,
+      profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+    });
     tx.device.findFirst.mockResolvedValue({ id: DEVICE });
     await expect(
       repository.createUsage(
@@ -104,7 +111,6 @@ describe('PhoneManagementRepository', () => {
           id: MEMBER,
           userId: CHILD,
           familyId: FAMILY,
-          role: 'child',
           status: 'accepted',
         }),
       }),
@@ -140,7 +146,10 @@ describe('PhoneManagementRepository', () => {
 
   it('reuses identical telemetry retry and rejects conflicting reuse', async () => {
     const { tx, usage, repository } = setup();
-    tx.familyMember.findFirst.mockResolvedValue({ id: MEMBER });
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: MEMBER,
+      profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+    });
     tx.device.findFirst.mockResolvedValue({ id: DEVICE });
     tx.phoneUsageLog.findUnique.mockResolvedValue({
       ...usage,
@@ -179,8 +188,19 @@ describe('PhoneManagementRepository', () => {
   it('requires a current manager, accepted child and owned active target for command creation', async () => {
     const { tx, repository } = setup();
     tx.familyMember.findFirst
-      .mockResolvedValueOnce({ id: MANAGER })
-      .mockResolvedValueOnce({ id: MEMBER, userId: CHILD });
+      .mockResolvedValueOnce({
+        id: MANAGER,
+        userId: 'manager-user',
+        canManageCare: true,
+        isHired: false,
+        careScopes: [],
+        family: { ownerUserId: 'manager-user' },
+      })
+      .mockResolvedValueOnce({
+        id: MEMBER,
+        userId: CHILD,
+        profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+      });
     tx.device.findFirst.mockResolvedValue({ id: DEVICE, fcmToken: 'secret' });
     await expect(
       repository.createCommand(
@@ -263,5 +283,69 @@ describe('PhoneManagementRepository', () => {
       where: { id: DEVICE, fcmToken: 'secret' },
       data: { fcmToken: null, updatedAt: expect.any(Date) },
     });
+  });
+
+  it('lists the managed child Devices without secrets and with lock state', async () => {
+    const { prisma, repository } = setup();
+    prisma.familyMember.findFirst
+      .mockResolvedValueOnce({
+        id: MANAGER,
+        userId: 'manager-user',
+        canManageCare: true,
+        isHired: false,
+        careScopes: [],
+        family: { ownerUserId: 'manager-user' },
+      })
+      .mockResolvedValueOnce({
+        id: MEMBER,
+        userId: CHILD,
+        profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+      });
+    const other = '88888888-8888-4888-8888-888888888888';
+    prisma.device.findMany.mockResolvedValue([
+      { id: DEVICE, deviceName: 'A14', platform: 'android', lastSeenAt: now },
+      { id: other, deviceName: 'Tab', platform: 'android', lastSeenAt: now },
+    ]);
+    prisma.phoneCommand.findMany.mockResolvedValue([
+      { targetDeviceId: DEVICE, commandType: 'lock' },
+      { targetDeviceId: other, commandType: 'unlock' },
+    ]);
+
+    const result = await repository.listMemberDevices(
+      'manager-user',
+      FAMILY,
+      MEMBER,
+    );
+
+    expect(result).toMatchObject({
+      outcome: 'listed',
+      devices: [
+        { id: DEVICE, locked: true },
+        { id: other, locked: false },
+      ],
+    });
+    const deviceQuery = prisma.device.findMany.mock.calls[0][0];
+    expect(deviceQuery.where).toEqual({ userId: CHILD, isActive: true });
+    expect(deviceQuery.select).not.toHaveProperty('fcmToken');
+    expect(deviceQuery.select).not.toHaveProperty('installationId');
+    expect(prisma.phoneCommand.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          memberId: MEMBER,
+          commandType: { in: ['lock', 'unlock'] },
+          status: 'completed',
+        }),
+        distinct: ['targetDeviceId'],
+      }),
+    );
+  });
+
+  it('refuses to list Devices for a non-manager', async () => {
+    const { prisma, repository } = setup();
+    prisma.familyMember.findFirst.mockResolvedValue(null);
+    await expect(
+      repository.listMemberDevices(CHILD, FAMILY, MEMBER),
+    ).resolves.toEqual({ outcome: 'forbidden' });
+    expect(prisma.device.findMany).not.toHaveBeenCalled();
   });
 });

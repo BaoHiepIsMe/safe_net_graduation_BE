@@ -32,6 +32,7 @@ export type ReminderLogMinAggregateOutputType = {
   status: string | null
   notificationProcessedAt: Date | null
   processedAt: Date | null
+  completedAt: Date | null
   note: string | null
 }
 
@@ -43,6 +44,7 @@ export type ReminderLogMaxAggregateOutputType = {
   status: string | null
   notificationProcessedAt: Date | null
   processedAt: Date | null
+  completedAt: Date | null
   note: string | null
 }
 
@@ -54,6 +56,7 @@ export type ReminderLogCountAggregateOutputType = {
   status: number
   notificationProcessedAt: number
   processedAt: number
+  completedAt: number
   note: number
   _all: number
 }
@@ -67,6 +70,7 @@ export type ReminderLogMinAggregateInputType = {
   status?: true
   notificationProcessedAt?: true
   processedAt?: true
+  completedAt?: true
   note?: true
 }
 
@@ -78,6 +82,7 @@ export type ReminderLogMaxAggregateInputType = {
   status?: true
   notificationProcessedAt?: true
   processedAt?: true
+  completedAt?: true
   note?: true
 }
 
@@ -89,6 +94,7 @@ export type ReminderLogCountAggregateInputType = {
   status?: true
   notificationProcessedAt?: true
   processedAt?: true
+  completedAt?: true
   note?: true
   _all?: true
 }
@@ -173,6 +179,7 @@ export type ReminderLogGroupByOutputType = {
   status: string
   notificationProcessedAt: Date | null
   processedAt: Date | null
+  completedAt: Date | null
   note: string | null
   _count: ReminderLogCountAggregateOutputType | null
   _min: ReminderLogMinAggregateOutputType | null
@@ -205,6 +212,7 @@ export type ReminderLogWhereInput = {
   status?: Prisma.StringFilter<"ReminderLog"> | string
   notificationProcessedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
   processedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
+  completedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
   note?: Prisma.StringNullableFilter<"ReminderLog"> | string | null
   member?: Prisma.XOR<Prisma.FamilyMemberScalarRelationFilter, Prisma.FamilyMemberWhereInput>
   reminder?: Prisma.XOR<Prisma.ReminderScalarRelationFilter, Prisma.ReminderWhereInput>
@@ -218,6 +226,7 @@ export type ReminderLogOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   notificationProcessedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   member?: Prisma.FamilyMemberOrderByWithRelationInput
   reminder?: Prisma.ReminderOrderByWithRelationInput
@@ -235,6 +244,7 @@ export type ReminderLogWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"ReminderLog"> | string
   notificationProcessedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
   processedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
+  completedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
   note?: Prisma.StringNullableFilter<"ReminderLog"> | string | null
   member?: Prisma.XOR<Prisma.FamilyMemberScalarRelationFilter, Prisma.FamilyMemberWhereInput>
   reminder?: Prisma.XOR<Prisma.ReminderScalarRelationFilter, Prisma.ReminderWhereInput>
@@ -248,6 +258,7 @@ export type ReminderLogOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   notificationProcessedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ReminderLogCountOrderByAggregateInput
   _max?: Prisma.ReminderLogMaxOrderByAggregateInput
@@ -265,6 +276,7 @@ export type ReminderLogScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"ReminderLog"> | string
   notificationProcessedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ReminderLog"> | Date | string | null
   processedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ReminderLog"> | Date | string | null
+  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ReminderLog"> | Date | string | null
   note?: Prisma.StringNullableWithAggregatesFilter<"ReminderLog"> | string | null
 }
 
@@ -274,6 +286,7 @@ export type ReminderLogCreateInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
   member: Prisma.FamilyMemberCreateNestedOneWithoutReminderLogsInput
   reminder: Prisma.ReminderCreateNestedOneWithoutLogsInput
@@ -287,6 +300,7 @@ export type ReminderLogUncheckedCreateInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
 }
 
@@ -296,6 +310,7 @@ export type ReminderLogUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   member?: Prisma.FamilyMemberUpdateOneRequiredWithoutReminderLogsNestedInput
   reminder?: Prisma.ReminderUpdateOneRequiredWithoutLogsNestedInput
@@ -309,6 +324,7 @@ export type ReminderLogUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -320,6 +336,7 @@ export type ReminderLogCreateManyInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
 }
 
@@ -329,6 +346,7 @@ export type ReminderLogUpdateManyMutationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -340,6 +358,7 @@ export type ReminderLogUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -367,6 +386,7 @@ export type ReminderLogCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   notificationProcessedAt?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   note?: Prisma.SortOrder
 }
 
@@ -378,6 +398,7 @@ export type ReminderLogMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   notificationProcessedAt?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   note?: Prisma.SortOrder
 }
 
@@ -389,6 +410,7 @@ export type ReminderLogMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   notificationProcessedAt?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   note?: Prisma.SortOrder
 }
 
@@ -482,6 +504,7 @@ export type ReminderLogCreateWithoutMemberInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
   reminder: Prisma.ReminderCreateNestedOneWithoutLogsInput
 }
@@ -493,6 +516,7 @@ export type ReminderLogUncheckedCreateWithoutMemberInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
 }
 
@@ -533,6 +557,7 @@ export type ReminderLogScalarWhereInput = {
   status?: Prisma.StringFilter<"ReminderLog"> | string
   notificationProcessedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
   processedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
+  completedAt?: Prisma.DateTimeNullableFilter<"ReminderLog"> | Date | string | null
   note?: Prisma.StringNullableFilter<"ReminderLog"> | string | null
 }
 
@@ -542,6 +567,7 @@ export type ReminderLogCreateWithoutReminderInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
   member: Prisma.FamilyMemberCreateNestedOneWithoutReminderLogsInput
 }
@@ -553,6 +579,7 @@ export type ReminderLogUncheckedCreateWithoutReminderInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
 }
 
@@ -589,6 +616,7 @@ export type ReminderLogCreateManyMemberInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
 }
 
@@ -598,6 +626,7 @@ export type ReminderLogUpdateWithoutMemberInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminder?: Prisma.ReminderUpdateOneRequiredWithoutLogsNestedInput
 }
@@ -609,6 +638,7 @@ export type ReminderLogUncheckedUpdateWithoutMemberInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -619,6 +649,7 @@ export type ReminderLogUncheckedUpdateManyWithoutMemberInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -629,6 +660,7 @@ export type ReminderLogCreateManyReminderInput = {
   status?: string
   notificationProcessedAt?: Date | string | null
   processedAt?: Date | string | null
+  completedAt?: Date | string | null
   note?: string | null
 }
 
@@ -638,6 +670,7 @@ export type ReminderLogUpdateWithoutReminderInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   member?: Prisma.FamilyMemberUpdateOneRequiredWithoutReminderLogsNestedInput
 }
@@ -649,6 +682,7 @@ export type ReminderLogUncheckedUpdateWithoutReminderInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -659,6 +693,7 @@ export type ReminderLogUncheckedUpdateManyWithoutReminderInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notificationProcessedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -672,6 +707,7 @@ export type ReminderLogSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   status?: boolean
   notificationProcessedAt?: boolean
   processedAt?: boolean
+  completedAt?: boolean
   note?: boolean
   member?: boolean | Prisma.FamilyMemberDefaultArgs<ExtArgs>
   reminder?: boolean | Prisma.ReminderDefaultArgs<ExtArgs>
@@ -685,6 +721,7 @@ export type ReminderLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   status?: boolean
   notificationProcessedAt?: boolean
   processedAt?: boolean
+  completedAt?: boolean
   note?: boolean
   member?: boolean | Prisma.FamilyMemberDefaultArgs<ExtArgs>
   reminder?: boolean | Prisma.ReminderDefaultArgs<ExtArgs>
@@ -698,6 +735,7 @@ export type ReminderLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   status?: boolean
   notificationProcessedAt?: boolean
   processedAt?: boolean
+  completedAt?: boolean
   note?: boolean
   member?: boolean | Prisma.FamilyMemberDefaultArgs<ExtArgs>
   reminder?: boolean | Prisma.ReminderDefaultArgs<ExtArgs>
@@ -711,10 +749,11 @@ export type ReminderLogSelectScalar = {
   status?: boolean
   notificationProcessedAt?: boolean
   processedAt?: boolean
+  completedAt?: boolean
   note?: boolean
 }
 
-export type ReminderLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reminderId" | "memberId" | "scheduledAt" | "status" | "notificationProcessedAt" | "processedAt" | "note", ExtArgs["result"]["reminderLog"]>
+export type ReminderLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reminderId" | "memberId" | "scheduledAt" | "status" | "notificationProcessedAt" | "processedAt" | "completedAt" | "note", ExtArgs["result"]["reminderLog"]>
 export type ReminderLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   member?: boolean | Prisma.FamilyMemberDefaultArgs<ExtArgs>
   reminder?: boolean | Prisma.ReminderDefaultArgs<ExtArgs>
@@ -742,6 +781,7 @@ export type $ReminderLogPayload<ExtArgs extends runtime.Types.Extensions.Interna
     status: string
     notificationProcessedAt: Date | null
     processedAt: Date | null
+    completedAt: Date | null
     note: string | null
   }, ExtArgs["result"]["reminderLog"]>
   composites: {}
@@ -1175,6 +1215,7 @@ export interface ReminderLogFieldRefs {
   readonly status: Prisma.FieldRef<"ReminderLog", 'String'>
   readonly notificationProcessedAt: Prisma.FieldRef<"ReminderLog", 'DateTime'>
   readonly processedAt: Prisma.FieldRef<"ReminderLog", 'DateTime'>
+  readonly completedAt: Prisma.FieldRef<"ReminderLog", 'DateTime'>
   readonly note: Prisma.FieldRef<"ReminderLog", 'String'>
 }
     

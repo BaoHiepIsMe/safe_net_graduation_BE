@@ -30,9 +30,12 @@ function transactionFixture() {
   const tx: any = {
     $queryRaw: jest.fn(),
     familyMember: {
-      findFirst: jest
-        .fn()
-        .mockResolvedValue({ id: MEMBER, userId: USER, role: 'child' }),
+      findFirst: jest.fn().mockResolvedValue({
+        id: MEMBER,
+        userId: USER,
+        isCareRecipient: false,
+        profile: { dateOfBirth: new Date('2018-01-01') },
+      }),
     },
     dailyStatusReport: {
       findUnique: jest.fn().mockImplementation(() => Promise.resolve(stored)),

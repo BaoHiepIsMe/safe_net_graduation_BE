@@ -3,6 +3,7 @@ import {
   calendarDateSchema,
   fullNameSchema,
   genderSchema,
+  uiModeSchema,
 } from '../../../common/schemas/profile.schema';
 
 const timeSchema = z
@@ -17,6 +18,7 @@ export const updateProfileSchema = z
     avatarUrl: z.string().trim().url().max(2048).nullable().optional(),
     dateOfBirth: calendarDateSchema.nullable().optional(),
     gender: genderSchema.nullable().optional(),
+    uiMode: uiModeSchema.optional(),
   })
   .strict()
   .refine((value) => Object.keys(value).length > 0, {
@@ -32,6 +34,10 @@ export const updateUserSettingsSchema = z
     smsNotificationsEnabled: z.boolean().optional(),
     emailNotificationsEnabled: z.boolean().optional(),
     locationSharingEnabled: z.boolean().optional(),
+    sharingMode: z.enum(['continuous', 'battery_saver']).optional(),
+    locationVisibility: z.enum(['all', 'selected']).optional(),
+    notifyOnZoneExit: z.boolean().optional(),
+    notifyOnSignalLost: z.boolean().optional(),
     darkMode: z.boolean().optional(),
     theme: z.enum(['light', 'dark', 'system']).optional(),
     quietHoursStart: timeSchema.nullable().optional(),

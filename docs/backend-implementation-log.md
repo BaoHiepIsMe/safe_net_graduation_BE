@@ -1117,3 +1117,38 @@ This log tracks the chronological implementation progress across all development
   - Unit: 87 suites / 514 tests PASS.
   - E2E: 14 suites / 89 tests PASS.
   - Live Supabase security regression: 1 suite / 11 tests PASS.
+
+---
+
+## [Care Roles & Scopes Refactor] - Capability & Care-Scope Authorization Model
+
+- **Date**: 2026-11-20
+- **Status**: Implemented across Phases 1–7; forward migration `20261120090000_care_roles_and_scopes` created and validated (pending deployment to shared DB).
+- **Summary of Changes**:
+  - **Phase 1 (Migration & Schema)**:
+    - Added `profiles.ui_mode` (`kid` | `adult` | `assisted`), updated `handle_new_user()` trigger to compute `ui_mode` from `date_of_birth` in `Asia/Ho_Chi_Minh` and stop reading `role`.
+    - Made `family_members.role` nullable; added `can_manage_care`, `care_granted_by`, `is_care_recipient`, `care_recipient_set_by`, `is_hired`, membership status `requested`, and new family labels (`husband`, `wife`, `brother`, `sister`, `grandchild`).
+    - Created `family_member_care_scopes` with composite PK, FKs, same-family trigger, and forced backend-only RLS.
+    - Updated `assert_active_family_owner_manager()`, `enforce_adult_care_manager()`, `enforce_phone_target_binding()`, and `enforce_daily_status_context()` triggers.
+  - **Phase 2 (Authorization Core)**:
+    - Added single shared Vietnam timezone age utility `src/common/utils/age.util.ts` (`getAgeInVietnam`, `isMinor`, `isUnder13`, `isSenior`, `isEffectiveCareRecipient`, `resolveUiMode`).
+    - Updated `FamilyAccessService` with `requireAcceptedMember`, `requireOwner`, `requireCareManager`, `requireFamilyAdmin`, `canManage`, `requireCanManage`, and `listManagersFor`; removed `requireManager`.
+  - **Phase 3 (Families Module)**:
+    - Replaced `role` in invitations and member responses with care flags (`isOwner`, `canManageCare`, `isCareRecipient`, `isMinor`, `isHired`, `careScopeMemberIds`).
+    - Implemented 3-state `isCareRecipient` on invitations, age re-evaluation on acceptance, and join-by-code preview + join request + approve/reject/cancel workflow.
+    - Added `POST /api/v1/families/:familyId/transfer-ownership`, updated member PATCH and removal rules, and wired persistent family notifications (`family_join_requested`, `family_join_approved`, `family_join_rejected`, `family_permissions_changed`, `family_owner_transferred`, `care_recipient_left`).
+  - **Phase 4 (Feature Modules)**:
+    - Updated Geofences, Reminders, Phone Management, Daily Status, Cameras, Chat, Locations, and Realtime room authorization to use `canManage`, `requireCareManager`, `requireFamilyAdmin`, `isMinor`, `isEffectiveCareRecipient`, and hired caregiver scope filtering.
+  - **Phase 5 (Auth & Profiles)**:
+    - Replaced `role` on `POST /api/v1/auth/register` and `GET/PATCH /api/v1/profiles/me` with `uiMode`; enforced `< 13` `kid` lock and prevented active care recipients from disabling global location sharing.
+  - **Phase 6 & 7 (SOS Verification & Documentation)**:
+    - Verified SOS fanout to all accepted members of all active families of the sender (excluding self from `sos_alert` notifications) with emergency location snapshot regardless of `locationSharingEnabled`.
+    - Updated `AGENTS.md`, `docs/flutter-integration-contract.md`, `docs/technical-debt.md`, and this log.
+  - **Review fixes (2026-11-21)**:
+    - Blocked a hired caregiver from relabelling themselves out of `caregiver` into a full manager; leaving `caregiver` now also clears `canManageCare`.
+    - `PATCH /families/{familyId}/members/{memberId}` is open to every accepted member, with per-field rules; `locationSharingEnabled` is self-only.
+    - Care recipients can no longer hide from their family: current/realtime location, safe-zone alerts and signal-loss alerts ignore their sharing, visibility and alert switches.
+    - Safe-zone alerts go only to the people who canManage the member; hired caregivers cannot edit safe zones outside their scope; scope filters moved into queries so pagination stays correct.
+    - Migration hands minor-owned legacy families to an adult before the owner invariant changes.
+    - Daily-status eligibility is filtered in SQL again; `uiMode = kid` is refused from age 13.
+    - Shared the hired-scope rule in `families/care-scope.util.ts`; removed mock-tolerant permission guards and `any` in the new code; rewrote the contract's family roles section to match the code.

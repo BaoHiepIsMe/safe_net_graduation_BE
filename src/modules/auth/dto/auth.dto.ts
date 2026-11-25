@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import {
-  accountRoleSchema,
   calendarDateSchema,
   fullNameSchema,
   genderSchema,
   normalizedPhoneNumberSchema,
+  registerUiModeSchema,
 } from '../../../common/schemas/profile.schema';
 
 const emailSchema = z
@@ -30,7 +30,7 @@ export const registerSchema = z
       (value) => value <= new Date().toISOString().slice(0, 10),
       'Ngày sinh không được ở tương lai',
     ),
-    role: accountRoleSchema,
+    uiMode: registerUiModeSchema.optional(),
   })
   .strict();
 

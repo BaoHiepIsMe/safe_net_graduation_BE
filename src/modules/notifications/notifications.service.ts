@@ -35,6 +35,15 @@ export class NotificationsService {
     return created;
   }
 
+  async processSignalLoss(
+    input: Parameters<NotificationsRepository['createFromSignalLoss']>[0],
+  ) {
+    const created = await this.repository.createFromSignalLoss(input);
+    this.emitCreated(created);
+    await this.deliverCreated(created);
+    return created;
+  }
+
   async processSosEvent(eventId: string, afterNotificationCommit?: () => void) {
     const created = await this.repository.createFromSosEvent(eventId);
     this.emitCreated(created);
@@ -59,6 +68,15 @@ export class NotificationsService {
 
   async processCall(callId: string) {
     const created = await this.repository.createFromCall(callId);
+    this.emitCreated(created);
+    await this.deliverCreated(created);
+    return created;
+  }
+
+  async notifyFamilyEvent(
+    input: Parameters<NotificationsRepository['createFamilyNotifications']>[0],
+  ) {
+    const created = await this.repository.createFamilyNotifications(input);
     this.emitCreated(created);
     await this.deliverCreated(created);
     return created;
@@ -258,6 +276,15 @@ export class NotificationsService {
         metadata.callType === 'voice' || metadata.callType === 'video'
           ? metadata.callType
           : null,
+      ...(typeof metadata.decision === 'string'
+        ? { decision: metadata.decision }
+        : {}),
+      ...(typeof metadata.action === 'string'
+        ? { action: metadata.action }
+        : {}),
+      ...(typeof metadata.priority === 'string'
+        ? { priority: metadata.priority }
+        : {}),
     };
   }
 

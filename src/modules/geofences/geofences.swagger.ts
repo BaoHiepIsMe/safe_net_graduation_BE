@@ -1,4 +1,5 @@
 import type { SchemaObject } from '@nestjs/swagger';
+import { GEOFENCE_ICONS } from './geofences.constants';
 
 const assignmentSchema: SchemaObject = {
   type: 'object',
@@ -21,6 +22,7 @@ export const createGeofenceBodySchema: SchemaObject = {
     centerLatitude: { type: 'number', minimum: -90, maximum: 90 },
     centerLongitude: { type: 'number', minimum: -180, maximum: 180 },
     radiusMeters: { type: 'integer', minimum: 1, maximum: 100000 },
+    icon: { type: 'string', nullable: true, enum: [...GEOFENCE_ICONS] },
     members: { type: 'array', maxItems: 100, items: assignmentSchema },
   },
 };
@@ -35,6 +37,7 @@ export const updateGeofenceBodySchema: SchemaObject = {
     centerLatitude: { type: 'number', minimum: -90, maximum: 90 },
     centerLongitude: { type: 'number', minimum: -180, maximum: 180 },
     radiusMeters: { type: 'integer', minimum: 1, maximum: 100000 },
+    icon: { type: 'string', nullable: true, enum: [...GEOFENCE_ICONS] },
     isActive: { type: 'boolean' },
   },
 };
@@ -63,6 +66,7 @@ export const geofenceSuccessSchema: SchemaObject = {
         centerLatitude: { type: 'number' },
         centerLongitude: { type: 'number' },
         radiusMeters: { type: 'integer' },
+        icon: { type: 'string', nullable: true },
         isActive: { type: 'boolean' },
         members: { type: 'array', items: assignmentSchema },
         createdAt: { type: 'string', format: 'date-time' },

@@ -1,4 +1,5 @@
 import { NotificationsService } from '../notifications/notifications.service';
+import { ReminderEventsService } from './reminder-events.service';
 import { ReminderSchedulerService } from './reminder-scheduler.service';
 import { RemindersRepository } from './reminders.repository';
 
@@ -15,22 +16,26 @@ describe('ReminderSchedulerService', () => {
         .mockResolvedValue({ outcome: 'due', dueLogIds: [LOG] }),
       listPendingNotificationLogs: jest.fn().mockResolvedValue([]),
       markNotificationProcessed: jest.fn().mockResolvedValue({ count: 1 }),
+      markUnconfirmedMissed: jest.fn().mockResolvedValue([]),
     };
+    const events = { emitLogsUpdated: jest.fn().mockResolvedValue(undefined) };
     const notifications = {
       processReminderLog: jest.fn().mockResolvedValue([]),
     };
     return {
       repository,
       notifications,
+      events,
       service: new ReminderSchedulerService(
         repository as unknown as RemindersRepository,
         notifications as unknown as NotificationsService,
+        events as unknown as ReminderEventsService,
       ),
     };
   };
 
   it('persists due occurrence before processing its notification', async () => {
-    const { repository, notifications, service } = setup();
+    const { repository, notifications, events, service } = setup();
     repository.listDue.mockResolvedValue([
       { id: REMINDER, nextOccurrenceAt: new Date('2030-01-01T08:00:00Z') },
     ]);
@@ -38,6 +43,7 @@ describe('ReminderSchedulerService', () => {
     await service.runDue(now);
     expect(repository.claimOccurrence).toHaveBeenCalled();
     expect(notifications.processReminderLog).toHaveBeenCalledWith(LOG);
+    expect(events.emitLogsUpdated).toHaveBeenCalledWith([LOG], now);
     expect(repository.markNotificationProcessed).toHaveBeenCalledWith(LOG);
   });
 
@@ -82,5 +88,16 @@ describe('ReminderSchedulerService', () => {
     release();
     await first;
     expect(repository.listDue).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks occurrences unconfirmed for an hour as missed and broadcasts them', async () => {
+    const { repository, events, service } = setup();
+    repository.markUnconfirmedMissed.mockResolvedValue([LOG]);
+    await service.runDue(now);
+    expect(repository.markUnconfirmedMissed).toHaveBeenCalledWith(
+      new Date('2030-01-01T07:05:00Z'),
+      expect.any(Number),
+    );
+    expect(events.emitLogsUpdated).toHaveBeenCalledWith([LOG], now);
   });
 });

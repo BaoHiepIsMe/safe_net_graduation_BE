@@ -2,29 +2,31 @@ import {
   FAMILY_LABELS,
   INVITE_CODE_ALPHABET,
   INVITE_CODE_LENGTH,
-  deriveRoleFromLabel,
+  MEMBERSHIP_STATUSES,
   invitationCutoff,
   invitationExpiresAt,
 } from './families.constants';
 
 describe('families constants', () => {
-  it.each([
-    ['son', 'child'],
-    ['daughter', 'child'],
-    ['grandfather', 'elder'],
-    ['grandmother', 'elder'],
-    ['father', 'adult'],
-    ['mother', 'adult'],
-    ['caregiver', 'adult'],
-    ['other', 'adult'],
-  ] as const)('derives %s -> %s', (label, role) => {
-    expect(deriveRoleFromLabel(label)).toBe(role);
-  });
-
-  it('covers every label and never derives manager', () => {
-    for (const label of FAMILY_LABELS) {
-      expect(['adult', 'child', 'elder']).toContain(deriveRoleFromLabel(label));
+  it('includes the new relationship labels and requested membership status', () => {
+    for (const label of [
+      'father',
+      'mother',
+      'son',
+      'daughter',
+      'grandfather',
+      'grandmother',
+      'caregiver',
+      'other',
+      'husband',
+      'wife',
+      'brother',
+      'sister',
+      'grandchild',
+    ] as const) {
+      expect(FAMILY_LABELS).toContain(label);
     }
+    expect(MEMBERSHIP_STATUSES).toContain('requested');
   });
 
   it('invite alphabet has no look-alike characters', () => {

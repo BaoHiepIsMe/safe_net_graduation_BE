@@ -34,6 +34,7 @@ export const envSchema = z
     FIREBASE_PROJECT_ID: optionalNonEmptyString,
     FIREBASE_CLIENT_EMAIL: optionalNonEmptyString,
     FIREBASE_PRIVATE_KEY: optionalNonEmptyString,
+    SIGNAL_LOSS_ALERTS_ENABLED: z.enum(['true', 'false']).default('true'),
     THROTTLE_TTL: z.coerce.number().int().positive().default(60000),
     THROTTLE_LIMIT: z.coerce.number().int().positive().default(100),
     MAX_BODY_SIZE: z

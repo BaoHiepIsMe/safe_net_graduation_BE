@@ -28,18 +28,45 @@ class InMemoryCamerasRepository {
   ];
   accessState: Record<
     string,
-    { familyId: string; role: string; status: string }
+    {
+      familyId: string;
+      canManageCare: boolean;
+      isHired: boolean;
+      status: string;
+    }
   > = {
-    [MANAGER_A]: { familyId: FAMILY_A, role: 'manager', status: 'accepted' },
-    [ADULT_A]: { familyId: FAMILY_A, role: 'adult', status: 'accepted' },
-    [USER_C]: { familyId: FAMILY_B, role: 'adult', status: 'accepted' },
+    [MANAGER_A]: {
+      familyId: FAMILY_A,
+      canManageCare: true,
+      isHired: false,
+      status: 'accepted',
+    },
+    [ADULT_A]: {
+      familyId: FAMILY_A,
+      canManageCare: false,
+      isHired: false,
+      status: 'accepted',
+    },
+    [USER_C]: {
+      familyId: FAMILY_B,
+      canManageCare: false,
+      isHired: false,
+      status: 'accepted',
+    },
   };
 
   getFamilyAccess(userId: string, familyId: string) {
     const access = this.accessState[userId];
     return Promise.resolve(
       access?.familyId === familyId && access.status === 'accepted'
-        ? { id: userId, role: access.role }
+        ? {
+            id: userId,
+            userId,
+            canManageCare: access.canManageCare,
+            isHired: access.isHired,
+            profile: { dateOfBirth: new Date('1985-01-01') },
+            family: { ownerUserId: MANAGER_A },
+          }
         : null,
     );
   }
@@ -50,7 +77,8 @@ class InMemoryCamerasRepository {
       !access ||
       access.familyId !== familyId ||
       access.status !== 'accepted' ||
-      access.role !== 'manager'
+      !access.canManageCare ||
+      access.isHired
     ) {
       return Promise.resolve({ outcome: 'forbidden' });
     }
@@ -97,7 +125,8 @@ class InMemoryCamerasRepository {
       !access ||
       access.familyId !== familyId ||
       access.status !== 'accepted' ||
-      access.role !== 'manager'
+      !access.canManageCare ||
+      access.isHired
     ) {
       return Promise.resolve({ outcome: 'forbidden' });
     }

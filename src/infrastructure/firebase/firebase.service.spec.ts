@@ -17,6 +17,13 @@ describe('FirebaseService disabled behavior', () => {
     ).resolves.toEqual({ status: 'disabled' });
 
     await expect(
+      service.sendDataMessage({
+        token: 'sensitive-token',
+        data: { type: 'phone_command' },
+      }),
+    ).resolves.toEqual({ status: 'disabled' });
+
+    await expect(
       service.sendMulticastPushNotification({
         tokens: ['sensitive-token'],
         title: 'Private title',

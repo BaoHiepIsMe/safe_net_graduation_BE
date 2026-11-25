@@ -19,6 +19,16 @@ export const familyMemberLocationParamSchema = z
   .object({ familyId: z.string().uuid(), memberId: z.string().uuid() })
   .strict();
 
+export const setLocationViewersSchema = z
+  .object({ viewerUserIds: z.array(z.string().uuid()).max(100) })
+  .strict()
+  .refine((v) => new Set(v.viewerUserIds).size === v.viewerUserIds.length, {
+    message: 'viewerUserIds must be unique',
+    path: ['viewerUserIds'],
+  });
+
+export type SetLocationViewersDto = z.infer<typeof setLocationViewersSchema>;
+
 // Plugin chạy ngầm dùng giá trị âm (-1) cho tốc độ/hướng/pin không biết: coi như null
 const unknownToNull = (value: unknown) =>
   typeof value === 'number' && value < 0 ? null : value;

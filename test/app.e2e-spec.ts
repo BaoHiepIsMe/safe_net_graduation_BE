@@ -18,7 +18,6 @@ describe('Foundation and Phase 1 security (e2e)', () => {
     fullName: 'Safe User',
     gender: 'female',
     dateOfBirth: '2000-02-29',
-    role: 'parent',
   };
   const createUser = jest.fn().mockResolvedValue({
     data: { user: { id: USER_ID, email: registration.email } },
@@ -65,7 +64,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
       avatarUrl: null,
       dateOfBirth: null,
       gender: null,
-      role: 'parent',
+      uiMode: 'adult',
       phoneNumber: registration.phoneNumber,
       accountStatus: 'active',
       createdAt: '2026-08-19T00:00:00.000Z',
@@ -161,7 +160,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
       .expect(200);
     expect(response.body.data.id).toBe(USER_ID);
     expect(response.body.data.fullName).toBe('Safe User');
-    expect(response.body.data.role).toBe('parent');
+    expect(response.body.data.uiMode).toBe('adult');
   });
 
   it('does not expose arbitrary or malformed profile lookup routes', async () => {
@@ -247,7 +246,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
     expect(response.body.error.code).toBe('VALIDATION_ERROR');
   });
 
-  it.each(['phoneNumber', 'gender', 'dateOfBirth', 'role'])(
+  it.each(['phoneNumber', 'gender', 'dateOfBirth'])(
     'rejects registration without %s before creating an Auth account',
     async (key) => {
       createUser.mockClear();
@@ -270,7 +269,7 @@ describe('Foundation and Phase 1 security (e2e)', () => {
     const { password: _password, ...user } = registration;
     expect(response.body.success).toBe(true);
     expect(response.body.data).toEqual({
-      user: { id: USER_ID, ...user },
+      user: { id: USER_ID, ...user, uiMode: 'adult' },
       session: null,
     });
     expect(response.body.data.user).not.toHaveProperty('password');

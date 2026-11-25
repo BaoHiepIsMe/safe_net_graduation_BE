@@ -47,6 +47,7 @@ export type GeofenceMinAggregateOutputType = {
   center_latitude: runtime.Decimal | null
   center_longitude: runtime.Decimal | null
   radius_meters: number | null
+  icon: string | null
   is_active: boolean | null
   created_at: Date | null
   updated_at: Date | null
@@ -61,6 +62,7 @@ export type GeofenceMaxAggregateOutputType = {
   center_latitude: runtime.Decimal | null
   center_longitude: runtime.Decimal | null
   radius_meters: number | null
+  icon: string | null
   is_active: boolean | null
   created_at: Date | null
   updated_at: Date | null
@@ -75,6 +77,7 @@ export type GeofenceCountAggregateOutputType = {
   center_latitude: number
   center_longitude: number
   radius_meters: number
+  icon: number
   is_active: number
   created_at: number
   updated_at: number
@@ -103,6 +106,7 @@ export type GeofenceMinAggregateInputType = {
   center_latitude?: true
   center_longitude?: true
   radius_meters?: true
+  icon?: true
   is_active?: true
   created_at?: true
   updated_at?: true
@@ -117,6 +121,7 @@ export type GeofenceMaxAggregateInputType = {
   center_latitude?: true
   center_longitude?: true
   radius_meters?: true
+  icon?: true
   is_active?: true
   created_at?: true
   updated_at?: true
@@ -131,6 +136,7 @@ export type GeofenceCountAggregateInputType = {
   center_latitude?: true
   center_longitude?: true
   radius_meters?: true
+  icon?: true
   is_active?: true
   created_at?: true
   updated_at?: true
@@ -232,6 +238,7 @@ export type GeofenceGroupByOutputType = {
   center_latitude: runtime.Decimal
   center_longitude: runtime.Decimal
   radius_meters: number
+  icon: string | null
   is_active: boolean
   created_at: Date
   updated_at: Date
@@ -269,6 +276,7 @@ export type GeofenceWhereInput = {
   center_latitude?: Prisma.DecimalFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFilter<"Geofence"> | number
+  icon?: Prisma.StringNullableFilter<"Geofence"> | string | null
   is_active?: Prisma.BoolFilter<"Geofence"> | boolean
   created_at?: Prisma.DateTimeFilter<"Geofence"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Geofence"> | Date | string
@@ -288,6 +296,7 @@ export type GeofenceOrderByWithRelationInput = {
   center_latitude?: Prisma.SortOrder
   center_longitude?: Prisma.SortOrder
   radius_meters?: Prisma.SortOrder
+  icon?: Prisma.SortOrderInput | Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -310,6 +319,7 @@ export type GeofenceWhereUniqueInput = Prisma.AtLeast<{
   center_latitude?: Prisma.DecimalFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFilter<"Geofence"> | number
+  icon?: Prisma.StringNullableFilter<"Geofence"> | string | null
   is_active?: Prisma.BoolFilter<"Geofence"> | boolean
   created_at?: Prisma.DateTimeFilter<"Geofence"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Geofence"> | Date | string
@@ -329,6 +339,7 @@ export type GeofenceOrderByWithAggregationInput = {
   center_latitude?: Prisma.SortOrder
   center_longitude?: Prisma.SortOrder
   radius_meters?: Prisma.SortOrder
+  icon?: Prisma.SortOrderInput | Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -351,6 +362,7 @@ export type GeofenceScalarWhereWithAggregatesInput = {
   center_latitude?: Prisma.DecimalWithAggregatesFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalWithAggregatesFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntWithAggregatesFilter<"Geofence"> | number
+  icon?: Prisma.StringNullableWithAggregatesFilter<"Geofence"> | string | null
   is_active?: Prisma.BoolWithAggregatesFilter<"Geofence"> | boolean
   created_at?: Prisma.DateTimeWithAggregatesFilter<"Geofence"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"Geofence"> | Date | string
@@ -363,6 +375,7 @@ export type GeofenceCreateInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -382,6 +395,7 @@ export type GeofenceUncheckedCreateInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -397,6 +411,7 @@ export type GeofenceUpdateInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -416,6 +431,7 @@ export type GeofenceUncheckedUpdateInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -433,6 +449,7 @@ export type GeofenceCreateManyInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -445,6 +462,7 @@ export type GeofenceUpdateManyMutationInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -459,6 +477,7 @@ export type GeofenceUncheckedUpdateManyInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -488,6 +507,7 @@ export type GeofenceCountOrderByAggregateInput = {
   center_latitude?: Prisma.SortOrder
   center_longitude?: Prisma.SortOrder
   radius_meters?: Prisma.SortOrder
+  icon?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -508,6 +528,7 @@ export type GeofenceMaxOrderByAggregateInput = {
   center_latitude?: Prisma.SortOrder
   center_longitude?: Prisma.SortOrder
   radius_meters?: Prisma.SortOrder
+  icon?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -522,6 +543,7 @@ export type GeofenceMinOrderByAggregateInput = {
   center_latitude?: Prisma.SortOrder
   center_longitude?: Prisma.SortOrder
   radius_meters?: Prisma.SortOrder
+  icon?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -666,6 +688,7 @@ export type GeofenceCreateWithoutFamilyInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -683,6 +706,7 @@ export type GeofenceUncheckedCreateWithoutFamilyInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -729,6 +753,7 @@ export type GeofenceScalarWhereInput = {
   center_latitude?: Prisma.DecimalFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFilter<"Geofence"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFilter<"Geofence"> | number
+  icon?: Prisma.StringNullableFilter<"Geofence"> | string | null
   is_active?: Prisma.BoolFilter<"Geofence"> | boolean
   created_at?: Prisma.DateTimeFilter<"Geofence"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Geofence"> | Date | string
@@ -741,6 +766,7 @@ export type GeofenceCreateWithoutGeofenceEventInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -759,6 +785,7 @@ export type GeofenceUncheckedCreateWithoutGeofenceEventInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -789,6 +816,7 @@ export type GeofenceUpdateWithoutGeofenceEventInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -807,6 +835,7 @@ export type GeofenceUncheckedUpdateWithoutGeofenceEventInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -821,6 +850,7 @@ export type GeofenceCreateWithoutGeofenceMemberInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -839,6 +869,7 @@ export type GeofenceUncheckedCreateWithoutGeofenceMemberInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -869,6 +900,7 @@ export type GeofenceUpdateWithoutGeofenceMemberInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -887,6 +919,7 @@ export type GeofenceUncheckedUpdateWithoutGeofenceMemberInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -901,6 +934,7 @@ export type GeofenceCreateWithoutGeofenceStateInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -919,6 +953,7 @@ export type GeofenceUncheckedCreateWithoutGeofenceStateInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -949,6 +984,7 @@ export type GeofenceUpdateWithoutGeofenceStateInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -967,6 +1003,7 @@ export type GeofenceUncheckedUpdateWithoutGeofenceStateInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -981,6 +1018,7 @@ export type GeofenceCreateWithoutProfileInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -998,6 +1036,7 @@ export type GeofenceUncheckedCreateWithoutProfileInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -1040,6 +1079,7 @@ export type GeofenceCreateManyFamilyInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -1052,6 +1092,7 @@ export type GeofenceUpdateWithoutFamilyInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1069,6 +1110,7 @@ export type GeofenceUncheckedUpdateWithoutFamilyInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1085,6 +1127,7 @@ export type GeofenceUncheckedUpdateManyWithoutFamilyInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1098,6 +1141,7 @@ export type GeofenceCreateManyProfileInput = {
   center_latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters: number
+  icon?: string | null
   is_active?: boolean
   created_at?: Date | string
   updated_at?: Date | string
@@ -1110,6 +1154,7 @@ export type GeofenceUpdateWithoutProfileInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1127,6 +1172,7 @@ export type GeofenceUncheckedUpdateWithoutProfileInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1143,6 +1189,7 @@ export type GeofenceUncheckedUpdateManyWithoutProfileInput = {
   center_latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   center_longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   radius_meters?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1206,6 +1253,7 @@ export type GeofenceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   center_latitude?: boolean
   center_longitude?: boolean
   radius_meters?: boolean
+  icon?: boolean
   is_active?: boolean
   created_at?: boolean
   updated_at?: boolean
@@ -1226,6 +1274,7 @@ export type GeofenceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   center_latitude?: boolean
   center_longitude?: boolean
   radius_meters?: boolean
+  icon?: boolean
   is_active?: boolean
   created_at?: boolean
   updated_at?: boolean
@@ -1242,6 +1291,7 @@ export type GeofenceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   center_latitude?: boolean
   center_longitude?: boolean
   radius_meters?: boolean
+  icon?: boolean
   is_active?: boolean
   created_at?: boolean
   updated_at?: boolean
@@ -1258,12 +1308,13 @@ export type GeofenceSelectScalar = {
   center_latitude?: boolean
   center_longitude?: boolean
   radius_meters?: boolean
+  icon?: boolean
   is_active?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type GeofenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "family_id" | "created_by" | "name" | "address" | "center_latitude" | "center_longitude" | "radius_meters" | "is_active" | "created_at" | "updated_at", ExtArgs["result"]["geofence"]>
+export type GeofenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "family_id" | "created_by" | "name" | "address" | "center_latitude" | "center_longitude" | "radius_meters" | "icon" | "is_active" | "created_at" | "updated_at", ExtArgs["result"]["geofence"]>
 export type GeofenceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   GeofenceEvent?: boolean | Prisma.Geofence$GeofenceEventArgs<ExtArgs>
   GeofenceMember?: boolean | Prisma.Geofence$GeofenceMemberArgs<ExtArgs>
@@ -1299,6 +1350,7 @@ export type $GeofencePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     center_latitude: runtime.Decimal
     center_longitude: runtime.Decimal
     radius_meters: number
+    icon: string | null
     is_active: boolean
     created_at: Date
     updated_at: Date
@@ -1738,6 +1790,7 @@ export interface GeofenceFieldRefs {
   readonly center_latitude: Prisma.FieldRef<"Geofence", 'Decimal'>
   readonly center_longitude: Prisma.FieldRef<"Geofence", 'Decimal'>
   readonly radius_meters: Prisma.FieldRef<"Geofence", 'Int'>
+  readonly icon: Prisma.FieldRef<"Geofence", 'String'>
   readonly is_active: Prisma.FieldRef<"Geofence", 'Boolean'>
   readonly created_at: Prisma.FieldRef<"Geofence", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"Geofence", 'DateTime'>

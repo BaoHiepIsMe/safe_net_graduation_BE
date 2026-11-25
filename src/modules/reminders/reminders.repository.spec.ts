@@ -22,8 +22,22 @@ describe('RemindersRepository', () => {
     const tx = {
       $queryRaw: jest.fn().mockResolvedValue([]),
       familyMember: {
-        findFirst: jest.fn().mockResolvedValue({ id: MEMBER }),
-        findMany: jest.fn().mockResolvedValue([{ id: MEMBER }]),
+        findFirst: jest.fn().mockResolvedValue({
+          id: 'manager-member',
+          userId: USER,
+          canManageCare: true,
+          isHired: false,
+          careScopes: [],
+          family: { ownerUserId: USER },
+        }),
+        findMany: jest.fn().mockResolvedValue([
+          {
+            id: MEMBER,
+            userId: 'child-user',
+            isCareRecipient: false,
+            profile: { dateOfBirth: new Date('2016-01-01T00:00:00Z') },
+          },
+        ]),
         count: jest.fn().mockResolvedValue(1),
       },
       reminder: {
@@ -35,6 +49,7 @@ describe('RemindersRepository', () => {
         update: jest.fn().mockResolvedValue({ id: REMINDER }),
       },
       reminderTarget: {
+        findMany: jest.fn().mockResolvedValue([{ memberId: MEMBER }]),
         deleteMany: jest.fn(),
         createMany: jest.fn(),
       },
@@ -111,6 +126,53 @@ describe('RemindersRepository', () => {
     expect(tx.reminder.create).not.toHaveBeenCalled();
   });
 
+  it('rejects targets that the care manager cannot manage (self, non-care-recipient, or out of hired scope)', async () => {
+    const { tx, repository } = setup();
+    tx.familyMember.findMany.mockResolvedValueOnce([
+      {
+        id: MEMBER,
+        userId: USER,
+        isCareRecipient: true,
+        profile: { dateOfBirth: new Date('1980-01-01') },
+      },
+    ]);
+    await expect(repository.create(USER, dto, schedule)).resolves.toEqual({
+      outcome: 'invalid_target',
+    });
+
+    tx.familyMember.findMany.mockResolvedValueOnce([
+      {
+        id: MEMBER,
+        userId: '99999999-9999-4999-8999-999999999999',
+        isCareRecipient: false,
+        profile: { dateOfBirth: new Date('1980-01-01') },
+      },
+    ]);
+    await expect(repository.create(USER, dto, schedule)).resolves.toEqual({
+      outcome: 'invalid_target',
+    });
+
+    tx.familyMember.findFirst.mockResolvedValueOnce({
+      id: '88888888-8888-4888-8888-888888888888',
+      userId: USER,
+      canManageCare: true,
+      isHired: true,
+      careScopes: [],
+      family: { ownerUserId: '77777777-7777-4777-8777-777777777777' },
+    });
+    tx.familyMember.findMany.mockResolvedValueOnce([
+      {
+        id: MEMBER,
+        userId: '99999999-9999-4999-8999-999999999999',
+        isCareRecipient: true,
+        profile: { dateOfBirth: new Date('1950-01-01') },
+      },
+    ]);
+    await expect(repository.create(USER, dto, schedule)).resolves.toEqual({
+      outcome: 'invalid_target',
+    });
+  });
+
   it('propagates transaction failure without attempting a partial target write', async () => {
     const { tx, repository } = setup();
     tx.reminder.create.mockRejectedValue(new Error('transaction rollback'));
@@ -135,6 +197,53 @@ describe('RemindersRepository', () => {
     });
     expect(tx.reminderTarget.createMany).toHaveBeenCalled();
     expect(tx.reminderLog.createMany).not.toHaveBeenCalled();
+  });
+
+  it('refuses a hired caregiver editing a reminder for someone outside their scope', async () => {
+    const { tx, repository } = setup();
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: 'hired-member',
+      userId: USER,
+      canManageCare: true,
+      isHired: true,
+      careScopes: [{ targetMemberId: 'someone-else' }],
+      family: { ownerUserId: 'owner-user' },
+    });
+    await expect(
+      repository.update(
+        USER,
+        REMINDER,
+        { title: 'Changed' },
+        undefined,
+        undefined,
+      ),
+    ).resolves.toEqual({ outcome: 'forbidden' });
+    await expect(repository.deactivate(USER, REMINDER)).resolves.toEqual({
+      outcome: 'forbidden',
+    });
+    expect(tx.reminder.update).not.toHaveBeenCalled();
+    expect(tx.reminderTarget.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('lets a hired caregiver edit when every recipient is in scope', async () => {
+    const { tx, repository } = setup();
+    tx.familyMember.findFirst.mockResolvedValue({
+      id: 'hired-member',
+      userId: USER,
+      canManageCare: true,
+      isHired: true,
+      careScopes: [{ targetMemberId: MEMBER }],
+      family: { ownerUserId: 'owner-user' },
+    });
+    await expect(
+      repository.update(
+        USER,
+        REMINDER,
+        { title: 'Changed' },
+        undefined,
+        undefined,
+      ),
+    ).resolves.toMatchObject({ outcome: 'updated' });
   });
 
   it('claims one durable occurrence and advances schedule inside one serializable transaction', async () => {
